@@ -1,0 +1,2 @@
+class SleeperAPIException(Exception):
+    pass
