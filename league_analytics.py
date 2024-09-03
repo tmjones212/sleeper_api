@@ -5,6 +5,7 @@ from client import SleeperAPI
 class LeagueAnalytics:
     def __init__(self, client: SleeperAPI):
         self.client = client
+        self.valid_positions = ["QB", "RB", "WR", "TE"]
 
     def get_top_half_scorers(self, league_id: str, week: int) -> List[Dict[str, any]]:
         league = self.client.get_league(league_id, fetch_all=True)
@@ -147,29 +148,65 @@ class LeagueAnalytics:
         start_week = league.settings.start_week
         end_week = league.settings.playoff_week_start
 
-        print(f"Calculating best ball scores for weeks {start_week} to {end_week - 1}")
-
         for week in range(start_week, end_week):
-            print(f"Processing week {week}")
             matchups = self.client.get_matchups(league_id, week)
             for matchup in matchups:
                 best_ball_points, _ = self._calculate_best_ball_points(matchup.players_points, league.roster_positions)
+                actual_points = self._calculate_actual_points(matchup.players_points, matchup.starters)
                 team_data = team_totals[matchup.roster_id]
                 team_data['total_best_ball_points'] += best_ball_points
-                team_data['total_actual_points'] += matchup.points
+                team_data['total_actual_points'] += actual_points
                 team_data['weekly_scores'].append({
                     'week': week,
                     'best_ball_points': best_ball_points,
-                    'actual_points': matchup.points
+                    'actual_points': actual_points
                 })
 
         return {'teams': sorted(team_totals.values(), key=lambda x: x['total_best_ball_points'], reverse=True)}
 
+    def _calculate_actual_points(self, players_points: Dict[str, float], starters: List[str]) -> float:
+        return sum(players_points[player] for player in starters if self.client.get_player_position(player) in self.valid_positions)
+
     def print_season_best_ball_total(self, league_id: str):
         season_total = self.get_season_best_ball_total(league_id)
-        
-        print("Season Best Ball Totals for All Teams:")
-        print("Rank | Team Name | Best Ball Points | Actual Points | Difference")
-        for rank, team in enumerate(season_total['teams'], 1):
+        print("TeamName|TotalPointsScored|BestBallPointsScored|Difference")
+        for team in season_total['teams']:
             diff = team['total_best_ball_points'] - team['total_actual_points']
-            print(f"{rank:4d} | {team['team_name']:<20} | {team['total_best_ball_points']:16.2f} | {team['total_actual_points']:13.2f} | {diff:10.2f}")
+            print(f"{team['team_name']}|{team['total_actual_points']:.2f}|{team['total_best_ball_points']:.2f}|{diff:.2f}")
+
+    def get_weekly_best_ball_scores(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
+        league = self.client.get_league(league_id, fetch_all=True)
+        team_scores = {team.roster.roster_id: {
+            'team_name': team.display_name,
+            'weekly_scores': []
+        } for team in league.teams if team.roster}
+
+        start_week = league.settings.start_week
+        end_week = league.settings.playoff_week_start
+
+        for week in range(start_week, end_week):
+            matchups = self.client.get_matchups(league_id, week)
+            for matchup in matchups:
+                best_ball_points, _ = self._calculate_best_ball_points(matchup.players_points, league.roster_positions)
+                actual_points = self._calculate_actual_points(matchup.players_points, matchup.starters)
+                team_data = team_scores[matchup.roster_id]
+                team_data['weekly_scores'].append({
+                    'week': week,
+                    'actual_points': actual_points,
+                    'best_ball_points': best_ball_points,
+                    'difference': best_ball_points - actual_points
+                })
+
+        return team_scores
+
+    def print_weekly_best_ball_scores(self, league_id: str, team_name: str = None):
+        weekly_scores = self.get_weekly_best_ball_scores(league_id)
+        
+        print("TeamName|Week|TotalPointsScored|BestBallPointsScored|Difference")
+        
+        for team_id, team_data in weekly_scores.items():
+            if team_name is None or team_data['team_name'].lower() == team_name.lower():
+                for week_score in team_data['weekly_scores']:
+                    print(f"{team_data['team_name']}|{week_score['week']}|{week_score['actual_points']:.2f}|{week_score['best_ball_points']:.2f}|{week_score['difference']:.2f}")
+
+    # ... (other methods remain the same)
