@@ -2,15 +2,26 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 import re
 
+import requests
+
 @dataclass
 class LeagueMetadata:
-    auto_continue: str
-    division_1: str
-    division_1_avatar: str
-    division_2: str
-    division_2_avatar: str
-    keeper_deadline: str
-    latest_league_winner_roster_id: str
+    auto_continue: Optional[str] = None
+    division_1: Optional[str] = None
+    division_1_avatar: Optional[str] = None
+    division_2: Optional[str] = None
+    division_2_avatar: Optional[str] = None
+    keeper_deadline: Optional[str] = None
+    latest_league_winner_roster_id: Optional[str] = None
+    continued: Optional[str] = None
+    extra_fields: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        # Capture any unexpected fields
+        known_fields = set(self.__annotations__.keys()) - {'extra_fields'}
+        self.extra_fields = {k: v for k, v in self.__dict__.items() if k not in known_fields}
+        for k in self.extra_fields:
+            delattr(self, k)
 
 @dataclass
 class LeagueSettings:
@@ -31,7 +42,6 @@ class LeagueSettings:
     daily_waivers_hour: int
     playoff_type: int
     taxi_slots: int
-    sub_start_time_eligibility: int
     daily_waivers_days: int
     playoff_week_start: int
     waiver_clear_days: int
@@ -53,7 +63,6 @@ class LeagueSettings:
     type: int
     max_keepers: int
     waiver_type: int
-    max_subs: int
     league_average_match: int
     trade_review_days: int
     bench_lock: int
@@ -63,6 +72,18 @@ class LeagueSettings:
     reserve_slots: int
     reserve_allow_cov: int
     daily_waivers_last_ran: int
+    last_report: Optional[int] = None
+    last_scored_leg: Optional[int] = None
+    sub_start_time_eligibility: Optional[int] = None
+    max_subs: Optional[int] = None
+    extra_fields: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        # Capture any unexpected fields
+        known_fields = set(self.__annotations__.keys()) - {'extra_fields'}
+        self.extra_fields = {k: v for k, v in self.__dict__.items() if k not in known_fields}
+        for k in self.extra_fields:
+            delattr(self, k)
 
 @dataclass
 class League:
@@ -96,6 +117,7 @@ class League:
     loser_bracket_id: Optional[str]
     total_rosters: int
     teams: List['Team'] = field(default_factory=list)
+    extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         # Convert metadata dict to LeagueMetadata object if it's not already
@@ -103,6 +125,12 @@ class League:
             self.metadata = LeagueMetadata(**self.metadata)
         if isinstance(self.settings, dict):
             self.settings = LeagueSettings(**self.settings)
+        
+        # Capture any unexpected fields
+        known_fields = set(self.__annotations__.keys()) - {'extra_fields'}
+        self.extra_fields = {k: v for k, v in self.__dict__.items() if k not in known_fields}
+        for k in self.extra_fields:
+            delattr(self, k)
 
     def __str__(self):
         return f"{self.name} (ID: {self.league_id})"
@@ -263,3 +291,86 @@ class Roster:
 
     def __repr__(self):
         return f"Roster(roster_id={self.roster_id}, owner_id='{self.owner_id}', players_count={len(self.players)})"
+
+
+
+
+from dataclasses import dataclass
+from typing import List, Optional
+
+@dataclass
+class PlayerInfo:
+    player_id: str
+    first_name: str
+    last_name: str
+    position: str
+    team: str
+    injury_status: Optional[str] = None
+
+@dataclass
+class ProjectedStats:
+    rush_att: float
+    rush_yd: float
+    rush_td: float
+    rec: float
+    rec_yd: float
+    rec_td: float
+    pts_ppr: float
+    pts_half_ppr: float
+    pts_std: float
+
+@dataclass
+class PlayerProjection:
+    player: PlayerInfo
+    stats: ProjectedStats
+    week: int
+    year: int
+    opponent: Optional[str] = None
+
+class SleeperProjections:
+    BASE_URL = "https://api.sleeper.com/projections/nfl"
+
+    @staticmethod
+    def get_projections(year: int, week: int, position: str) -> List[PlayerProjection]:
+        url = f"{SleeperProjections.BASE_URL}/{year}/{week}?season_type=regular&position={position}"
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        projections = []
+        for item in data:
+            player_data = item.get('player', {})
+            stats_data = item.get('stats', {})
+
+            player = PlayerInfo(
+                player_id=player_data.get('player_id'),
+                first_name=player_data.get('first_name'),
+                last_name=player_data.get('last_name'),
+                position=player_data.get('position'),
+                team=player_data.get('team'),
+                injury_status=player_data.get('injury_status')
+            )
+
+            stats = ProjectedStats(
+                rush_att=stats_data.get('rush_att', 0),
+                rush_yd=stats_data.get('rush_yd', 0),
+                rush_td=stats_data.get('rush_td', 0),
+                rec=stats_data.get('rec', 0),
+                rec_yd=stats_data.get('rec_yd', 0),
+                rec_td=stats_data.get('rec_td', 0),
+                pts_ppr=stats_data.get('pts_ppr', 0),
+                pts_half_ppr=stats_data.get('pts_half_ppr', 0),
+                pts_std=stats_data.get('pts_std', 0)
+            )
+
+            projection = PlayerProjection(
+                player=player,
+                stats=stats,
+                week=item.get('week'),
+                year=item.get('season'),
+                opponent=item.get('opponent')
+            )
+
+            projections.append(projection)
+
+        return projections

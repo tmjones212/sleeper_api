@@ -4,7 +4,7 @@ import re
 from typing import Any, Dict, List, Optional
 import requests
 from exceptions import SleeperAPIException
-from models import League, Team, Matchup, Player, Roster
+from models import League, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection
 
 class SleeperAPI:
     BASE_URL = "https://api.sleeper.app/v1"
@@ -24,6 +24,13 @@ class SleeperAPI:
         
         return league
 
+    def get_projections(self,year: int, week: int, position: str) -> List[PlayerProjection]:
+        url = f"{self.BASE_URL}/projections/nfl/{year}/{week}?season_type=regular&position={position}"
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return SleeperProjections.get_projections(year, week, position)
+    
     def get_league_users(self, league_id: str) -> List[Team]:
         endpoint = f"{self.BASE_URL}/league/{league_id}/users"
         response = self._make_request(endpoint)
@@ -187,14 +194,13 @@ class SleeperAPI:
 
     def print_weekly_matchups(self, league_id: str):
         league = self.get_league(league_id, fetch_all=True)
-        team_dict = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+        team_dict: Dict[int, Team] = {team.roster.roster_id: team for team in league.teams if team.roster}
 
-        print(f"\nWeekly Matchups for {league.name}:")
+        print("Week|Winner|Loser|WinnerPoints|LoserPoints")
         for week in range(league.settings.start_week, league.settings.playoff_week_start):
             matchups = self.get_matchups(league_id, week)
-            print(f"\nWeek {week}:")
             
-            grouped_matchups = {}
+            grouped_matchups: Dict[int, List[Matchup]] = {}
             for matchup in matchups:
                 if matchup.matchup_id not in grouped_matchups:
                     grouped_matchups[matchup.matchup_id] = []
@@ -202,9 +208,22 @@ class SleeperAPI:
             
             for matchup_id, teams in grouped_matchups.items():
                 if len(teams) == 2:
-                    team1 = team_dict.get(teams[0].roster_id, f"Team {teams[0].roster_id}")
-                    team2 = team_dict.get(teams[1].roster_id, f"Team {teams[1].roster_id}")
-                    print(f"  {team1} vs {team2}")
-                elif len(teams) == 1:
-                    team = team_dict.get(teams[0].roster_id, f"Team {teams[0].roster_id}")
-                    print(f"  {team} has a bye")
+                    team1 = team_dict.get(teams[0].roster_id, Team(user_id=str(teams[0].roster_id), display_name=f"Team {teams[0].roster_id}", metadata={}))
+                    team2 = team_dict.get(teams[1].roster_id, Team(user_id=str(teams[1].roster_id), display_name=f"Team {teams[1].roster_id}", metadata={}))
+                    
+                    score1 = teams[0].points
+                    score2 = teams[1].points
+                    
+                    if score1 > score2:
+                        winner, loser = team1.display_name, team2.display_name
+                        winner_points, loser_points = score1, score2
+                    elif score2 > score1:
+                        winner, loser = team2.display_name, team1.display_name
+                        winner_points, loser_points = score2, score1
+                    else:
+                        # In case of a tie, arbitrarily choose team1 as "winner"
+                        winner, loser = team1.display_name, team2.display_name
+                        winner_points, loser_points = score1, score2
+                    
+                    print(f"{week}|{winner}|{loser}|{winner_points:.2f}|{loser_points:.2f}")
+
