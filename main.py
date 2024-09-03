@@ -7,8 +7,23 @@ league_id = "916445745966915584" # 2023
 client = SleeperAPI()
 analytics = LeagueAnalytics(client)
 
-print("Top Half Scorers by Week:")
-analytics.print_weekly_top_half_scorers(league_id)
+print("Season Best Ball Total for All Teams:")
+analytics.print_season_best_ball_total(league_id)
+
+# print("\n\nSeason Best Ball Total for a Specific Team:")
+# team_name = "tmjones212"
+# analytics.print_season_best_ball_total(league_id, team_name)
+
+
+# team_name = "tmjones212"
+# week = 1
+
+# print(f"Best Ball for {team_name} in Week {week}:")
+# analytics.print_team_best_ball(league_id, team_name, week)
+
+
+# print("Top Half Scorers by Week:")
+# analytics.print_weekly_top_half_scorers(league_id)
 
 # client.get_player_fields()
 

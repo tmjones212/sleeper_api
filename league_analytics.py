@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from models import League, Team, Matchup
 from client import SleeperAPI
 
@@ -40,3 +40,136 @@ class LeagueAnalytics:
             top_scorers = self.get_top_half_scorers(league_id, week)
             for scorer in top_scorers:
                 print(f"{week}|{scorer['team_name']}|{scorer['points']:.2f}")
+
+    def _calculate_best_ball_points(self, players_points: Dict[str, float], roster_positions: List[str]) -> Tuple[float, List[Dict[str, any]]]:
+        valid_positions = ["QB", "RB", "WR", "TE"]
+        position_players = {pos: [] for pos in valid_positions}
+        
+        for player_id, points in players_points.items():
+            position = self.client.get_player_position(player_id)
+            if position in valid_positions:
+                position_players[position].append({"id": player_id, "points": points, "position": position})
+        
+        for pos in position_players:
+            position_players[pos].sort(key=lambda x: x["points"], reverse=True)
+        
+        best_lineup = []
+        total_points = 0
+        
+        def add_to_lineup(pos):
+            nonlocal total_points
+            if position_players[pos]:
+                player = position_players[pos].pop(0)
+                best_lineup.append({"position": pos, "player": player})
+                total_points += player["points"]
+                return True
+            return False
+        
+        for pos in roster_positions:
+            if pos == "QB":
+                add_to_lineup("QB")
+            elif pos == "RB":
+                add_to_lineup("RB")
+            elif pos == "WR":
+                add_to_lineup("WR")
+            elif pos == "TE":
+                add_to_lineup("TE")
+            elif pos == "FLEX":
+                flex_options = position_players["RB"] + position_players["WR"] + position_players["TE"]
+                if flex_options:
+                    best_flex = max(flex_options, key=lambda x: x["points"])
+                    best_lineup.append({"position": "FLEX", "player": best_flex})
+                    total_points += best_flex["points"]
+                    position_players[best_flex["position"]].remove(best_flex)
+            elif pos == "SUPER_FLEX":
+                superflex_options = position_players["QB"] + position_players["RB"] + position_players["WR"] + position_players["TE"]
+                if superflex_options:
+                    best_superflex = max(superflex_options, key=lambda x: x["points"])
+                    best_lineup.append({"position": "SUPER_FLEX", "player": best_superflex})
+                    total_points += best_superflex["points"]
+                    position_players[best_superflex["position"]].remove(best_superflex)
+        
+        return total_points, best_lineup
+
+    def get_best_ball_scores(self, league_id: str, week: int) -> List[Dict[str, any]]:
+        print(f"Getting best ball scores for week {week}... ")
+        league = self.client.get_league(league_id, fetch_all=True)
+        matchups = self.client.get_matchups(league_id, week)
+        
+        team_dict = {team.roster.roster_id: team for team in league.teams if team.roster}
+        
+        best_ball_scores = []
+        for matchup in matchups:
+            team = team_dict.get(matchup.roster_id)
+            team_name = team.display_name if team else f"Team {matchup.roster_id}"
+            print(f"Calculating best ball points for {team_name}... ")
+            best_ball_points, best_lineup = self._calculate_best_ball_points(matchup.players_points, league.roster_positions)
+            print(f"Best ball points for {team_name}: {best_ball_points}")
+            best_ball_scores.append({
+                "team_name": team_name,
+                "actual_points": matchup.points,
+                "best_ball_points": best_ball_points,
+                "roster_id": matchup.roster_id,
+                "best_lineup": best_lineup
+            })
+        
+        return best_ball_scores
+
+    def get_team_best_ball(self, league_id: str, team_name: str, week: int) -> Dict[str, any]:
+        best_ball_scores = self.get_best_ball_scores(league_id, week)
+        for score in best_ball_scores:
+            if score["team_name"].lower() == team_name.lower():
+                return score
+        return None
+
+    def print_team_best_ball(self, league_id: str, team_name: str, week: int):
+        team_best_ball = self.get_team_best_ball(league_id, team_name, week)
+        if team_best_ball:
+            print(f"Best Ball for {team_best_ball['team_name']} in Week {week}:")
+            print(f"Actual Points: {team_best_ball['actual_points']:.2f}")
+            print(f"Best Ball Points: {team_best_ball['best_ball_points']:.2f}")
+            print("\nBest Lineup:")
+            for slot in team_best_ball['best_lineup']:
+                player = slot['player']
+                print(f"{slot['position']}: {self.client.get_player_name(player['id'])} - {player['points']:.2f}")
+        else:
+            print(f"No data found for team {team_name} in week {week}")
+
+    def get_season_best_ball_total(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
+        league = self.client.get_league(league_id, fetch_all=True)
+        team_totals = {team.roster.roster_id: {
+            'team_name': team.display_name,
+            'total_best_ball_points': 0,
+            'total_actual_points': 0,
+            'weekly_scores': []
+        } for team in league.teams if team.roster}
+
+        start_week = league.settings.start_week
+        end_week = league.settings.playoff_week_start
+
+        print(f"Calculating best ball scores for weeks {start_week} to {end_week - 1}")
+
+        for week in range(start_week, end_week):
+            print(f"Processing week {week}")
+            matchups = self.client.get_matchups(league_id, week)
+            for matchup in matchups:
+                best_ball_points, _ = self._calculate_best_ball_points(matchup.players_points, league.roster_positions)
+                team_data = team_totals[matchup.roster_id]
+                team_data['total_best_ball_points'] += best_ball_points
+                team_data['total_actual_points'] += matchup.points
+                team_data['weekly_scores'].append({
+                    'week': week,
+                    'best_ball_points': best_ball_points,
+                    'actual_points': matchup.points
+                })
+
+        return {'teams': sorted(team_totals.values(), key=lambda x: x['total_best_ball_points'], reverse=True)}
+
+    def print_season_best_ball_total(self, league_id: str):
+        season_total = self.get_season_best_ball_total(league_id)
+        
+        print("Season Best Ball Totals for All Teams:")
+        print("Rank | Team Name | Best Ball Points | Actual Points | Difference")
+        for rank, team in enumerate(season_total['teams'], 1):
+            diff = team['total_best_ball_points'] - team['total_actual_points']
+            print(f"{rank:4d} | {team['team_name']:<20} | {team['total_best_ball_points']:16.2f} | {team['total_actual_points']:13.2f} | {diff:10.2f}")

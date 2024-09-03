@@ -9,6 +9,47 @@ from models import League, SleeperProjections, Team, Matchup, Player, Roster, Pl
 class SleeperAPI:
     BASE_URL = "https://api.sleeper.app/v1"
 
+    def __init__(self):
+        self.players = self.load_players_from_file()
+
+    def fetch_players_from_api(self) -> Dict[str, Player]:
+        url = f"{self.BASE_URL}/players/nfl"
+        print('getting players from api...')
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return {player_id: Player(**player_data) for player_id, player_data in data.items()}
+
+    def save_players_to_file(self, filename="players.json"):
+        players = self.fetch_players_from_api()
+        with open(filename, 'w') as f:
+            json.dump({pid: {k: v for k, v in vars(p).items() if not k.startswith('_')} for pid, p in players.items()}, f)
+        print(f"Players data saved to {filename}")
+
+    def load_players_from_file(self, filename="players.json") -> Dict[str, Player]:
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                print('loading players from file...')
+                data = json.load(f)
+            return {pid: Player(**player_data) for pid, player_data in data.items()}
+        else:
+            print(f"File {filename} not found. Fetching data from API...")
+            return self.fetch_players_from_api()
+
+    def get_player_position(self, player_id: str) -> str:
+        player = self.players.get(player_id)
+        if player:
+            return player.position
+        else:
+            return "UNKNOWN"
+
+    def get_player_name(self, player_id: str) -> str:
+        player = self.players.get(player_id)
+        if player:
+            return player.name
+        else:
+            return f"Unknown Player ({player_id})"
+
     def get_league(self, league_id: str, fetch_all: bool = False) -> League:
         url = f"{self.BASE_URL}/league/{league_id}"
         response = requests.get(url)
@@ -46,11 +87,7 @@ class SleeperAPI:
         for team in teams:
             team.roster = roster_dict.get(team.user_id)
 
-    def get_matchups(self, league_id: str, week: Optional[int] = None) -> List[Matchup]:
-        if week is None:
-            league = self.get_league(league_id)
-            week = league.settings.playoff_week_start - 1
-
+    def get_matchups(self, league_id: str, week: int) -> List[Matchup]:
         url = f"{self.BASE_URL}/league/{league_id}/matchups/{week}"
         response = requests.get(url)
         response.raise_for_status()
@@ -62,35 +99,9 @@ class SleeperAPI:
             matchup_id=m['matchup_id'],
             players=m['players'],
             starters=m['starters'],
-            starters_points=m['starters_points']
+            starters_points=m['starters_points'],
+            players_points={player: m['players_points'].get(player, 0) for player in m['players']}
         ) for m in matchup_data]
-
-    def fetch_players_from_api(self) -> Dict[str, Player]:
-        url = f"{self.BASE_URL}/players/nfl"
-        print('getting players from api...')
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        return {player_id: Player(**player_data) for player_id, player_data in data.items()}
-
-    def save_players_to_file(self, filename="players.json"):
-        players = self.fetch_players_from_api()
-        with open(filename, 'w') as f:
-            json.dump({pid: vars(p) for pid, p in players.items()}, f)
-        print(f"Players data saved to {filename}")
-
-    def load_players_from_file(self, filename="players.json"):
-        if os.path.exists(filename):
-            with open(filename, 'r') as f:
-                print('loading players from file...')
-                data = json.load(f)
-            return {pid: Player(**player_data) for pid, player_data in data.items()}
-        else:
-            print(f"File {filename} not found. Fetching data from API...")
-            return self.fetch_players_from_api()
-
-    def get_players(self):
-        return self.load_players_from_file()
 
     def get_player_fields(self):
         url = f"{self.BASE_URL}/players/nfl"
@@ -191,39 +202,4 @@ class SleeperAPI:
             name = name.replace(f"{old} ", f"{new} ")
 
         return name
-
-    def print_weekly_matchups(self, league_id: str):
-        league = self.get_league(league_id, fetch_all=True)
-        team_dict: Dict[int, Team] = {team.roster.roster_id: team for team in league.teams if team.roster}
-
-        print("Week|Winner|Loser|WinnerPoints|LoserPoints")
-        for week in range(league.settings.start_week, league.settings.playoff_week_start):
-            matchups = self.get_matchups(league_id, week)
-            
-            grouped_matchups: Dict[int, List[Matchup]] = {}
-            for matchup in matchups:
-                if matchup.matchup_id not in grouped_matchups:
-                    grouped_matchups[matchup.matchup_id] = []
-                grouped_matchups[matchup.matchup_id].append(matchup)
-            
-            for matchup_id, teams in grouped_matchups.items():
-                if len(teams) == 2:
-                    team1 = team_dict.get(teams[0].roster_id, Team(user_id=str(teams[0].roster_id), display_name=f"Team {teams[0].roster_id}", metadata={}))
-                    team2 = team_dict.get(teams[1].roster_id, Team(user_id=str(teams[1].roster_id), display_name=f"Team {teams[1].roster_id}", metadata={}))
-                    
-                    score1 = teams[0].points
-                    score2 = teams[1].points
-                    
-                    if score1 > score2:
-                        winner, loser = team1.display_name, team2.display_name
-                        winner_points, loser_points = score1, score2
-                    elif score2 > score1:
-                        winner, loser = team2.display_name, team1.display_name
-                        winner_points, loser_points = score2, score1
-                    else:
-                        # In case of a tie, arbitrarily choose team1 as "winner"
-                        winner, loser = team1.display_name, team2.display_name
-                        winner_points, loser_points = score1, score2
-                    
-                    print(f"{week}|{winner}|{loser}|{winner_points:.2f}|{loser_points:.2f}")
 

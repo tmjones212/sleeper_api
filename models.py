@@ -263,6 +263,7 @@ class Matchup:
     players: List[str]
     starters: List[str]
     starters_points: List[float]
+    players_points: Dict[str, float]
 
 from typing import List, Dict, Optional
 
