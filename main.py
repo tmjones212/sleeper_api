@@ -1,17 +1,55 @@
 from client import SleeperAPI
 from league_analytics import LeagueAnalytics
+from draft_kings_api import DraftKingsAPI
 
-# league_id = "1048308938824937472" # 2024
-league_id = "916445745966915584" # 2023
+
+# subcategories = DraftKingsAPI.get_all_subcategories()
+# for sub in subcategories:
+#     print(f"Name: {sub['name']}, ID: {sub['id']}")
+
+# pass_yard_props = DraftKingsAPI.get_nfl_player_props_2("Passing Yards")
+
+# rush_rec_yards_props = DraftKingsAPI.get_nfl_player_props(1, "Rush + Rec Yards")
+
+
+# # Remove duplicates
+# unique_props = {prop.player_name: prop for prop in rush_rec_yards_props}.values()
+
+# # Sort props by player name
+# sorted_props = sorted(unique_props, key=lambda x: x.player_name)
+
+# # Print the props in a tabular format
+# print("Name                 | PropName         | Value | OverLine | UnderLine")
+# print("-" * 70)
+# for prop in sorted_props:
+#     print(f"{prop.player_name:<20} | {prop.prop_type:<16} | {prop.prop_value:>5} | {prop.over_line:>8} | {prop.under_line:>9}")
+
+league_id = "1048308938824937472" # 2024
+# league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
 analytics = LeagueAnalytics(client)
 
+# positions = ["QB", "RB", "WR", "TE"]  # Add or remove positions as needed
+# year = 2024
+# week = 1
+
+# for position in positions:
+#     projections = client.get_projections(year, week, position)
+#     print(f"Loaded {len(projections)} projections for {position}")
+
+# projections = client.get_projections(2024, 1, "RB")
+# print("Season Best Ball Total for All Teams:")
+analytics.print_season_best_ball_total(league_id)
+
+# analytics.print_league_standings(league_id)
+
 # print("Season Best Ball Total for All Teams:")
 # analytics.print_season_best_ball_total(league_id)
-
-print("\nWeekly Best Ball Scores for All Teams:")
-analytics.print_weekly_best_ball_scores(league_id)
+# projections = client.get_projections(2024, 1, "RB")
+# print("\nWeekly Best Ball Scores for All Teams:")
+# print(analytics.get_best_ball_scores(league_id,1))
+# analytics.print_weekly_best_ball_scores(league_id)
 
 print("\nWeekly Best Ball Scores for a Specific Team:")
 team_name = "tmjones212"

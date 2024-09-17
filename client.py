@@ -3,14 +3,23 @@ import os
 import re
 from typing import Any, Dict, List, Optional
 import requests
+from customer_json_encoder import CustomJSONEncoder
 from exceptions import SleeperAPIException
-from models import League, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection
+from models import League, PlayerInfo, ProjectedStats, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection, PlayerStats
+import csv
+from datetime import datetime, timedelta
 
 class SleeperAPI:
     BASE_URL = "https://api.sleeper.app/v1"
 
     def __init__(self):
         self.players = self.load_players_from_file()
+        self.cache = {}
+        self.load_cache()
+        self.scoring_settings = {}
+        self.stats_cache = self.load_stats_cache()
+        self.projections_cache = self.load_projections_cache()
+        self.matchups_cache = self.load_matchups_cache()
 
     def fetch_players_from_api(self) -> Dict[str, Player]:
         url = f"{self.BASE_URL}/players/nfl"
@@ -18,10 +27,11 @@ class SleeperAPI:
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        return {player_id: Player(**player_data) for player_id, player_data in data.items()}
+        players = {player_id: Player(**player_data) for player_id, player_data in data.items()}
+        self.save_players_to_file(players)  # Save the fetched players to file
+        return players
 
-    def save_players_to_file(self, filename="players.json"):
-        players = self.fetch_players_from_api()
+    def save_players_to_file(self, players: Dict[str, Player], filename="players.json"):
         with open(filename, 'w') as f:
             json.dump({pid: {k: v for k, v in vars(p).items() if not k.startswith('_')} for pid, p in players.items()}, f)
         print(f"Players data saved to {filename}")
@@ -51,12 +61,19 @@ class SleeperAPI:
             return f"Unknown Player ({player_id})"
 
     def get_league(self, league_id: str, fetch_all: bool = False) -> League:
-        url = f"{self.BASE_URL}/league/{league_id}"
-        response = requests.get(url)
-        response.raise_for_status()
-        league_data = response.json()
+        cache_key = f"league_{league_id}"
+        if cache_key in self.cache:
+            league_data = self.cache[cache_key]
+        else:
+            url = f"{self.BASE_URL}/league/{league_id}"
+            response = requests.get(url)
+            response.raise_for_status()
+            league_data = response.json()
+            self.cache[cache_key] = league_data
+            self.save_cache()
         
         league = League(**league_data)
+        self.scoring_settings[league_id] = league.scoring_settings
         
         if fetch_all:
             league.teams = self.get_league_users(league_id)
@@ -65,12 +82,15 @@ class SleeperAPI:
         
         return league
 
-    def get_projections(self,year: int, week: int, position: str) -> List[PlayerProjection]:
-        url = f"{self.BASE_URL}/projections/nfl/{year}/{week}?season_type=regular&position={position}"
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        return SleeperProjections.get_projections(year, week, position)
+    def get_projections(self, year: int, week: int, position: str) -> List[PlayerProjection]:
+        cache_key = f"{year}_{week}_{position}"
+        if cache_key in self.projections_cache:
+            return self.projections_cache[cache_key]
+
+        projections = SleeperProjections.get_projections(year, week, position)
+        self.projections_cache[cache_key] = projections
+        self.save_projections_cache()
+        return projections
     
     def get_league_users(self, league_id: str) -> List[Team]:
         endpoint = f"{self.BASE_URL}/league/{league_id}/users"
@@ -87,21 +107,56 @@ class SleeperAPI:
         for team in teams:
             team.roster = roster_dict.get(team.user_id)
 
-    def get_matchups(self, league_id: str, week: int) -> List[Matchup]:
+    def get_matchups(self, league_id: str, week: int, current_week: Optional[int] = None) -> List[Matchup]:
+        cache_key = f"{league_id}_{week}"
+        
+        # If current_week is not provided, use the week parameter
+        current_week = current_week or week
+
+        # Check if the matchup is in the cache
+        if cache_key in self.matchups_cache:
+            cached_matchups = self.matchups_cache[cache_key]
+            
+            # If it's a past week (relative to current_week) and any matchup has zero points, fetch new data
+            if week < current_week and any(matchup.points == 0 for matchup in cached_matchups):
+                print(f"Cached matchups for week {week} have zero points. Fetching new data.")
+            else:
+                return cached_matchups
+
         url = f"{self.BASE_URL}/league/{league_id}/matchups/{week}"
         response = requests.get(url)
         response.raise_for_status()
-        matchup_data = response.json()
-        
-        return [Matchup(
-            roster_id=m['roster_id'],
-            points=m['points'],
-            matchup_id=m['matchup_id'],
-            players=m['players'],
-            starters=m['starters'],
-            starters_points=m['starters_points'],
-            players_points={player: m['players_points'].get(player, 0) for player in m['players']}
-        ) for m in matchup_data]
+        data = response.json()
+
+        matchups = []
+        for matchup_data in data:
+            players_points = {}
+            starters_points = []
+            for player_id, points in matchup_data.get('players_points', {}).items():
+                players_points[player_id] = points
+                if player_id in matchup_data.get('starters', []):
+                    starters_points.append(points)
+
+            matchup = Matchup(
+                matchup_id=matchup_data.get('matchup_id'),
+                roster_id=matchup_data.get('roster_id'),
+                points=matchup_data.get('points'),
+                players=matchup_data.get('players', []),
+                starters=matchup_data.get('starters', []),
+                players_points=players_points,
+                starters_points=starters_points
+            )
+            matchups.append(matchup)
+
+        self.matchups_cache[cache_key] = matchups
+        self.save_matchups_cache()
+        return matchups
+
+    def get_all_matchups(self, league_id: str, current_week: int) -> Dict[int, List[Matchup]]:
+        all_matchups = {}
+        for week in range(1, current_week + 1):
+            all_matchups[week] = self.get_matchups(league_id, week, current_week)
+        return all_matchups
 
     def get_player_fields(self):
         url = f"{self.BASE_URL}/players/nfl"
@@ -125,9 +180,16 @@ class SleeperAPI:
     
     
     def _make_request(self, endpoint: str) -> Dict[str, Any]:
+        cache_key = endpoint
+        if cache_key in self.cache:
+            return self.cache[cache_key]
+
         response = requests.get(endpoint)
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            self.cache[cache_key] = data
+            self.save_cache()
+            return data
         else:
             raise SleeperAPIException(f"API request failed: {response.status_code} - {response.text}")
 
@@ -203,3 +265,154 @@ class SleeperAPI:
 
         return name
 
+    def get_current_week(self) -> int:
+        current_date = datetime.now().date()
+        week_ranges = self._get_week_ranges()
+
+        for week, (start_date, end_date) in sorted(week_ranges.items()):
+            if current_date <= end_date:
+                return week
+
+        # If we're past the last week, return the last week number
+        return max(week_ranges.keys())
+    
+    def get_current_season_year(self) -> int:
+        week_ranges = self._get_week_ranges()
+        current_date = datetime.now().date()
+        
+        for week, (start_date, end_date) in week_ranges.items():
+            if current_date <= end_date:
+                return start_date.year
+        
+        # If we're past the last game, return the year of the last game
+        return max(end_date.year for _, end_date in week_ranges.values())
+
+    def _get_week_ranges(self):
+        week_ranges = {}
+        with open('2024 Game Dates.csv', 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                week = int(row['WeekNum'])
+                date = datetime.strptime(row['ScheduleDate'], '%Y-%m-%d %H:%M:%S').date()
+                
+                if week not in week_ranges:
+                    week_ranges[week] = [date, date]  # [start_date, end_date]
+                else:
+                    week_ranges[week][0] = min(week_ranges[week][0], date)
+                    week_ranges[week][1] = max(week_ranges[week][1], date)
+
+        # Adjust the start and end dates for each week
+        sorted_weeks = sorted(week_ranges.keys())
+        for i in range(len(sorted_weeks)):
+            current_week = sorted_weeks[i]
+            
+            # Set end date (no change needed, it's already the last game day of the week)
+            
+            # Set start date (except for week 1)
+            if i > 0:
+                previous_week = sorted_weeks[i-1]
+                week_ranges[current_week][0] = week_ranges[previous_week][1] + timedelta(days=1)
+
+        return week_ranges
+
+    def load_cache(self, filename="api_cache.json"):
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                self.cache = json.load(f)
+
+    def save_cache(self, filename="api_cache.json"):
+        with open(filename, 'w') as f:
+            json.dump(self.cache, f, default=lambda o: vars(o) if hasattr(o, '__dict__') else str(o))
+
+    def clear_cache(self):
+        self.cache = {}
+        self.stats_cache = {}
+        self.projections_cache = {}
+        self.matchups_cache = {}
+        self.save_cache()
+        self.save_stats_cache()
+        self.save_projections_cache()
+        self.save_matchups_cache()
+
+    def get_stats(self, year: int, week: int, position: str, league_id: str) -> Dict[str, PlayerStats]:
+        cache_key = f"{year}_{week}_{position}_{league_id}"
+        if cache_key in self.stats_cache:
+            print(f"Debug: Using cached stats for {cache_key}")
+            return self.stats_cache[cache_key]
+
+        print(f"Debug: Fetching stats for {cache_key}")
+        url = f"{self.BASE_URL}/stats/nfl/{year}/{week}?season_type=regular&position[]={position}"
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        stats = {}
+        scoring_settings = self.scoring_settings.get(league_id, {})
+
+        for player_id, item in data.items():
+            player_stats = item.get('stats', {})
+            fantasy_points = self._calculate_fantasy_points(player_stats, scoring_settings)
+            stats[player_id] = PlayerStats(
+                player_id=player_id,
+                fantasy_points=fantasy_points,
+                **player_stats
+            )
+            print(f"Debug: Player {player_id} - Fantasy Points: {fantasy_points}")
+
+        self.stats_cache[cache_key] = stats
+        self.save_stats_cache()
+        return stats
+
+    def _calculate_fantasy_points(self, player_stats: Dict[str, float], scoring_settings: Dict[str, float]) -> float:
+        fantasy_points = 0
+        for stat, value in player_stats.items():
+            if stat in scoring_settings:
+                fantasy_points += value * scoring_settings[stat]
+        return fantasy_points
+
+    def load_stats_cache(self, filename="stats_cache.json"):
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                return {k: {player_id: PlayerStats(**stats) for player_id, stats in v.items()} for k, v in data.items()}
+        return {}
+
+    def save_stats_cache(self, filename="stats_cache.json"):
+        with open(filename, 'w') as f:
+            json.dump(self.stats_cache, f, cls=CustomJSONEncoder)
+
+    def load_projections_cache(self, filename="projections_cache.json"):
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                return {k: [self._reconstruct_player_projection(p) for p in v] for k, v in data.items()}
+        return {}
+
+    def save_projections_cache(self, filename="projections_cache.json"):
+        with open(filename, 'w') as f:
+            json.dump(self.projections_cache, f, cls=CustomJSONEncoder)
+
+    def load_matchups_cache(self, filename="matchups_cache.json"):
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                serialized_cache = json.load(f)
+                return {key: [Matchup(**matchup_data) for matchup_data in matchups]
+                        for key, matchups in serialized_cache.items()}
+        return {}
+
+    def save_matchups_cache(self, filename="matchups_cache.json"):
+        serializable_cache = {}
+        for key, matchups in self.matchups_cache.items():
+            serializable_cache[key] = [matchup.__dict__ for matchup in matchups]
+        
+        with open(filename, 'w') as f:
+            json.dump(serializable_cache, f)
+
+    def _reconstruct_player_projection(self, data):
+        return PlayerProjection(
+            player=PlayerInfo(**data['player']),
+            stats=ProjectedStats(**data['stats']),
+            week=data['week'],
+            year=data['year'],
+            opponent=data['opponent']
+        )

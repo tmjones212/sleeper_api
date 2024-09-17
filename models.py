@@ -264,6 +264,22 @@ class Matchup:
     starters: List[str]
     starters_points: List[float]
     players_points: Dict[str, float]
+    custom_points: Optional[float] = None
+
+    def __post_init__(self):
+        # Convert points to float if it's not None
+        if self.points is not None:
+            self.points = float(self.points)
+        
+        # Convert custom_points to float if it's not None
+        if self.custom_points is not None:
+            self.custom_points = float(self.custom_points)
+        
+        # Ensure starters_points is a list of floats
+        self.starters_points = [float(p) if p is not None else 0.0 for p in self.starters_points]
+        
+        # Ensure players_points values are floats
+        self.players_points = {k: float(v) if v is not None else 0.0 for k, v in self.players_points.items()}
 
 from typing import List, Dict, Optional
 
@@ -328,6 +344,16 @@ class PlayerProjection:
     year: int
     opponent: Optional[str] = None
 
+@dataclass
+class PlayerProp:
+    player_name: str
+    team: str
+    opponent: str
+    prop_type: str
+    prop_value: float
+    over_line: int
+    under_line: int
+
 class SleeperProjections:
     BASE_URL = "https://api.sleeper.com/projections/nfl"
 
@@ -375,3 +401,20 @@ class SleeperProjections:
             projections.append(projection)
 
         return projections
+    
+@dataclass
+class PlayerStats:
+    player_id: str
+    fantasy_points: float
+    rush_att: float = 0
+    rush_yd: float = 0
+    rush_td: float = 0
+    rec: float = 0
+    rec_yd: float = 0
+    rec_td: float = 0
+    pass_att: float = 0
+    pass_cmp: float = 0
+    pass_yd: float = 0
+    pass_td: float = 0
+    pass_int: float = 0
+    fum_lost: float = 0
