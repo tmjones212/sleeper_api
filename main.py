@@ -53,11 +53,11 @@ analytics.print_season_best_ball_total(league_id)
 
 print("\nWeekly Best Ball Scores for a Specific Team:")
 team_name = "tmjones212"
-analytics.print_weekly_best_ball_scores(league_id, team_name)
+# analytics.print_weekly_best_ball_scores(league_id, team_name)
 
 # print("\n\nSeason Best Ball Total for a Specific Team:")
 # team_name = "tmjones212"
-# analytics.print_season_best_ball_total(league_id, team_name)
+analytics.print_season_best_ball_total(league_id)
 
 
 # team_name = "tmjones212"

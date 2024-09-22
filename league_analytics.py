@@ -190,11 +190,12 @@ class LeagueAnalytics:
     def print_season_best_ball_total(self, league_id: str):
         self.league_id = league_id  # Set the league_id
         season_total = self.get_season_best_ball_total(league_id)
-        print("TeamName|TotalPointsScored|BestBallPointsScored|OffensiveBestBallPoints|Difference")
+        print("TeamName|TotalPointsScored|BestBallPointsScored|OffensiveBestBallPoints|Wins|HalfWins|TotalWins|Difference")
         for team in season_total['teams']:
             diff = team['total_best_ball_points'] - team['total_actual_points']
             offensive_bb_points = team['total_offensive_best_ball_points']
-            print(f"{team['team_name']}|{team['total_actual_points']:.2f}|{team['total_best_ball_points']:.2f}|{offensive_bb_points:.2f}|{diff:.2f}")
+            total_wins = team['wins'] + team['half_wins']
+            print(f"{team['team_name']}|{team['total_actual_points']:.2f}|{team['total_best_ball_points']:.2f}|{offensive_bb_points:.2f}|{team['wins']}|{team['half_wins']:.1f}|{total_wins:.1f}|{diff:.2f}")
 
     def get_season_best_ball_total(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
         self.league_id = league_id  # Set the league_id
@@ -204,6 +205,8 @@ class LeagueAnalytics:
             'total_best_ball_points': 0,
             'total_actual_points': 0,
             'total_offensive_best_ball_points': 0,
+            'wins': 0,
+            'half_wins': 0,
             'weekly_scores': []
         } for team in league.teams if team.roster}
 
@@ -213,6 +216,16 @@ class LeagueAnalytics:
         for week in range(start_week, current_week):
             print(f"\nWeek {week}")
             matchups = self.client.get_matchups(league_id, week)
+            
+            # Calculate half wins for the week
+            week_scores = [(matchup.roster_id, sum(matchup.starters_points)) for matchup in matchups]
+            week_scores.sort(key=lambda x: x[1], reverse=True)
+            half_win_threshold = len(week_scores) // 2
+            
+            for idx, (roster_id, score) in enumerate(week_scores):
+                if idx < half_win_threshold:
+                    team_totals[roster_id]['half_wins'] += 0.5
+
             for matchup in matchups:
                 print(f"\nTeam: {team_totals[matchup.roster_id]['team_name']}")
                 for player_id, points in matchup.players_points.items():
@@ -234,12 +247,19 @@ class LeagueAnalytics:
                     'actual_points': actual_points,     
                     'offensive_best_ball_points': offensive_best_ball_points
                 })
+                
+                # Calculate head-to-head win
+                opponent = next((m for m in matchups if m.matchup_id == matchup.matchup_id and m.roster_id != matchup.roster_id), None)
+                if opponent and actual_points > sum(opponent.starters_points):
+                    team_data['wins'] += 1
+                
                 print(f"Weekly Best Ball Points: {best_ball_points:.2f}")
                 print(f"Weekly Actual Points: {actual_points:.2f}")
                 print(f"Weekly Offensive Best Ball Points: {offensive_best_ball_points:.2f}")
                 print(f"Cumulative Best Ball Points: {team_data['total_best_ball_points']:.2f}")
                 print(f"Cumulative Actual Points: {team_data['total_actual_points']:.2f}")
                 print(f"Cumulative Offensive Best Ball Points: {team_data['total_offensive_best_ball_points']:.2f}")
+                print(f"Wins: {team_data['wins']}, Half Wins: {team_data['half_wins']:.1f}")
                 print("Best Ball Lineup:")
                 for slot in best_lineup:
                     player = slot['player']
