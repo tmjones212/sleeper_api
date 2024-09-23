@@ -6,20 +6,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>League Trades</title>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; background-color: #f0f0f0; }
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; margin: 0 auto; background-color: #f0f0f0; }
             h1 { color: #333; text-align: center; }
+            .trade-container { max-width: 1200px; margin: 0 auto; }
             .trade { background-color: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
             .trade-header { font-weight: bold; margin-bottom: 10px; font-size: 1.1em; color: #444; }
             .asset { margin-bottom: 15px; display: flex; align-items: center; }
-            .team { flex: 1; padding: 5px; }
+            .team { flex: 0 0 200px; padding: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .arrow { flex: 0 0 30px; text-align: center; font-size: 1.2em; color: #666; }
             .player-img { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
-            .asset-details { display: flex; align-items: center; flex: 2; }
+            .asset-details { display: flex; align-items: center; flex: 1; }
             .asset-name { font-weight: bold; }
+            .original-owner { font-style: italic; color: #666; margin-left: 10px; }
         </style>
     </head>
     <body>
-        <h1>League Trades</h1>
+        <div class="trade-container">
+            <h1>League Trades</h1>
     
         <div class="trade">
             <div class="trade-header">Week 1 - Trade ID: 1134536618741960704</div>
@@ -63,7 +66,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2025 Pick (mlum20)</span>
+                    <span class="asset-name">Round 4 2025 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             </div>
@@ -86,7 +89,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -96,7 +99,7 @@
                 <div class="team">BaoDown</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2026 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 4 2026 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -221,7 +224,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2026 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 2 2026 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             
@@ -231,7 +234,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2026 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2026 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             </div>
@@ -267,7 +270,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             </div>
@@ -300,7 +303,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2026 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 3 2026 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -310,7 +313,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2025 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 4 2025 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -353,7 +356,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -409,7 +412,7 @@
                 <div class="team">EBao</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             </div>
@@ -432,7 +435,7 @@
                 <div class="team">androooooo</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: BaoDown)</span></span>
                 </div>
             </div>
             
@@ -442,7 +445,7 @@
                 <div class="team">BaoDown</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (androooooo)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             </div>
@@ -455,7 +458,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             
@@ -465,7 +468,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             
@@ -475,7 +478,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: mlum20)</span></span>
                 </div>
             </div>
             </div>
@@ -508,7 +511,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (androooooo)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -518,7 +521,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2025 Pick (androooooo)</span>
+                    <span class="asset-name">Round 2 2025 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -528,7 +531,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2026 Pick (androooooo)</span>
+                    <span class="asset-name">Round 3 2026 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -538,7 +541,7 @@
                 <div class="team">androooooo</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -561,7 +564,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2025 Pick (tmjones212)</span>
+                    <span class="asset-name">Round 2 2025 Pick <span class='original-owner'>(Original owner: tmjones212)</span></span>
                 </div>
             </div>
             
@@ -571,7 +574,7 @@
                 <div class="team">tmjones212</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2024 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 2 2024 Pick <span class='original-owner'>(Original owner: BaoDown)</span></span>
                 </div>
             </div>
             
@@ -581,7 +584,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (tmjones212)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             
@@ -591,7 +594,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (tmjones212)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             </div>
@@ -614,7 +617,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             
@@ -624,7 +627,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2026 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 3 2026 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             </div>
@@ -647,7 +650,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 1 2024 Pick (androooooo)</span>
+                    <span class="asset-name">Round 1 2024 Pick <span class='original-owner'>(Original owner: BaoDown)</span></span>
                 </div>
             </div>
             </div>
@@ -710,7 +713,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -733,7 +736,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2026 Pick (EBao)</span>
+                    <span class="asset-name">Round 3 2026 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             </div>
@@ -756,7 +759,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (tmjones212)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: tmjones212)</span></span>
                 </div>
             </div>
             </div>
@@ -812,7 +815,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (EBao)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             </div>
@@ -835,7 +838,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             
@@ -845,7 +848,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -855,7 +858,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: mlum20)</span></span>
                 </div>
             </div>
             </div>
@@ -938,7 +941,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2024 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 2 2024 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             
@@ -948,7 +951,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2025 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 4 2025 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             </div>
@@ -994,7 +997,7 @@
                 <div class="team">BaoDown</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 1 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 1 2024 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -1004,7 +1007,7 @@
                 <div class="team">BaoDown</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2024 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -1014,7 +1017,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 1 2024 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 1 2024 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             
@@ -1024,7 +1027,7 @@
                 <div class="team">ShadyCommish88</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2024 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 2 2024 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -1087,7 +1090,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             
@@ -1097,7 +1100,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 2 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 2 2025 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             </div>
@@ -1110,7 +1113,7 @@
                 <div class="team">BaoDown</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (tmjones212)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: BaoDown)</span></span>
                 </div>
             </div>
             
@@ -1120,7 +1123,7 @@
                 <div class="team">tmjones212</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2024 Pick (BaoDown)</span>
+                    <span class="asset-name">Round 3 2024 Pick <span class='original-owner'>(Original owner: EBao)</span></span>
                 </div>
             </div>
             </div>
@@ -1143,7 +1146,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: androooooo)</span></span>
                 </div>
             </div>
             
@@ -1153,7 +1156,7 @@
                 <div class="team">lamjohnson56</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2026 Pick (emanueljd3)</span>
+                    <span class="asset-name">Round 4 2026 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             
@@ -1163,7 +1166,7 @@
                 <div class="team">emanueljd3</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2027 Pick (lamjohnson56)</span>
+                    <span class="asset-name">Round 3 2027 Pick <span class='original-owner'>(Original owner: lamjohnson56)</span></span>
                 </div>
             </div>
             </div>
@@ -1259,7 +1262,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2025 Pick <span class='original-owner'>(Original owner: ShadyCommish88)</span></span>
                 </div>
             </div>
             
@@ -1269,7 +1272,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 3 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 3 2025 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -1279,7 +1282,7 @@
                 <div class="team">mlum20</div>
                 <div class="asset-details">
                     
-                    <span class="asset-name">Round 4 2025 Pick (ShadyCommish88)</span>
+                    <span class="asset-name">Round 4 2025 Pick <span class='original-owner'>(Original owner: emanueljd3)</span></span>
                 </div>
             </div>
             
@@ -1293,6 +1296,7 @@
                 </div>
             </div>
             </div>
+        </div>
     </body>
     </html>
     

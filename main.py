@@ -5,7 +5,7 @@ import os
 import webbrowser
 
 
-def generate_trade_html(trades_data):
+def generate_trade_html(trades_data, client):
     html_content = """
     <!DOCTYPE html>
     <html lang="en">
@@ -14,20 +14,23 @@ def generate_trade_html(trades_data):
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>League Trades</title>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; background-color: #f0f0f0; }
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; margin: 0 auto; background-color: #f0f0f0; }
             h1 { color: #333; text-align: center; }
+            .trade-container { max-width: 1200px; margin: 0 auto; }
             .trade { background-color: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
             .trade-header { font-weight: bold; margin-bottom: 10px; font-size: 1.1em; color: #444; }
             .asset { margin-bottom: 15px; display: flex; align-items: center; }
-            .team { flex: 1; padding: 5px; }
+            .team { flex: 0 0 200px; padding: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .arrow { flex: 0 0 30px; text-align: center; font-size: 1.2em; color: #666; }
             .player-img { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
-            .asset-details { display: flex; align-items: center; flex: 2; }
+            .asset-details { display: flex; align-items: center; flex: 1; }
             .asset-name { font-weight: bold; }
+            .original-owner { font-style: italic; color: #666; margin-left: 10px; }
         </style>
     </head>
     <body>
-        <h1>League Trades</h1>
+        <div class="trade-container">
+            <h1>League Trades</h1>
     """
 
     for trade in trades_data:
@@ -40,6 +43,12 @@ def generate_trade_html(trades_data):
             img_url = f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg" if player_id else ""
             img_tag = f'<img src="{img_url}" class="player-img" onerror="this.src=\'https://sleepercdn.com/images/v2/icons/player_default.webp\';">' if player_id else ""
             
+            original_owner = ""
+            if 'draft_pick' in asset:
+                original_owner_id = asset['draft_pick']['roster_id']
+                original_owner_name = client.get_team_name(trade['league_id'], original_owner_id)
+                original_owner = f" <span class='original-owner'>(Original owner: {original_owner_name})</span>"
+            
             html_content += f"""
             <div class="asset">
                 <div class="team">{asset['old_team']}</div>
@@ -47,13 +56,14 @@ def generate_trade_html(trades_data):
                 <div class="team">{asset['new_team']}</div>
                 <div class="asset-details">
                     {img_tag}
-                    <span class="asset-name">{asset['asset']}</span>
+                    <span class="asset-name">{asset['asset']}{original_owner}</span>
                 </div>
             </div>
             """
         html_content += "</div>"
 
     html_content += """
+        </div>
     </body>
     </html>
     """
@@ -117,47 +127,52 @@ total_weeks = 4  # Assuming a standard NFL season
 all_trades = []
 
 for week in range(1, total_weeks + 1):
-    trades = client.get_league_trades(league_id, week)
+    transactions = client.get_league_transactions(league_id, week)
     
-    for trade in trades:
+    for transaction in transactions:
+        # Only process transactions of type "trade"
+        if transaction.type != "trade":
+            continue
+
         trade_data = {
             'week': week,
-            'transaction_id': trade.transaction_id,
+            'transaction_id': transaction.transaction_id,
+            'league_id': league_id,
             'assets': []
         }
 
         # Process player adds
-        if trade.adds:
-            for player_id, new_roster_id in trade.adds.items():
+        if transaction.adds:
+            for player_id, new_roster_id in transaction.adds.items():
                 player_name = client.get_player_name(player_id)
                 new_team = client.get_team_name(league_id, new_roster_id)
                 old_team = "FA"  # Assume player was a free agent if not in drops
-                if trade.drops and player_id in trade.drops:
-                    old_team = client.get_team_name(league_id, trade.drops[player_id])
+                if transaction.drops and player_id in transaction.drops:
+                    old_team = client.get_team_name(league_id, transaction.drops[player_id])
                 trade_data['assets'].append({
                     'asset': player_name,
                     'old_team': old_team,
                     'new_team': new_team,
-                    'player_id': player_id  # Add this line
+                    'player_id': player_id
                 })
         
-        
         # Process draft picks
-        if trade.draft_picks:
-            for pick in trade.draft_picks:
-                original_owner = client.get_team_name(league_id, pick.previous_owner_id)
-                asset = f"Round {pick.round} {pick.season} Pick ({original_owner})"
+        if transaction.draft_picks:
+            for pick in transaction.draft_picks:
+                original_owner = client.get_team_name(league_id, pick.roster_id)
+                asset = f"Round {pick.round} {pick.season} Pick"
                 old_team = client.get_team_name(league_id, pick.previous_owner_id)
                 new_team = client.get_team_name(league_id, pick.owner_id)
                 trade_data['assets'].append({
                     'asset': asset,
                     'old_team': old_team,
-                    'new_team': new_team
+                    'new_team': new_team,
+                    'draft_pick': pick.__dict__
                 })
         
         # Process FAAB
-        if trade.waiver_budget:
-            for faab in trade.waiver_budget:
+        if transaction.waiver_budget:
+            for faab in transaction.waiver_budget:
                 asset = f"${faab['amount']} FAAB"
                 old_team = client.get_team_name(league_id, faab['sender'])
                 new_team = client.get_team_name(league_id, faab['receiver'])
@@ -170,7 +185,7 @@ for week in range(1, total_weeks + 1):
         all_trades.append(trade_data)
 
 # Generate HTML file
-generate_trade_html(all_trades)
+generate_trade_html(all_trades, client)
 
 
 # for position in positions:

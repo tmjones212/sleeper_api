@@ -193,6 +193,28 @@ class SleeperAPI:
         for week in range(1, current_week + 1):
             all_matchups[week] = self.get_matchups(league_id, week, current_week)
         return all_matchups
+    
+    def get_traded_picks(self, league_id: str) -> List[Dict[str, Any]]:
+        url = f"{self.BASE_URL}/league/{league_id}/traded_picks"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            raise SleeperAPIException(f"Error fetching traded picks: {str(e)}")
+
+    def get_all_traded_picks(self, league_id: str) -> List[Dict[str, Any]]:
+        all_traded_picks = []
+        current_league_id = league_id
+
+        while current_league_id:
+            traded_picks = self.get_traded_picks(current_league_id)
+            all_traded_picks.extend(traded_picks)
+
+            league = self.get_league(current_league_id)
+            current_league_id = league.previous_league_id
+
+        return all_traded_picks
 
     def get_player_fields(self):
         url = f"{self.BASE_URL}/players/nfl"

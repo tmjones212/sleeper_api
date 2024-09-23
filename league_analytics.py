@@ -13,6 +13,7 @@ class LeagueAnalytics:
         self.current_year = self.client.get_current_season_year()
         self.current_week = self.client.get_current_week()
         self.league_id = None  # Initialize league_id as None
+        self.traded_picks = {}
 
     def get_top_half_scorers(self, league_id: str, week: int) -> List[Dict[str, any]]:
         league = self.client.get_league(league_id, fetch_all=True)
@@ -188,14 +189,12 @@ class LeagueAnalytics:
             print(f"No data found for team {team_name} in week {week}")
 
     def print_season_best_ball_total(self, league_id: str):
-        self.league_id = league_id  # Set the league_id
-        season_total = self.get_season_best_ball_total(league_id)
-        print("TeamName|TotalPointsScored|BestBallPointsScored|OffensiveBestBallPoints|Wins|HalfWins|TotalWins|Difference")
-        for team in season_total['teams']:
-            diff = team['total_best_ball_points'] - team['total_actual_points']
-            offensive_bb_points = team['total_offensive_best_ball_points']
-            total_wins = team['wins'] + team['half_wins']
-            print(f"{team['team_name']}|{team['total_actual_points']:.2f}|{team['total_best_ball_points']:.2f}|{offensive_bb_points:.2f}|{team['wins']}|{team['half_wins']:.1f}|{total_wins:.1f}|{diff:.2f}")
+        totals = self.get_season_best_ball_total(league_id)
+        print("Team|Total Best Ball|Total Actual|Total Offensive Best Ball|Wins|Half Wins|Original Draft Team|Current Owner")
+        for team in totals['teams']:
+            original_draft_team = team['weekly_scores'][0]['original_draft_team'] if team['weekly_scores'] else "Unknown"
+            current_owner = team['weekly_scores'][0]['current_owner'] if team['weekly_scores'] else "Unknown"
+            print(f"{team['team_name']}|{team['total_best_ball_points']:.2f}|{team['total_actual_points']:.2f}|{team['total_offensive_best_ball_points']:.2f}|{team['wins']}|{team['half_wins']:.1f}|{original_draft_team}|{current_owner}")
 
     def get_season_best_ball_total(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
         self.league_id = league_id  # Set the league_id
@@ -241,11 +240,22 @@ class LeagueAnalytics:
                 team_data['total_best_ball_points'] += best_ball_points
                 team_data['total_actual_points'] += actual_points
                 team_data['total_offensive_best_ball_points'] += offensive_best_ball_points
+                
+                # Add draft pick information
+                current_year = self.client.get_current_season_year()
+                original_owner_id = self.get_original_draft_team(league_id, matchup.roster_id, 1, str(current_year))
+                original_owner = next((team for team in league.teams if team.roster and team.roster.roster_id == original_owner_id), None)
+                original_owner_name = original_owner.display_name if original_owner else f"Unknown (ID: {original_owner_id})"
+                current_owner = next((team for team in league.teams if team.roster and team.roster.roster_id == matchup.roster_id), None)
+                current_owner_name = current_owner.display_name if current_owner else f"Unknown (ID: {matchup.roster_id})"
+
                 team_data['weekly_scores'].append({
                     'week': week,
                     'best_ball_points': best_ball_points,
                     'actual_points': actual_points,     
-                    'offensive_best_ball_points': offensive_best_ball_points
+                    'offensive_best_ball_points': offensive_best_ball_points,
+                    'original_draft_team': original_owner_name,
+                    'current_owner': current_owner_name
                 })
                 
                 # Calculate head-to-head win
@@ -418,3 +428,15 @@ class LeagueAnalytics:
 
     def get_player_stats(self, year: int, week: int, position: str, league_id: str) -> Dict[str, PlayerStats]:
         return self.client.get_stats(year, week, position, league_id)
+
+    def get_original_draft_team(self, league_id: str, current_owner_id: int, round: int, season: str) -> int:
+        if not self.traded_picks:
+            self.traded_picks = self.client.get_all_traded_picks(league_id)
+
+        for pick in self.traded_picks:
+            if (pick['owner_id'] == current_owner_id and
+                pick['round'] == round and
+                pick['season'] == season):
+                return pick['roster_id']  # This is the original owner
+
+        return current_owner_id  # If no trade found, assume it's the original owner
