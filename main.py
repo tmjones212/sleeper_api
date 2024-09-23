@@ -1,6 +1,76 @@
 from client import SleeperAPI
 from league_analytics import LeagueAnalytics
 from draft_kings_api import DraftKingsAPI
+import os
+import webbrowser
+
+
+def generate_trade_html(trades_data):
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>League Trades</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; background-color: #f0f0f0; }
+            h1 { color: #333; text-align: center; }
+            .trade { background-color: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .trade-header { font-weight: bold; margin-bottom: 10px; font-size: 1.1em; color: #444; }
+            .asset { margin-bottom: 15px; display: flex; align-items: center; }
+            .team { flex: 1; padding: 5px; }
+            .arrow { flex: 0 0 30px; text-align: center; font-size: 1.2em; color: #666; }
+            .player-img { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+            .asset-details { display: flex; align-items: center; flex: 2; }
+            .asset-name { font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <h1>League Trades</h1>
+    """
+
+    for trade in trades_data:
+        html_content += f"""
+        <div class="trade">
+            <div class="trade-header">Week {trade['week']} - Trade ID: {trade['transaction_id']}</div>
+        """
+        for asset in trade['assets']:
+            player_id = asset.get('player_id', '')
+            img_url = f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg" if player_id else ""
+            img_tag = f'<img src="{img_url}" class="player-img" onerror="this.src=\'https://sleepercdn.com/images/v2/icons/player_default.webp\';">' if player_id else ""
+            
+            html_content += f"""
+            <div class="asset">
+                <div class="team">{asset['old_team']}</div>
+                <div class="arrow">&rarr;</div>
+                <div class="team">{asset['new_team']}</div>
+                <div class="asset-details">
+                    {img_tag}
+                    <span class="asset-name">{asset['asset']}</span>
+                </div>
+            </div>
+            """
+        html_content += "</div>"
+
+    html_content += """
+    </body>
+    </html>
+    """
+
+    file_path = 'league_trades.html'
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    print(f"HTML file generated: {os.path.abspath(file_path)}")
+    
+    # Open the generated HTML file in the default web browser
+    webbrowser.open('file://' + os.path.realpath(file_path))
+
+
+
+
+# ... (rest of the existing code)
 
 
 # subcategories = DraftKingsAPI.get_all_subcategories()
@@ -44,10 +114,18 @@ print("Year|Week|TransactionID|Asset|OldTeam|NewTeam")
 current_year = client.get_current_season_year()
 total_weeks = 4  # Assuming a standard NFL season
 
+all_trades = []
+
 for week in range(1, total_weeks + 1):
     trades = client.get_league_trades(league_id, week)
     
     for trade in trades:
+        trade_data = {
+            'week': week,
+            'transaction_id': trade.transaction_id,
+            'assets': []
+        }
+
         # Process player adds
         if trade.adds:
             for player_id, new_roster_id in trade.adds.items():
@@ -56,7 +134,13 @@ for week in range(1, total_weeks + 1):
                 old_team = "FA"  # Assume player was a free agent if not in drops
                 if trade.drops and player_id in trade.drops:
                     old_team = client.get_team_name(league_id, trade.drops[player_id])
-                print(f"{current_year}|{week}|{trade.transaction_id}|{player_name}|{old_team}|{new_team}")
+                trade_data['assets'].append({
+                    'asset': player_name,
+                    'old_team': old_team,
+                    'new_team': new_team,
+                    'player_id': player_id  # Add this line
+                })
+        
         
         # Process draft picks
         if trade.draft_picks:
@@ -65,7 +149,11 @@ for week in range(1, total_weeks + 1):
                 asset = f"Round {pick.round} {pick.season} Pick ({original_owner})"
                 old_team = client.get_team_name(league_id, pick.previous_owner_id)
                 new_team = client.get_team_name(league_id, pick.owner_id)
-                print(f"{current_year}|{week}|{trade.transaction_id}|{asset}|{old_team}|{new_team}")
+                trade_data['assets'].append({
+                    'asset': asset,
+                    'old_team': old_team,
+                    'new_team': new_team
+                })
         
         # Process FAAB
         if trade.waiver_budget:
@@ -73,7 +161,16 @@ for week in range(1, total_weeks + 1):
                 asset = f"${faab['amount']} FAAB"
                 old_team = client.get_team_name(league_id, faab['sender'])
                 new_team = client.get_team_name(league_id, faab['receiver'])
-                print(f"{current_year}|{week}|{trade.transaction_id}|{asset}|{old_team}|{new_team}")
+                trade_data['assets'].append({
+                    'asset': asset,
+                    'old_team': old_team,
+                    'new_team': new_team
+                })
+
+        all_trades.append(trade_data)
+
+# Generate HTML file
+generate_trade_html(all_trades)
 
 
 # for position in positions:
@@ -195,3 +292,4 @@ for projection in sorted_projections:
 
 # for player_id, player in players.items():
 #     print(player.name)
+
