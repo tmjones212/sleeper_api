@@ -1,7 +1,7 @@
 import requests
 
 from exceptions import SleeperAPIException
-from models import PlayerProp
+from models import PlayerProp, Transaction
 
 
 class DraftKingsAPI:

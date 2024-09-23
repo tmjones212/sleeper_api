@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 import requests
 from customer_json_encoder import CustomJSONEncoder
 from exceptions import SleeperAPIException
-from models import League, PlayerInfo, ProjectedStats, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection, PlayerStats
+from models import League, PlayerInfo, ProjectedStats, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection, PlayerStats, Transaction
 import csv
 from datetime import datetime, timedelta
 
@@ -20,6 +20,42 @@ class SleeperAPI:
         self.stats_cache = self.load_stats_cache()
         self.projections_cache = self.load_projections_cache()
         self.matchups_cache = self.load_matchups_cache()
+
+    def get_team_name(self, league_id: str, roster_id: int) -> str:
+        league = self.get_league(league_id, fetch_all=True)
+        for team in league.teams:
+            if team.roster and team.roster.roster_id == roster_id:
+                return team.display_name
+        return f"Unknown Team (Roster ID: {roster_id})"
+
+    def get_player_name(self, player_id: str) -> str:
+        player = self.players.get(player_id)
+        if player:
+            return f"{player.first_name} {player.last_name}"
+        else:
+            return f"Unknown Player (ID: {player_id})"
+
+    
+    def get_league_transactions(self, league_id: str, week: int) -> List[Transaction]:
+        url = f"{self.BASE_URL}/league/{league_id}/transactions/{week}"
+        
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            
+            transactions = []
+            for transaction_data in data:
+                transaction = Transaction.from_dict(transaction_data)
+                transactions.append(transaction)
+            
+            return transactions
+        except requests.RequestException as e:
+            raise SleeperAPIException(f"Error fetching Sleeper transactions: {str(e)}")
+
+    def get_league_trades(self, league_id: str, week: int) -> List[Transaction]:
+        transactions = self.get_league_transactions(league_id, week)
+        return [t for t in transactions if t.type == "trade"]
 
     def fetch_players_from_api(self) -> Dict[str, Player]:
         url = f"{self.BASE_URL}/players/nfl"

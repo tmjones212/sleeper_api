@@ -418,3 +418,59 @@ class PlayerStats:
     pass_td: float = 0
     pass_int: float = 0
     fum_lost: float = 0
+
+@dataclass
+class DraftPick:
+    round: int
+    season: str
+    roster_id: Optional[int] = None
+    owner_id: Optional[int] = None
+    previous_owner_id: Optional[int] = None
+    league_id: Optional[str] = None  # Add this line
+    extra_fields: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        # Capture any unexpected fields
+        known_fields = set(self.__annotations__.keys()) - {'extra_fields'}
+        self.extra_fields = {k: v for k, v in self.__dict__.items() if k not in known_fields}
+        for k in self.extra_fields:
+            delattr(self, k)
+
+@dataclass
+class Transaction:
+    status: str
+    type: str
+    transaction_id: str
+    status_updated: int
+    roster_ids: List[int]
+    adds: Optional[Dict[str, int]] = None
+    drops: Optional[Dict[str, int]] = None
+    draft_picks: List[DraftPick] = field(default_factory=list)
+    waiver_budget: List[Dict[str, Any]] = field(default_factory=list)
+    creator: Optional[str] = None
+    created: Optional[int] = None
+    consenter_ids: List[int] = field(default_factory=list)
+    metadata: Optional[Dict[str, Any]] = None
+    settings: Optional[Dict[str, Any]] = None
+    leg: Optional[int] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Transaction':
+        draft_picks = [DraftPick(**pick) for pick in data.get('draft_picks', [])]
+        return cls(
+            status=data['status'],
+            type=data['type'],
+            transaction_id=data['transaction_id'],
+            status_updated=data['status_updated'],
+            roster_ids=data['roster_ids'],
+            adds=data.get('adds'),
+            drops=data.get('drops'),
+            draft_picks=draft_picks,
+            waiver_budget=data.get('waiver_budget', []),
+            creator=data.get('creator'),
+            created=data.get('created'),
+            consenter_ids=data.get('consenter_ids', []),
+            metadata=data.get('metadata'),
+            settings=data.get('settings'),
+            leg=data.get('leg')
+        )

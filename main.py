@@ -34,6 +34,48 @@ analytics = LeagueAnalytics(client)
 # year = 2024
 # week = 1
 
+week = 2
+
+# Get all transactions for the week
+transactions = client.get_league_transactions(league_id, week)
+
+print("Year|Week|TransactionID|Asset|OldTeam|NewTeam")
+
+current_year = client.get_current_season_year()
+total_weeks = 4  # Assuming a standard NFL season
+
+for week in range(1, total_weeks + 1):
+    trades = client.get_league_trades(league_id, week)
+    
+    for trade in trades:
+        # Process player adds
+        if trade.adds:
+            for player_id, new_roster_id in trade.adds.items():
+                player_name = client.get_player_name(player_id)
+                new_team = client.get_team_name(league_id, new_roster_id)
+                old_team = "FA"  # Assume player was a free agent if not in drops
+                if trade.drops and player_id in trade.drops:
+                    old_team = client.get_team_name(league_id, trade.drops[player_id])
+                print(f"{current_year}|{week}|{trade.transaction_id}|{player_name}|{old_team}|{new_team}")
+        
+        # Process draft picks
+        if trade.draft_picks:
+            for pick in trade.draft_picks:
+                original_owner = client.get_team_name(league_id, pick.previous_owner_id)
+                asset = f"Round {pick.round} {pick.season} Pick ({original_owner})"
+                old_team = client.get_team_name(league_id, pick.previous_owner_id)
+                new_team = client.get_team_name(league_id, pick.owner_id)
+                print(f"{current_year}|{week}|{trade.transaction_id}|{asset}|{old_team}|{new_team}")
+        
+        # Process FAAB
+        if trade.waiver_budget:
+            for faab in trade.waiver_budget:
+                asset = f"${faab['amount']} FAAB"
+                old_team = client.get_team_name(league_id, faab['sender'])
+                new_team = client.get_team_name(league_id, faab['receiver'])
+                print(f"{current_year}|{week}|{trade.transaction_id}|{asset}|{old_team}|{new_team}")
+
+
 # for position in positions:
 #     projections = client.get_projections(year, week, position)
 #     print(f"Loaded {len(projections)} projections for {position}")
