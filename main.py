@@ -114,75 +114,81 @@ analytics = LeagueAnalytics(client)
 # year = 2024
 # week = 1
 
-week = 2
+week = 4
+
+# client.get_matchups(league_id,1)
+# client.get_matchups(league_id,2)
+# client.get_matchups(league_id,3)
+
+# dd = 2
 
 # Get all transactions for the week
-transactions = client.get_league_transactions(league_id, week)
+# transactions = client.get_league_transactions(league_id, week)
 
-print("Year|Week|TransactionID|Asset|OldTeam|NewTeam")
+# print("Year|Week|TransactionID|Asset|OldTeam|NewTeam")
 
-current_year = client.get_current_season_year()
-total_weeks = 4  # Assuming a standard NFL season
+# current_year = client.get_current_season_year()
+# total_weeks = 5  # Assuming a standard NFL season
 
-all_trades = []
+# all_trades = []
 
-for week in range(1, total_weeks + 1):
-    transactions = client.get_league_transactions(league_id, week)
+# for week in range(1, total_weeks + 1):
+#     transactions = client.get_league_transactions(league_id, week)
     
-    for transaction in transactions:
-        # Only process transactions of type "trade"
-        if transaction.type != "trade":
-            continue
+#     for transaction in transactions:
+#         # Only process transactions of type "trade"
+#         if transaction.type != "trade":
+#             continue
 
-        trade_data = {
-            'week': week,
-            'transaction_id': transaction.transaction_id,
-            'league_id': league_id,
-            'assets': []
-        }
+#         trade_data = {
+#             'week': week,
+#             'transaction_id': transaction.transaction_id,
+#             'league_id': league_id,
+#             'assets': []
+#         }
 
-        # Process player adds
-        if transaction.adds:
-            for player_id, new_roster_id in transaction.adds.items():
-                player_name = client.get_player_name(player_id)
-                new_team = client.get_team_name(league_id, new_roster_id)
-                old_team = "FA"  # Assume player was a free agent if not in drops
-                if transaction.drops and player_id in transaction.drops:
-                    old_team = client.get_team_name(league_id, transaction.drops[player_id])
-                trade_data['assets'].append({
-                    'asset': player_name,
-                    'old_team': old_team,
-                    'new_team': new_team,
-                    'player_id': player_id
-                })
+#         # Process player adds
+#         if transaction.adds:
+#             for player_id, new_roster_id in transaction.adds.items():
+#                 player_name = client.get_player_name(player_id)
+#                 new_team = client.get_team_name(league_id, new_roster_id)
+#                 old_team = "FA"  # Assume player was a free agent if not in drops
+#                 if transaction.drops and player_id in transaction.drops:
+#                     old_team = client.get_team_name(league_id, transaction.drops[player_id])
+#                 trade_data['assets'].append({
+#                     'asset': player_name,
+#                     'old_team': old_team,
+#                     'new_team': new_team,
+#                     'player_id': player_id
+#                 })
         
-        # Process draft picks
-        if transaction.draft_picks:
-            for pick in transaction.draft_picks:
-                original_owner = client.get_team_name(league_id, pick.roster_id)
-                asset = f"Round {pick.round} {pick.season} Pick"
-                old_team = client.get_team_name(league_id, pick.previous_owner_id)
-                new_team = client.get_team_name(league_id, pick.owner_id)
-                trade_data['assets'].append({
-                    'asset': asset,
-                    'old_team': old_team,
-                    'new_team': new_team,
-                    'draft_pick': pick.__dict__
-                })
+#         # Process draft picks
+#         if transaction.draft_picks:
+#             for pick in transaction.draft_picks:
+#                 original_owner = client.get_team_name(league_id, pick.roster_id)
+#                 asset = f"Round {pick.round} {pick.season} Pick"
+#                 old_team = client.get_team_name(league_id, pick.previous_owner_id)
+#                 new_team = client.get_team_name(league_id, pick.owner_id)
+#                 trade_data['assets'].append({
+#                     'asset': asset,
+#                     'old_team': old_team,
+#                     'new_team': new_team,
+#                     'draft_pick': pick.__dict__
+#                 })
         
-        # Process FAAB
-        if transaction.waiver_budget:
-            for faab in transaction.waiver_budget:
-                asset = f"${faab['amount']} FAAB"
-                old_team = client.get_team_name(league_id, faab['sender'])
-                new_team = client.get_team_name(league_id, faab['receiver'])
-                trade_data['assets'].append({
-                    'asset': asset,
-                    'old_team': old_team,
-                    'new_team': new_team
-                })
+#         # Process FAAB
+#         if transaction.waiver_budget:
+#             for faab in transaction.waiver_budget:
+#                 asset = f"${faab['amount']} FAAB"
+#                 old_team = client.get_team_name(league_id, faab['sender'])
+#                 new_team = client.get_team_name(league_id, faab['receiver'])
+#                 trade_data['assets'].append({
+#                     'asset': asset,
+#                     'old_team': old_team,
+#                     'new_team': new_team
+#                 })
 
-        all_trades.append(trade_data)
+#         all_trades.append(trade_data)
 
 # Generate HTML file
 # generate_trade_html(all_trades, client)
@@ -194,9 +200,9 @@ for week in range(1, total_weeks + 1):
 
 # projections = client.get_projections(2024, 1, "RB")
 # print("Season Best Ball Total for All Teams:")
-analytics.print_season_best_ball_total(league_id)
+# analytics.print_season_best_ball_total(league_id)
 
-# analytics.print_league_standings(league_id)
+analytics.print_league_standings(league_id)
 
 # print("Season Best Ball Total for All Teams:")
 # analytics.print_season_best_ball_total(league_id)
@@ -212,7 +218,7 @@ team_name = "tmjones212"
 # print("\n\nSeason Best Ball Total for a Specific Team:")
 # team_name = "tmjones212"
 analytics.print_season_best_ball_total(league_id)
-
+# 
 
 # team_name = "tmjones212"
 # week = 1

@@ -145,7 +145,7 @@ class SleeperAPI:
 
     def get_matchups(self, league_id: str, week: int, current_week: Optional[int] = None) -> List[Matchup]:
         cache_key = f"{league_id}_{week}"
-        
+    
         # If current_week is not provided, use the week parameter
         current_week = current_week or week
 

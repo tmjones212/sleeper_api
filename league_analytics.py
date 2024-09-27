@@ -358,7 +358,7 @@ class LeagueAnalytics:
 
     def get_league_standings(self, league_id: str) -> List[Dict[str, Any]]:
         league = self.client.get_league(league_id, fetch_all=True)
-        current_week = self.client.get_current_week(league_id)
+        current_week = self.client.get_current_week()
         
         standings = {team.roster.roster_id: {
             'team_name': team.display_name,
@@ -372,9 +372,13 @@ class LeagueAnalytics:
             'offensive_best_ball_points': 0
         } for team in league.teams if team.roster}
 
-        for week in range(1, current_week + 1):
+        for week in range(1, current_week):
             try:
                 matchups = self.client.get_matchups(league_id, week)
+                if not matchups:
+                    print(f"Warning: No matchups found for week {week}")
+                    continue
+
                 best_ball_scores = self.get_best_ball_scores(league_id, week)
                 
                 # Sort teams by best ball points for this week
@@ -409,8 +413,9 @@ class LeagueAnalytics:
                         else:
                             team['ties'] += 1
 
-            except SleeperAPIException:
-                break  # No more matchups found, exit the loop
+            except SleeperAPIException as e:
+                print(f"Error fetching data for week {week}: {str(e)}. Skipping...")
+                continue
 
         sorted_standings = sorted(
             standings.values(),
