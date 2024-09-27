@@ -28,7 +28,7 @@ class LeagueSettings:
     best_ball: int
     waiver_budget: int
     disable_adds: int
-    divisions: int
+    # divisions: int
     capacity_override: int
     waiver_bid_min: int
     taxi_deadline: int
@@ -76,6 +76,8 @@ class LeagueSettings:
     last_scored_leg: Optional[int] = None
     sub_start_time_eligibility: Optional[int] = None
     max_subs: Optional[int] = None
+    was_auto_archived: Optional[bool] = None
+    divisions: Optional[int] = None
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):

@@ -185,7 +185,7 @@ for week in range(1, total_weeks + 1):
         all_trades.append(trade_data)
 
 # Generate HTML file
-generate_trade_html(all_trades, client)
+# generate_trade_html(all_trades, client)
 
 
 # for position in positions:
