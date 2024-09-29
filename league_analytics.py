@@ -348,7 +348,7 @@ class LeagueAnalytics:
 
     def get_league_standings(self, league_id: str) -> List[Dict[str, Any]]:
         league = self.client.get_league(league_id, fetch_all=True)
-        current_week = self.client.get_current_week(league_id)
+        current_week = self.client.get_current_week()
         
         standings = {team.roster.roster_id: {
             'team_name': team.display_name,

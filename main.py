@@ -40,9 +40,9 @@ analytics = LeagueAnalytics(client)
 
 # projections = client.get_projections(2024, 1, "RB")
 # print("Season Best Ball Total for All Teams:")
-analytics.print_season_best_ball_total(league_id)
+# analytics.print_season_best_ball_total(league_id)
 
-# analytics.print_league_standings(league_id)
+analytics.print_league_standings(league_id)
 
 # print("Season Best Ball Total for All Teams:")
 # analytics.print_season_best_ball_total(league_id)
