@@ -89,7 +89,7 @@ def generate_trade_html(trades_data, client):
 
 # pass_yard_props = DraftKingsAPI.get_nfl_player_props_2("Passing Yards")
 
-# rush_rec_yards_props = DraftKingsAPI.get_nfl_player_props(1, "Rush + Rec Yards")
+rush_rec_yards_props = DraftKingsAPI.get_nfl_player_props(1, "Rush + Rec Yards")
 
 
 # # Remove duplicates
