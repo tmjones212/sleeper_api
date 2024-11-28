@@ -76,6 +76,7 @@ class LeagueSettings:
     last_scored_leg: Optional[int] = None
     sub_start_time_eligibility: Optional[int] = None
     max_subs: Optional[int] = None
+    sub_lock_if_starter_active: Optional[int] = None
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -110,14 +111,17 @@ class League:
     last_pinned_message_id: Optional[str]
     last_read_id: Optional[str]
     league_id: str
+    loser_bracket_overrides_id: Optional[str]  # Added this field
     previous_league_id: str
     roster_positions: List[str]
     group_id: Optional[str]
     bracket_id: Optional[str]
+    bracket_overrides_id: Optional[str]  # Added this field
     loser_bracket_id: Optional[str]
     total_rosters: int
     teams: List['Team'] = field(default_factory=list)
     extra_fields: Dict[str, Any] = field(default_factory=dict)
+    
 
     def __post_init__(self):
         # Convert metadata dict to LeagueMetadata object if it's not already

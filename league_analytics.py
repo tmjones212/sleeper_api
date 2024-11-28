@@ -3,6 +3,7 @@ from exceptions import SleeperAPIException
 from models import League, Team, Matchup, PlayerStats
 from client import SleeperAPI
 from datetime import datetime
+import csv
 
 class LeagueAnalytics:
     def __init__(self, client: SleeperAPI):
@@ -66,7 +67,7 @@ class LeagueAnalytics:
         
         for pos in position_players:
             position_players[pos].sort(key=lambda x: x["points"], reverse=True)
-            print(f"Debug: Sorted {pos} players: {position_players[pos]}")
+            # print(f"Debug: Sorted {pos} players: {position_players[pos]}")
         
         best_lineup = []
         total_points = 0
@@ -349,6 +350,7 @@ class LeagueAnalytics:
     def get_league_standings(self, league_id: str) -> List[Dict[str, Any]]:
         league = self.client.get_league(league_id, fetch_all=True)
         current_week = self.client.get_current_week()
+        offensive_positions = ["QB", "RB", "WR", "TE", "FLEX", "SUPER_FLEX"]
         
         standings = {team.roster.roster_id: {
             'team_name': team.display_name,
@@ -374,10 +376,14 @@ class LeagueAnalytics:
                 for idx, score in enumerate(sorted_scores):
                     team = standings[score['roster_id']]
                     team['best_ball_points'] += score['best_ball_points']
-                    team['offensive_best_ball_points'] += sum(
-                        player['player']['points'] for player in score['best_lineup']
-                        if self.is_offensive_position(player['position'])
-                    )
+                    
+                    # Calculate offensive best ball points using only offensive positions
+                    offensive_lineup = [
+                        slot for slot in score['best_lineup'] 
+                        if slot['position'] in offensive_positions
+                    ]
+                    offensive_points = sum(slot['player']['points'] for slot in offensive_lineup)
+                    team['offensive_best_ball_points'] += offensive_points
                     
                     # Assign half win to top half of teams
                     if idx < half_win_threshold:
@@ -418,3 +424,38 @@ class LeagueAnalytics:
 
     def get_player_stats(self, year: int, week: int, position: str, league_id: str) -> Dict[str, PlayerStats]:
         return self.client.get_stats(year, week, position, league_id)
+
+    def write_offensive_best_ball_to_csv(self, league_id: str, filename: str = "offensive_best_ball.csv"):
+        """Write each team's offensive best ball lineup to a CSV file."""
+        league = self.client.get_league(league_id, fetch_all=True)
+        current_week = self.client.get_current_week()
+        offensive_positions = ["QB", "RB", "WR", "TE", "FLEX", "SUPER_FLEX"]
+        
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Week', 'TeamName', 'PlayerName', 'LineupPosition', 'Points'])
+            
+            for week in range(league.settings.start_week, current_week):
+                print(f"Processing week {week}...")
+                best_ball_scores = self.get_best_ball_scores(league_id, week)
+                
+                for score in best_ball_scores:
+                    team_name = score['team_name']
+                    # Filter for offensive positions only
+                    offensive_lineup = [
+                        slot for slot in score['best_lineup'] 
+                        if slot['position'] in offensive_positions
+                    ]
+                    
+                    for slot in offensive_lineup:
+                        player_id = slot['player']['id']
+                        player_name = self.client.get_player_name(player_id)
+                        writer.writerow([
+                            week,
+                            team_name,
+                            player_name,
+                            slot['position'],
+                            f"{slot['player']['points']:.2f}"
+                        ])
+        
+        print(f"Data written to {filename}")

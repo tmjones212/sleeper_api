@@ -43,6 +43,7 @@ analytics = LeagueAnalytics(client)
 # analytics.print_season_best_ball_total(league_id)
 
 analytics.print_league_standings(league_id)
+# analytics.write_offensive_best_ball_to_csv(league_id)
 
 # print("Season Best Ball Total for All Teams:")
 # analytics.print_season_best_ball_total(league_id)
@@ -50,6 +51,7 @@ analytics.print_league_standings(league_id)
 # print("\nWeekly Best Ball Scores for All Teams:")
 # print(analytics.get_best_ball_scores(league_id,1))
 # analytics.print_weekly_best_ball_scores(league_id)
+
 
 print("\nWeekly Best Ball Scores for a Specific Team:")
 team_name = "tmjones212"
