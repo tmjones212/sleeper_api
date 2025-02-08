@@ -1,0 +1,181 @@
+{
+  "main": {
+    "id": "f73d335f7e5f48ed",
+    "type": "split",
+    "children": [
+      {
+        "id": "fb48423431144afb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "df47fb2329758c0d",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ab5c7e9d592d0613",
+    "type": "split",
+    "children": [
+      {
+        "id": "cf8f09c7d642791d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e79253a68b810c0c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "87c15b21a1ce6733",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "73d08839edace3de",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "192a759901ba98d3",
+    "type": "split",
+    "children": [
+      {
+        "id": "18d53ed467303649",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9d5a91832756a918",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CodeAnalyzer._process_class.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for CodeAnalyzer._process_class"
+            }
+          },
+          {
+            "id": "82a4fecc933481a3",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CodeAnalyzer._process_class.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from CodeAnalyzer._process_class"
+            }
+          },
+          {
+            "id": "44d80fbd5cd139b1",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "e4c1b91fca0198d0",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "CodeAnalyzer._process_class.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of CodeAnalyzer._process_class"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "df47fb2329758c0d",
+  "lastOpenFiles": [
+    "get_all_league_transactions.md",
+    "SleeperAPI.get_league_transactions.md",
+    "get_league_transactions.md",
+    "Code Structure.md",
+    "CodeAnalyzer._process_class.md",
+    "is_time_in_range.md",
+    "players_dropped_before_waivers_cleared.md",
+    "_calculate_offensive_best_ball_points.md",
+    "get_all_subcategories.md",
+    "CodeAnalyzer.md"
+  ]
+}

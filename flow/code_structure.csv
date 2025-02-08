@@ -1,0 +1,189 @@
+File,Class,Function,Description,Calls,Called By
+.\client.py,SleeperAPI,__init__,,,
+.\client.py,SleeperAPI,fetch_players_from_api,,,SleeperAPI.load_players_from_file|load_players_from_file
+.\client.py,SleeperAPI,save_players_to_file,,,fetch_players_from_api
+.\client.py,SleeperAPI,load_players_from_file,,fetch_players_from_api,
+.\client.py,SleeperAPI,get_player_position,,,LeagueAnalytics._calculate_actual_points|LeagueAnalytics._calculate_best_ball_points|LeagueAnalytics.get_season_best_ball_total|_calculate_actual_points|_calculate_best_ball_points|get_season_best_ball_total
+.\client.py,SleeperAPI,get_player_name,,,LeagueAnalytics._calculate_best_ball_points|LeagueAnalytics.add_to_lineup|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|LeagueAnalytics.print_team_best_ball|LeagueAnalytics.write_offensive_best_ball_to_csv|_calculate_best_ball_points|add_to_lineup|get_season_best_ball_total|get_weekly_drops|players_dropped_before_waivers_cleared|print_team_best_ball|write_offensive_best_ball_to_csv
+.\client.py,SleeperAPI,get_league,,,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_top_half_scorers|LeagueAnalytics.get_weekly_best_ball_scores|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|LeagueAnalytics.print_weekly_best_ball_scores|LeagueAnalytics.print_weekly_top_half_scorers|LeagueAnalytics.write_offensive_best_ball_to_csv|SleeperAPI.print_league_rosters|get_best_ball_scores|get_league_standings|get_season_best_ball_total|get_top_half_scorers|get_weekly_best_ball_scores|get_weekly_drops|players_dropped_before_waivers_cleared|print_league_rosters|print_weekly_best_ball_scores|print_weekly_top_half_scorers|write_offensive_best_ball_to_csv
+.\client.py,SleeperAPI,get_projections,,,
+.\client.py,SleeperAPI,get_league_users,,,get_league
+.\client.py,SleeperAPI,get_league_rosters,,,get_league
+.\client.py,SleeperAPI,_associate_rosters_with_teams,,,get_league
+.\client.py,SleeperAPI,get_matchups,,,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_top_half_scorers|LeagueAnalytics.get_weekly_best_ball_scores|SleeperAPI.get_all_matchups|get_all_matchups|get_best_ball_scores|get_league_standings|get_season_best_ball_total|get_top_half_scorers|get_weekly_best_ball_scores
+.\client.py,SleeperAPI,get_all_matchups,,get_matchups,
+.\client.py,SleeperAPI,get_player_fields,,,
+.\client.py,SleeperAPI,print_team_fields,,,
+.\client.py,SleeperAPI,_make_request,,,get_league_rosters|get_league_users|print_team_fields
+.\client.py,SleeperAPI,print_league_rosters,,get_league,
+.\client.py,SleeperAPI,_print_player,,,print_league_rosters
+.\client.py,SleeperAPI,format_player_name,,,_print_player
+.\client.py,SleeperAPI,get_current_week,,,LeagueAnalytics.__init__|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.write_offensive_best_ball_to_csv|get_league_standings|get_season_best_ball_total|write_offensive_best_ball_to_csv
+.\client.py,SleeperAPI,get_current_season_year,,,LeagueAnalytics.__init__
+.\client.py,SleeperAPI,_get_week_ranges,,,get_current_season_year|get_current_week
+.\client.py,SleeperAPI,load_cache,,,
+.\client.py,SleeperAPI,save_cache,,,SleeperAPI.clear_cache|_make_request|clear_cache|get_league
+.\client.py,SleeperAPI,clear_cache,,save_cache,
+.\client.py,SleeperAPI,get_stats,,,LeagueAnalytics.get_player_stats|get_player_stats
+.\client.py,SleeperAPI,_calculate_fantasy_points,,,get_stats
+.\client.py,SleeperAPI,load_stats_cache,,,
+.\client.py,SleeperAPI,save_stats_cache,,,clear_cache|get_stats
+.\client.py,SleeperAPI,load_projections_cache,,,
+.\client.py,SleeperAPI,save_projections_cache,,,clear_cache
+.\client.py,SleeperAPI,load_matchups_cache,,,
+.\client.py,SleeperAPI,save_matchups_cache,,,clear_cache|get_matchups
+.\client.py,SleeperAPI,_reconstruct_player_projection,,,load_projections_cache
+.\client.py,SleeperAPI,get_league_transactions,Get transactions for a specific league and week. Args: league_id (str): The league ID week (int): The week number to get transactions for Returns: List[Dict]: List of transaction objects,,LeagueAnalytics.get_all_league_transactions|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|get_all_league_transactions|get_weekly_drops|players_dropped_before_waivers_cleared
+.\client.py,,__init__,,load_cache|load_matchups_cache|load_players_from_file|load_projections_cache|load_stats_cache,
+.\client.py,,fetch_players_from_api,,save_players_to_file,SleeperAPI.load_players_from_file|load_players_from_file
+.\client.py,,save_players_to_file,,,fetch_players_from_api
+.\client.py,,load_players_from_file,,fetch_players_from_api,
+.\client.py,,get_player_position,,,LeagueAnalytics._calculate_actual_points|LeagueAnalytics._calculate_best_ball_points|LeagueAnalytics.get_season_best_ball_total|_calculate_actual_points|_calculate_best_ball_points|get_season_best_ball_total
+.\client.py,,get_player_name,,,LeagueAnalytics._calculate_best_ball_points|LeagueAnalytics.add_to_lineup|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|LeagueAnalytics.print_team_best_ball|LeagueAnalytics.write_offensive_best_ball_to_csv|_calculate_best_ball_points|add_to_lineup|get_season_best_ball_total|get_weekly_drops|players_dropped_before_waivers_cleared|print_team_best_ball|write_offensive_best_ball_to_csv
+.\client.py,,get_league,,_associate_rosters_with_teams|get_league_rosters|get_league_users|save_cache,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_top_half_scorers|LeagueAnalytics.get_weekly_best_ball_scores|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|LeagueAnalytics.print_weekly_best_ball_scores|LeagueAnalytics.print_weekly_top_half_scorers|LeagueAnalytics.write_offensive_best_ball_to_csv|SleeperAPI.print_league_rosters|get_best_ball_scores|get_league_standings|get_season_best_ball_total|get_top_half_scorers|get_weekly_best_ball_scores|get_weekly_drops|players_dropped_before_waivers_cleared|print_league_rosters|print_weekly_best_ball_scores|print_weekly_top_half_scorers|write_offensive_best_ball_to_csv
+.\client.py,,get_projections,,get_projections|save_projections_cache,
+.\client.py,,get_league_users,,_make_request,get_league
+.\client.py,,get_league_rosters,,_make_request,get_league
+.\client.py,,_associate_rosters_with_teams,,,get_league
+.\client.py,,get_matchups,,save_matchups_cache,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_top_half_scorers|LeagueAnalytics.get_weekly_best_ball_scores|SleeperAPI.get_all_matchups|get_all_matchups|get_best_ball_scores|get_league_standings|get_season_best_ball_total|get_top_half_scorers|get_weekly_best_ball_scores
+.\client.py,,get_all_matchups,,get_matchups,
+.\client.py,,get_player_fields,,,
+.\client.py,,print_team_fields,,_make_request,
+.\client.py,,_make_request,,save_cache,get_league_rosters|get_league_users|print_team_fields
+.\client.py,,print_league_rosters,,_print_player|get_league,
+.\client.py,,_print_player,,format_player_name,print_league_rosters
+.\client.py,,format_player_name,,,_print_player
+.\client.py,,get_current_week,,_get_week_ranges,LeagueAnalytics.__init__|LeagueAnalytics.get_league_standings|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.write_offensive_best_ball_to_csv|get_league_standings|get_season_best_ball_total|write_offensive_best_ball_to_csv
+.\client.py,,get_current_season_year,,_get_week_ranges,LeagueAnalytics.__init__
+.\client.py,,_get_week_ranges,,,get_current_season_year|get_current_week
+.\client.py,,load_cache,,,
+.\client.py,,save_cache,,,SleeperAPI.clear_cache|_make_request|clear_cache|get_league
+.\client.py,,clear_cache,,save_cache|save_matchups_cache|save_projections_cache|save_stats_cache,
+.\client.py,,get_stats,,_calculate_fantasy_points|save_stats_cache,LeagueAnalytics.get_player_stats|get_player_stats
+.\client.py,,_calculate_fantasy_points,,,get_stats
+.\client.py,,load_stats_cache,,,
+.\client.py,,save_stats_cache,,,clear_cache|get_stats
+.\client.py,,load_projections_cache,,_reconstruct_player_projection,
+.\client.py,,save_projections_cache,,,clear_cache
+.\client.py,,load_matchups_cache,,,
+.\client.py,,save_matchups_cache,,,clear_cache|get_matchups
+.\client.py,,_reconstruct_player_projection,,,load_projections_cache
+.\client.py,,get_league_transactions,Get transactions for a specific league and week. Args: league_id (str): The league ID week (int): The week number to get transactions for Returns: List[Dict]: List of transaction objects,,LeagueAnalytics.get_all_league_transactions|LeagueAnalytics.get_weekly_drops|LeagueAnalytics.players_dropped_before_waivers_cleared|get_all_league_transactions|get_weekly_drops|players_dropped_before_waivers_cleared
+.\code_flow.py,CodeAnalyzer,__init__,,,
+.\code_flow.py,CodeAnalyzer,analyze_file,Analyze a Python file and extract class/function information.,,analyze_directory
+.\code_flow.py,CodeAnalyzer,_process_class,Process a class node and extract its methods.,,analyze_file
+.\code_flow.py,CodeAnalyzer,_process_function,Process a function node and extract its calls.,,_process_class|analyze_file
+.\code_flow.py,CodeAnalyzer,export_to_csv,Export the analysis results to CSV format.,,analyze_directory
+.\code_flow.py,,analyze_directory,Analyze Python files in a directory (not including subdirectories).,analyze_file|export_to_csv,
+.\code_flow.py,,create_flow_diagram,,,
+.\code_flow.py,,__init__,,,
+.\code_flow.py,,analyze_file,Analyze a Python file and extract class/function information.,_process_class|_process_function,analyze_directory
+.\code_flow.py,,_process_class,Process a class node and extract its methods.,_process_function,analyze_file
+.\code_flow.py,,_process_function,Process a function node and extract its calls.,,_process_class|analyze_file
+.\code_flow.py,,export_to_csv,Export the analysis results to CSV format.,,analyze_directory
+.\customer_json_encoder.py,CustomJSONEncoder,default,,,default
+.\customer_json_encoder.py,,default,,default,default
+.\draft_kings_api.py,DraftKingsAPI,get_nfl_player_props,,,
+.\draft_kings_api.py,DraftKingsAPI,get_nfl_player_props_2,,,
+.\draft_kings_api.py,DraftKingsAPI,extract_player_props,,,get_nfl_player_props|get_nfl_player_props_2
+.\draft_kings_api.py,DraftKingsAPI,get_all_subcategories,,,DraftKingsAPI.get_subcategory_id|get_subcategory_id
+.\draft_kings_api.py,DraftKingsAPI,get_subcategory_id,,get_all_subcategories,get_nfl_player_props_2
+.\draft_kings_api.py,DraftKingsAPI,get_all_subcategories,,,DraftKingsAPI.get_subcategory_id|get_subcategory_id
+.\draft_kings_api.py,,get_nfl_player_props,,extract_player_props,
+.\draft_kings_api.py,,get_nfl_player_props_2,,extract_player_props|get_subcategory_id,
+.\draft_kings_api.py,,extract_player_props,,,get_nfl_player_props|get_nfl_player_props_2
+.\draft_kings_api.py,,get_all_subcategories,,,DraftKingsAPI.get_subcategory_id|get_subcategory_id
+.\draft_kings_api.py,,get_subcategory_id,,get_all_subcategories,get_nfl_player_props_2
+.\draft_kings_api.py,,get_all_subcategories,,,DraftKingsAPI.get_subcategory_id|get_subcategory_id
+.\league_analytics.py,LeagueAnalytics,__init__,,get_current_season_year|get_current_week,
+.\league_analytics.py,LeagueAnalytics,get_top_half_scorers,,get_league|get_matchups,LeagueAnalytics.print_weekly_top_half_scorers|print_weekly_top_half_scorers
+.\league_analytics.py,LeagueAnalytics,print_weekly_top_half_scorers,,get_league|get_top_half_scorers,
+.\league_analytics.py,LeagueAnalytics,_calculate_best_ball_points,,get_player_name|get_player_position,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_weekly_best_ball_scores|get_best_ball_scores|get_season_best_ball_total|get_weekly_best_ball_scores
+.\league_analytics.py,LeagueAnalytics,get_best_ball_scores,,_calculate_best_ball_points|get_league|get_matchups,LeagueAnalytics.get_league_standings|LeagueAnalytics.get_team_best_ball|LeagueAnalytics.print_weekly_best_ball_scores|LeagueAnalytics.write_offensive_best_ball_to_csv|get_league_standings|get_team_best_ball|print_weekly_best_ball_scores|write_offensive_best_ball_to_csv
+.\league_analytics.py,LeagueAnalytics,get_team_best_ball,,get_best_ball_scores,LeagueAnalytics.print_team_best_ball|print_team_best_ball
+.\league_analytics.py,LeagueAnalytics,print_team_best_ball,,get_player_name|get_team_best_ball,
+.\league_analytics.py,LeagueAnalytics,print_season_best_ball_total,,,
+.\league_analytics.py,LeagueAnalytics,get_season_best_ball_total,,_calculate_best_ball_points|get_current_week|get_league|get_matchups|get_player_name|get_player_position,print_season_best_ball_total
+.\league_analytics.py,LeagueAnalytics,_calculate_actual_points,,get_player_position,LeagueAnalytics.get_weekly_best_ball_scores|get_season_best_ball_total|get_weekly_best_ball_scores
+.\league_analytics.py,LeagueAnalytics,_calculate_offensive_best_ball_points,,,get_season_best_ball_total
+.\league_analytics.py,LeagueAnalytics,get_weekly_best_ball_scores,,_calculate_actual_points|_calculate_best_ball_points|get_league|get_matchups,
+.\league_analytics.py,LeagueAnalytics,print_weekly_best_ball_scores,,get_best_ball_scores|get_league,
+.\league_analytics.py,LeagueAnalytics,is_offensive_position,,,
+.\league_analytics.py,LeagueAnalytics,get_league_standings,,get_best_ball_scores|get_current_week|get_league|get_matchups,LeagueAnalytics.print_league_standings|print_league_standings
+.\league_analytics.py,LeagueAnalytics,print_league_standings,,get_league_standings,
+.\league_analytics.py,LeagueAnalytics,get_player_stats,,get_stats,
+.\league_analytics.py,LeagueAnalytics,write_offensive_best_ball_to_csv,Write each team's offensive best ball lineup to a CSV file.,get_best_ball_scores|get_current_week|get_league|get_player_name,
+.\league_analytics.py,LeagueAnalytics,players_dropped_before_waivers_cleared,"Get all players dropped between Sunday 5 PM and Wednesday 9 AM for a specific week. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name and team_name",get_league|get_league_transactions|get_player_name,
+.\league_analytics.py,LeagueAnalytics,get_weekly_drops,"Get all players dropped in a given week, including when they were dropped and by whom. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name, team_name, and dropped_at",get_league|get_league_transactions|get_player_name,
+.\league_analytics.py,LeagueAnalytics,get_all_league_transactions,"Get all transactions for a league, starting from week 1 until no more transactions are found. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week number and datetime fields added",get_league_transactions,LeagueAnalytics.load_league_transactions|load_league_transactions
+.\league_analytics.py,LeagueAnalytics,load_league_transactions,"Load transactions from the JSON file for a given league. If the file doesn't exist, fetch and create it. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week numbers",get_all_league_transactions,
+.\league_analytics.py,LeagueAnalytics,add_to_lineup,,get_player_name,_calculate_best_ball_points
+.\league_analytics.py,LeagueAnalytics,is_time_in_range,Check if the datetime falls between Sunday 5 PM and Wednesday 9 AM,,players_dropped_before_waivers_cleared
+.\league_analytics.py,,__init__,,get_current_season_year|get_current_week,
+.\league_analytics.py,,get_top_half_scorers,,get_league|get_matchups,LeagueAnalytics.print_weekly_top_half_scorers|print_weekly_top_half_scorers
+.\league_analytics.py,,print_weekly_top_half_scorers,,get_league|get_top_half_scorers,
+.\league_analytics.py,,_calculate_best_ball_points,,add_to_lineup|get_player_name|get_player_position,LeagueAnalytics.get_best_ball_scores|LeagueAnalytics.get_season_best_ball_total|LeagueAnalytics.get_weekly_best_ball_scores|get_best_ball_scores|get_season_best_ball_total|get_weekly_best_ball_scores
+.\league_analytics.py,,get_best_ball_scores,,_calculate_best_ball_points|get_league|get_matchups,LeagueAnalytics.get_league_standings|LeagueAnalytics.get_team_best_ball|LeagueAnalytics.print_weekly_best_ball_scores|LeagueAnalytics.write_offensive_best_ball_to_csv|get_league_standings|get_team_best_ball|print_weekly_best_ball_scores|write_offensive_best_ball_to_csv
+.\league_analytics.py,,get_team_best_ball,,get_best_ball_scores,LeagueAnalytics.print_team_best_ball|print_team_best_ball
+.\league_analytics.py,,print_team_best_ball,,get_player_name|get_team_best_ball,
+.\league_analytics.py,,print_season_best_ball_total,,get_season_best_ball_total,
+.\league_analytics.py,,get_season_best_ball_total,,_calculate_actual_points|_calculate_best_ball_points|_calculate_offensive_best_ball_points|get_current_week|get_league|get_matchups|get_player_name|get_player_position,print_season_best_ball_total
+.\league_analytics.py,,_calculate_actual_points,,get_player_position,LeagueAnalytics.get_weekly_best_ball_scores|get_season_best_ball_total|get_weekly_best_ball_scores
+.\league_analytics.py,,_calculate_offensive_best_ball_points,,,get_season_best_ball_total
+.\league_analytics.py,,get_weekly_best_ball_scores,,_calculate_actual_points|_calculate_best_ball_points|get_league|get_matchups,
+.\league_analytics.py,,print_weekly_best_ball_scores,,get_best_ball_scores|get_league,
+.\league_analytics.py,,is_offensive_position,,,
+.\league_analytics.py,,get_league_standings,,get_best_ball_scores|get_current_week|get_league|get_matchups,LeagueAnalytics.print_league_standings|print_league_standings
+.\league_analytics.py,,print_league_standings,,get_league_standings,
+.\league_analytics.py,,get_player_stats,,get_stats,
+.\league_analytics.py,,write_offensive_best_ball_to_csv,Write each team's offensive best ball lineup to a CSV file.,get_best_ball_scores|get_current_week|get_league|get_player_name,
+.\league_analytics.py,,players_dropped_before_waivers_cleared,"Get all players dropped between Sunday 5 PM and Wednesday 9 AM for a specific week. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name and team_name",get_league|get_league_transactions|get_player_name|is_time_in_range,
+.\league_analytics.py,,get_weekly_drops,"Get all players dropped in a given week, including when they were dropped and by whom. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name, team_name, and dropped_at",get_league|get_league_transactions|get_player_name,
+.\league_analytics.py,,get_all_league_transactions,"Get all transactions for a league, starting from week 1 until no more transactions are found. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week number and datetime fields added",get_league_transactions,LeagueAnalytics.load_league_transactions|load_league_transactions
+.\league_analytics.py,,load_league_transactions,"Load transactions from the JSON file for a given league. If the file doesn't exist, fetch and create it. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week numbers",get_all_league_transactions,
+.\league_analytics.py,,add_to_lineup,,get_player_name,_calculate_best_ball_points
+.\league_analytics.py,,is_time_in_range,Check if the datetime falls between Sunday 5 PM and Wednesday 9 AM,,players_dropped_before_waivers_cleared
+.\models.py,LeagueMetadata,__post_init__,,,
+.\models.py,LeagueSettings,__post_init__,,,
+.\models.py,League,__post_init__,,,
+.\models.py,League,__str__,,,
+.\models.py,League,__repr__,,,
+.\models.py,Team,team_name,,,
+.\models.py,Team,__str__,,,
+.\models.py,Team,__repr__,,,
+.\models.py,Player,__init__,,,
+.\models.py,Player,format_name,,,
+.\models.py,Player,__str__,,,
+.\models.py,Player,__repr__,,,
+.\models.py,Team,__init__,,,
+.\models.py,Team,__str__,,,
+.\models.py,Team,__repr__,,,
+.\models.py,Matchup,__post_init__,,,
+.\models.py,Roster,__init__,,,
+.\models.py,Roster,__str__,,,
+.\models.py,Roster,__repr__,,,
+.\models.py,SleeperProjections,get_projections,,,
+.\models.py,Transaction,from_dict,,,
+.\models.py,,__post_init__,,,
+.\models.py,,__post_init__,,,
+.\models.py,,__post_init__,,,
+.\models.py,,__str__,,,
+.\models.py,,__repr__,,,
+.\models.py,,team_name,,,
+.\models.py,,__str__,,,
+.\models.py,,__repr__,,,
+.\models.py,,__init__,,format_name,
+.\models.py,,format_name,,,
+.\models.py,,__str__,,,
+.\models.py,,__repr__,,,
+.\models.py,,__init__,,,
+.\models.py,,__str__,,,
+.\models.py,,__repr__,,,
+.\models.py,,__post_init__,,,
+.\models.py,,__init__,,,
+.\models.py,,__str__,,,
+.\models.py,,__repr__,,,
+.\models.py,,get_projections,,,
+.\models.py,,from_dict,,,
+.\player_extensions.py,,format_name,,,
+.\sleeper_api_calls.py,,get_player_stats_from_api,Get stats for all players for a specific week.,,

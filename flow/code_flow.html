@@ -1,0 +1,280 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Code Structure Visualization</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+            body { margin: 0; font-family: Arial, sans-serif; }
+            #container { display: flex; height: 100vh; }
+            #sidebar { 
+                width: 400px; 
+                padding: 20px; 
+                background: #f5f5f5;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+            }
+            #graph { flex-grow: 1; }
+            .node { cursor: pointer; }
+            .node.highlighted { stroke: #ff0000; stroke-width: 2px; }
+            .link { stroke: #999; stroke-opacity: 0.6; }
+            .link.highlighted { stroke: #ff0000; stroke-opacity: 1; }
+            .filter-section { margin-bottom: 20px; }
+            .filter-section h3 { margin: 0 0 10px 0; }
+            select { width: 100%; margin-bottom: 10px; }
+            
+            /* Table styles */
+            .functions-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                flex-grow: 1;
+                overflow-y: auto;
+            }
+            .functions-table th, .functions-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            .functions-table tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .functions-table tr:hover {
+                background-color: #f0f0f0;
+                cursor: pointer;
+            }
+            .functions-table th {
+                background-color: #4CAF50;
+                color: white;
+            }
+            .selected-row {
+                background-color: #e0e0e0 !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="sidebar">
+                <div class="filter-section">
+                    <h3>File Selection</h3>
+                    <select id="fileFilter">
+                        <option value="">Select a File</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <h3>Functions</h3>
+                    <table class="functions-table">
+                        <thead>
+                            <tr>
+                                <th>Function</th>
+                                <th>Class</th>
+                            </tr>
+                        </thead>
+                        <tbody id="functionsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="graph"></div>
+        </div>
+        <script>
+        // Embed the data directly in the HTML
+        const graphData = {
+            nodes: [{"id": 0, "name": "__init__", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 1, "name": "fetch_players_from_api", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 2, "name": "save_players_to_file", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 3, "name": "load_players_from_file", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 4, "name": "get_player_position", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 5, "name": "get_player_name", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 6, "name": "get_league", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 7, "name": "get_projections", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 8, "name": "get_league_users", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 9, "name": "get_league_rosters", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 10, "name": "_associate_rosters_with_teams", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 11, "name": "get_matchups", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 12, "name": "get_all_matchups", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 13, "name": "get_player_fields", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 14, "name": "print_team_fields", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 15, "name": "_make_request", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 16, "name": "print_league_rosters", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 17, "name": "_print_player", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 18, "name": "format_player_name", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 19, "name": "get_current_week", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 20, "name": "get_current_season_year", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 21, "name": "_get_week_ranges", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 22, "name": "load_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 23, "name": "save_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 24, "name": "clear_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 25, "name": "get_stats", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 26, "name": "_calculate_fantasy_points", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 27, "name": "load_stats_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 28, "name": "save_stats_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 29, "name": "load_projections_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 30, "name": "save_projections_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 31, "name": "load_matchups_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 32, "name": "save_matchups_cache", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 33, "name": "_reconstruct_player_projection", "file": ".\\client.py", "class": "SleeperAPI", "description": "", "type": "class"}, {"id": 34, "name": "get_league_transactions", "file": ".\\client.py", "class": "SleeperAPI", "description": "Get transactions for a specific league and week. Args: league_id (str): The league ID week (int): The week number to get transactions for Returns: List[Dict]: List of transaction objects", "type": "class"}, {"id": 35, "name": "__init__", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 36, "name": "fetch_players_from_api", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 37, "name": "save_players_to_file", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 38, "name": "load_players_from_file", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 39, "name": "get_player_position", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 40, "name": "get_player_name", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 41, "name": "get_league", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 42, "name": "get_projections", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 43, "name": "get_league_users", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 44, "name": "get_league_rosters", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 45, "name": "_associate_rosters_with_teams", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 46, "name": "get_matchups", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 47, "name": "get_all_matchups", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 48, "name": "get_player_fields", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 49, "name": "print_team_fields", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 50, "name": "_make_request", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 51, "name": "print_league_rosters", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 52, "name": "_print_player", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 53, "name": "format_player_name", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 54, "name": "get_current_week", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 55, "name": "get_current_season_year", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 56, "name": "_get_week_ranges", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 57, "name": "load_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 58, "name": "save_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 59, "name": "clear_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 60, "name": "get_stats", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 61, "name": "_calculate_fantasy_points", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 62, "name": "load_stats_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 63, "name": "save_stats_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 64, "name": "load_projections_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 65, "name": "save_projections_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 66, "name": "load_matchups_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 67, "name": "save_matchups_cache", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 68, "name": "_reconstruct_player_projection", "file": ".\\client.py", "class": "", "description": "", "type": "function"}, {"id": 69, "name": "get_league_transactions", "file": ".\\client.py", "class": "", "description": "Get transactions for a specific league and week. Args: league_id (str): The league ID week (int): The week number to get transactions for Returns: List[Dict]: List of transaction objects", "type": "function"}, {"id": 70, "name": "__init__", "file": ".\\code_flow.py", "class": "CodeAnalyzer", "description": "", "type": "class"}, {"id": 71, "name": "analyze_file", "file": ".\\code_flow.py", "class": "CodeAnalyzer", "description": "Analyze a Python file and extract class/function information.", "type": "class"}, {"id": 72, "name": "_process_class", "file": ".\\code_flow.py", "class": "CodeAnalyzer", "description": "Process a class node and extract its methods.", "type": "class"}, {"id": 73, "name": "_process_function", "file": ".\\code_flow.py", "class": "CodeAnalyzer", "description": "Process a function node and extract its calls.", "type": "class"}, {"id": 74, "name": "export_to_csv", "file": ".\\code_flow.py", "class": "CodeAnalyzer", "description": "Export the analysis results to CSV format.", "type": "class"}, {"id": 75, "name": "analyze_directory", "file": ".\\code_flow.py", "class": "", "description": "Analyze Python files in a directory (not including subdirectories).", "type": "function"}, {"id": 76, "name": "create_flow_diagram", "file": ".\\code_flow.py", "class": "", "description": "", "type": "function"}, {"id": 77, "name": "__init__", "file": ".\\code_flow.py", "class": "", "description": "", "type": "function"}, {"id": 78, "name": "analyze_file", "file": ".\\code_flow.py", "class": "", "description": "Analyze a Python file and extract class/function information.", "type": "function"}, {"id": 79, "name": "_process_class", "file": ".\\code_flow.py", "class": "", "description": "Process a class node and extract its methods.", "type": "function"}, {"id": 80, "name": "_process_function", "file": ".\\code_flow.py", "class": "", "description": "Process a function node and extract its calls.", "type": "function"}, {"id": 81, "name": "export_to_csv", "file": ".\\code_flow.py", "class": "", "description": "Export the analysis results to CSV format.", "type": "function"}, {"id": 82, "name": "default", "file": ".\\customer_json_encoder.py", "class": "CustomJSONEncoder", "description": "", "type": "class"}, {"id": 83, "name": "default", "file": ".\\customer_json_encoder.py", "class": "", "description": "", "type": "function"}, {"id": 84, "name": "get_nfl_player_props", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 85, "name": "get_nfl_player_props_2", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 86, "name": "extract_player_props", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 87, "name": "get_all_subcategories", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 88, "name": "get_subcategory_id", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 89, "name": "get_all_subcategories", "file": ".\\draft_kings_api.py", "class": "DraftKingsAPI", "description": "", "type": "class"}, {"id": 90, "name": "get_nfl_player_props", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 91, "name": "get_nfl_player_props_2", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 92, "name": "extract_player_props", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 93, "name": "get_all_subcategories", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 94, "name": "get_subcategory_id", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 95, "name": "get_all_subcategories", "file": ".\\draft_kings_api.py", "class": "", "description": "", "type": "function"}, {"id": 96, "name": "__init__", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 97, "name": "get_top_half_scorers", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 98, "name": "print_weekly_top_half_scorers", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 99, "name": "_calculate_best_ball_points", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 100, "name": "get_best_ball_scores", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 101, "name": "get_team_best_ball", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 102, "name": "print_team_best_ball", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 103, "name": "print_season_best_ball_total", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 104, "name": "get_season_best_ball_total", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 105, "name": "_calculate_actual_points", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 106, "name": "_calculate_offensive_best_ball_points", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 107, "name": "get_weekly_best_ball_scores", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 108, "name": "print_weekly_best_ball_scores", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 109, "name": "is_offensive_position", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 110, "name": "get_league_standings", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 111, "name": "print_league_standings", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 112, "name": "get_player_stats", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 113, "name": "write_offensive_best_ball_to_csv", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Write each team's offensive best ball lineup to a CSV file.", "type": "class"}, {"id": 114, "name": "players_dropped_before_waivers_cleared", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Get all players dropped between Sunday 5 PM and Wednesday 9 AM for a specific week. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name and team_name", "type": "class"}, {"id": 115, "name": "get_weekly_drops", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Get all players dropped in a given week, including when they were dropped and by whom. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name, team_name, and dropped_at", "type": "class"}, {"id": 116, "name": "get_all_league_transactions", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Get all transactions for a league, starting from week 1 until no more transactions are found. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week number and datetime fields added", "type": "class"}, {"id": 117, "name": "load_league_transactions", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Load transactions from the JSON file for a given league. If the file doesn't exist, fetch and create it. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week numbers", "type": "class"}, {"id": 118, "name": "add_to_lineup", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "", "type": "class"}, {"id": 119, "name": "is_time_in_range", "file": ".\\league_analytics.py", "class": "LeagueAnalytics", "description": "Check if the datetime falls between Sunday 5 PM and Wednesday 9 AM", "type": "class"}, {"id": 120, "name": "__init__", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 121, "name": "get_top_half_scorers", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 122, "name": "print_weekly_top_half_scorers", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 123, "name": "_calculate_best_ball_points", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 124, "name": "get_best_ball_scores", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 125, "name": "get_team_best_ball", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 126, "name": "print_team_best_ball", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 127, "name": "print_season_best_ball_total", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 128, "name": "get_season_best_ball_total", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 129, "name": "_calculate_actual_points", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 130, "name": "_calculate_offensive_best_ball_points", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 131, "name": "get_weekly_best_ball_scores", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 132, "name": "print_weekly_best_ball_scores", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 133, "name": "is_offensive_position", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 134, "name": "get_league_standings", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 135, "name": "print_league_standings", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 136, "name": "get_player_stats", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 137, "name": "write_offensive_best_ball_to_csv", "file": ".\\league_analytics.py", "class": "", "description": "Write each team's offensive best ball lineup to a CSV file.", "type": "function"}, {"id": 138, "name": "players_dropped_before_waivers_cleared", "file": ".\\league_analytics.py", "class": "", "description": "Get all players dropped between Sunday 5 PM and Wednesday 9 AM for a specific week. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name and team_name", "type": "function"}, {"id": 139, "name": "get_weekly_drops", "file": ".\\league_analytics.py", "class": "", "description": "Get all players dropped in a given week, including when they were dropped and by whom. Args: league_id (str): The league ID week (int): The week number to check Returns: List[Dict[str, str]]: List of dictionaries containing player_name, team_name, and dropped_at", "type": "function"}, {"id": 140, "name": "get_all_league_transactions", "file": ".\\league_analytics.py", "class": "", "description": "Get all transactions for a league, starting from week 1 until no more transactions are found. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week number and datetime fields added", "type": "function"}, {"id": 141, "name": "load_league_transactions", "file": ".\\league_analytics.py", "class": "", "description": "Load transactions from the JSON file for a given league. If the file doesn't exist, fetch and create it. Args: league_id (str): The league ID Returns: List[Dict[str, Any]]: List of all transactions with week numbers", "type": "function"}, {"id": 142, "name": "add_to_lineup", "file": ".\\league_analytics.py", "class": "", "description": "", "type": "function"}, {"id": 143, "name": "is_time_in_range", "file": ".\\league_analytics.py", "class": "", "description": "Check if the datetime falls between Sunday 5 PM and Wednesday 9 AM", "type": "function"}, {"id": 144, "name": "__post_init__", "file": ".\\models.py", "class": "LeagueMetadata", "description": "", "type": "class"}, {"id": 145, "name": "__post_init__", "file": ".\\models.py", "class": "LeagueSettings", "description": "", "type": "class"}, {"id": 146, "name": "__post_init__", "file": ".\\models.py", "class": "League", "description": "", "type": "class"}, {"id": 147, "name": "__str__", "file": ".\\models.py", "class": "League", "description": "", "type": "class"}, {"id": 148, "name": "__repr__", "file": ".\\models.py", "class": "League", "description": "", "type": "class"}, {"id": 149, "name": "team_name", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 150, "name": "__str__", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 151, "name": "__repr__", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 152, "name": "__init__", "file": ".\\models.py", "class": "Player", "description": "", "type": "class"}, {"id": 153, "name": "format_name", "file": ".\\models.py", "class": "Player", "description": "", "type": "class"}, {"id": 154, "name": "__str__", "file": ".\\models.py", "class": "Player", "description": "", "type": "class"}, {"id": 155, "name": "__repr__", "file": ".\\models.py", "class": "Player", "description": "", "type": "class"}, {"id": 156, "name": "__init__", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 157, "name": "__str__", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 158, "name": "__repr__", "file": ".\\models.py", "class": "Team", "description": "", "type": "class"}, {"id": 159, "name": "__post_init__", "file": ".\\models.py", "class": "Matchup", "description": "", "type": "class"}, {"id": 160, "name": "__init__", "file": ".\\models.py", "class": "Roster", "description": "", "type": "class"}, {"id": 161, "name": "__str__", "file": ".\\models.py", "class": "Roster", "description": "", "type": "class"}, {"id": 162, "name": "__repr__", "file": ".\\models.py", "class": "Roster", "description": "", "type": "class"}, {"id": 163, "name": "get_projections", "file": ".\\models.py", "class": "SleeperProjections", "description": "", "type": "class"}, {"id": 164, "name": "from_dict", "file": ".\\models.py", "class": "Transaction", "description": "", "type": "class"}, {"id": 165, "name": "__post_init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 166, "name": "__post_init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 167, "name": "__post_init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 168, "name": "__str__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 169, "name": "__repr__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 170, "name": "team_name", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 171, "name": "__str__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 172, "name": "__repr__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 173, "name": "__init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 174, "name": "format_name", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 175, "name": "__str__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 176, "name": "__repr__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 177, "name": "__init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 178, "name": "__str__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 179, "name": "__repr__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 180, "name": "__post_init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 181, "name": "__init__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 182, "name": "__str__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 183, "name": "__repr__", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 184, "name": "get_projections", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 185, "name": "from_dict", "file": ".\\models.py", "class": "", "description": "", "type": "function"}, {"id": 186, "name": "format_name", "file": ".\\player_extensions.py", "class": "", "description": "", "type": "function"}, {"id": 187, "name": "get_player_stats_from_api", "file": ".\\sleeper_api_calls.py", "class": "", "description": "Get stats for all players for a specific week.", "type": "function"}],
+            links: [{"source": 3, "target": 1}, {"source": 12, "target": 11}, {"source": 16, "target": 6}, {"source": 24, "target": 23}, {"source": 181, "target": 22}, {"source": 181, "target": 31}, {"source": 181, "target": 3}, {"source": 181, "target": 29}, {"source": 181, "target": 27}, {"source": 36, "target": 2}, {"source": 38, "target": 1}, {"source": 41, "target": 10}, {"source": 41, "target": 9}, {"source": 41, "target": 8}, {"source": 41, "target": 23}, {"source": 184, "target": 7}, {"source": 184, "target": 30}, {"source": 43, "target": 15}, {"source": 44, "target": 15}, {"source": 46, "target": 32}, {"source": 47, "target": 11}, {"source": 49, "target": 15}, {"source": 50, "target": 23}, {"source": 51, "target": 17}, {"source": 51, "target": 6}, {"source": 52, "target": 18}, {"source": 54, "target": 21}, {"source": 55, "target": 21}, {"source": 59, "target": 23}, {"source": 59, "target": 32}, {"source": 59, "target": 30}, {"source": 59, "target": 28}, {"source": 60, "target": 26}, {"source": 60, "target": 28}, {"source": 64, "target": 33}, {"source": 75, "target": 71}, {"source": 75, "target": 74}, {"source": 78, "target": 72}, {"source": 78, "target": 73}, {"source": 79, "target": 73}, {"source": 83, "target": 82}, {"source": 88, "target": 89}, {"source": 90, "target": 86}, {"source": 91, "target": 86}, {"source": 91, "target": 88}, {"source": 94, "target": 89}, {"source": 96, "target": 20}, {"source": 96, "target": 19}, {"source": 97, "target": 6}, {"source": 97, "target": 11}, {"source": 98, "target": 6}, {"source": 98, "target": 97}, {"source": 99, "target": 5}, {"source": 99, "target": 4}, {"source": 100, "target": 99}, {"source": 100, "target": 6}, {"source": 100, "target": 11}, {"source": 101, "target": 100}, {"source": 102, "target": 5}, {"source": 102, "target": 101}, {"source": 104, "target": 99}, {"source": 104, "target": 19}, {"source": 104, "target": 6}, {"source": 104, "target": 11}, {"source": 104, "target": 5}, {"source": 104, "target": 4}, {"source": 105, "target": 4}, {"source": 107, "target": 105}, {"source": 107, "target": 99}, {"source": 107, "target": 6}, {"source": 107, "target": 11}, {"source": 108, "target": 100}, {"source": 108, "target": 6}, {"source": 110, "target": 100}, {"source": 110, "target": 19}, {"source": 110, "target": 6}, {"source": 110, "target": 11}, {"source": 111, "target": 110}, {"source": 112, "target": 25}, {"source": 113, "target": 100}, {"source": 113, "target": 19}, {"source": 113, "target": 6}, {"source": 113, "target": 5}, {"source": 114, "target": 6}, {"source": 114, "target": 34}, {"source": 114, "target": 5}, {"source": 115, "target": 6}, {"source": 115, "target": 34}, {"source": 115, "target": 5}, {"source": 116, "target": 34}, {"source": 117, "target": 116}, {"source": 118, "target": 5}, {"source": 181, "target": 20}, {"source": 181, "target": 19}, {"source": 121, "target": 6}, {"source": 121, "target": 11}, {"source": 122, "target": 6}, {"source": 122, "target": 97}, {"source": 123, "target": 118}, {"source": 123, "target": 5}, {"source": 123, "target": 4}, {"source": 124, "target": 99}, {"source": 124, "target": 6}, {"source": 124, "target": 11}, {"source": 125, "target": 100}, {"source": 126, "target": 5}, {"source": 126, "target": 101}, {"source": 127, "target": 104}, {"source": 128, "target": 105}, {"source": 128, "target": 99}, {"source": 128, "target": 106}, {"source": 128, "target": 19}, {"source": 128, "target": 6}, {"source": 128, "target": 11}, {"source": 128, "target": 5}, {"source": 128, "target": 4}, {"source": 129, "target": 4}, {"source": 131, "target": 105}, {"source": 131, "target": 99}, {"source": 131, "target": 6}, {"source": 131, "target": 11}, {"source": 132, "target": 100}, {"source": 132, "target": 6}, {"source": 134, "target": 100}, {"source": 134, "target": 19}, {"source": 134, "target": 6}, {"source": 134, "target": 11}, {"source": 135, "target": 110}, {"source": 136, "target": 25}, {"source": 137, "target": 100}, {"source": 137, "target": 19}, {"source": 137, "target": 6}, {"source": 137, "target": 5}, {"source": 138, "target": 6}, {"source": 138, "target": 34}, {"source": 138, "target": 5}, {"source": 138, "target": 119}, {"source": 139, "target": 6}, {"source": 139, "target": 34}, {"source": 139, "target": 5}, {"source": 140, "target": 34}, {"source": 141, "target": 116}, {"source": 142, "target": 5}, {"source": 181, "target": 153}]
+        };
+
+        // Set up the visualization
+        const width = window.innerWidth - 400;
+        const height = window.innerHeight;
+
+        const svg = d3.select("#graph")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create the force simulation with better spacing
+        const simulation = d3.forceSimulation(graphData.nodes)
+            .force("link", d3.forceLink(graphData.links)
+                .id(d => d.id)
+                .distance(150)  // Increased distance between nodes
+            )
+            .force("charge", d3.forceManyBody()
+                .strength(-1000)  // Stronger repulsion
+                .distanceMax(500)  // Limit the repulsion range
+            )
+            .force("collide", d3.forceCollide()
+                .radius(50)  // Prevent node overlap
+                .strength(1)
+            )
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("x", d3.forceX(width / 2).strength(0.1))
+            .force("y", d3.forceY(height / 2).strength(0.1));
+
+        // Draw the links with curves
+        const link = svg.append("g")
+            .selectAll("path")  // Changed from line to path
+            .data(graphData.links)
+            .join("path")  // Using paths instead of lines
+            .attr("class", "link")
+            .attr("stroke", "#999")
+            .attr("stroke-width", 1.5)
+            .attr("fill", "none")
+            .attr("marker-end", "url(#arrowhead)");  // Add arrowheads
+
+        // Add arrowhead marker
+        svg.append("defs").selectAll("marker")
+            .data(["arrowhead"])
+            .join("marker")
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 20)  // Position of the arrowhead
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")
+            .attr("fill", "#999");
+
+        // Draw the nodes with larger radius
+        const node = svg.append("g")
+            .selectAll("circle")
+            .data(graphData.nodes)
+            .join("circle")
+            .attr("class", "node")
+            .attr("r", 12)  // Larger radius
+            .attr("fill", d => d.type === 'class' ? "#69b3a2" : "#404080")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2);
+
+        // Add labels with background
+        const label = svg.append("g")
+            .selectAll("g")
+            .data(graphData.nodes)
+            .join("g");
+
+        // Add label background
+        label.append("rect")
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+
+        // Add label text
+        const labelText = label.append("text")
+            .attr("dx", 15)
+            .attr("dy", ".35em")
+            .text(d => d.name)
+            .each(function() {
+                const bbox = this.getBBox();
+                const parent = this.parentNode;
+                const rect = parent.querySelector("rect");
+                rect.setAttribute("x", bbox.x - 2);
+                rect.setAttribute("y", bbox.y - 2);
+                rect.setAttribute("width", bbox.width + 4);
+                rect.setAttribute("height", bbox.height + 4);
+            });
+
+        // Update tick function for curved links
+        simulation.on("tick", () => {
+            link.attr("d", d => {
+                const dx = d.target.x - d.source.x;
+                const dy = d.target.y - d.source.y;
+                const dr = Math.sqrt(dx * dx + dy * dy);
+                return `M${d.source.x},${d.source.y}A${dr},${dr} 0 0,1 ${d.target.x},${d.target.y}`;
+            });
+
+            node
+                .attr("cx", d => d.x = Math.max(20, Math.min(width - 20, d.x)))
+                .attr("cy", d => d.y = Math.max(20, Math.min(height - 20, d.y)));
+
+            label
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        // Set up the file filter
+        const files = [...new Set(graphData.nodes.map(n => n.file))];
+        d3.select("#fileFilter")
+            .selectAll("option")
+            .data(files)
+            .enter()
+            .append("option")
+            .text(d => d);
+
+        // Update table based on file selection
+        function updateFunctionsTable() {
+            const selectedFile = d3.select("#fileFilter").property("value");
+            const tbody = d3.select("#functionsTableBody");
+            
+            // Clear existing rows
+            tbody.html("");
+            
+            // Filter nodes for selected file
+            const fileNodes = graphData.nodes.filter(n => n.file === selectedFile);
+            
+            // Create table rows
+            const rows = tbody.selectAll("tr")
+                .data(fileNodes)
+                .enter()
+                .append("tr")
+                .on("click", function(event, d) {
+                    // Remove previous selection
+                    tbody.selectAll("tr").classed("selected-row", false);
+                    // Highlight selected row
+                    d3.select(this).classed("selected-row", true);
+                    
+                    // Find connected nodes
+                    const connectedNodes = findConnectedNodes(d.id);
+                    
+                    // Update visibility
+                    node.style("display", n => connectedNodes.has(n.id) ? "block" : "none");
+                    label.style("display", n => connectedNodes.has(n.id) ? "block" : "none");
+                    link.style("display", l => 
+                        connectedNodes.has(l.source.id) && connectedNodes.has(l.target.id) 
+                            ? "block" : "none");
+                });
+            
+            rows.append("td").text(d => d.name);
+            rows.append("td").text(d => d.class || "");
+        }
+
+        // Add event listener for file filter
+        d3.select("#fileFilter").on("change", updateFunctionsTable);
+
+        // Add zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                svg.selectAll("g").attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        // Add drag behavior
+        node.call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        }
+
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        }
+        </script>
+    </body>
+    </html>
+    

@@ -1,0 +1,712 @@
+// Code Flow Diagram
+digraph {
+	rankdir=LR
+	"SleeperAPI.__init__" [label="__init__
+Class: SleeperAPI
+"]
+	"SleeperAPI.fetch_players_from_api" [label="fetch_players_from_api
+Class: SleeperAPI
+"]
+	"SleeperAPI.save_players_to_file" [label="save_players_to_file
+Class: SleeperAPI
+"]
+	"SleeperAPI.load_players_from_file" [label="load_players_from_file
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_player_position" [label="get_player_position
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_player_name" [label="get_player_name
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_league" [label="get_league
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_projections" [label="get_projections
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_league_users" [label="get_league_users
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_league_rosters" [label="get_league_rosters
+Class: SleeperAPI
+"]
+	"SleeperAPI._associate_rosters_with_teams" [label="_associate_rosters_with_teams
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_matchups" [label="get_matchups
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_all_matchups" [label="get_all_matchups
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_player_fields" [label="get_player_fields
+Class: SleeperAPI
+"]
+	"SleeperAPI.print_team_fields" [label="print_team_fields
+Class: SleeperAPI
+"]
+	"SleeperAPI._make_request" [label="_make_request
+Class: SleeperAPI
+"]
+	"SleeperAPI.print_league_rosters" [label="print_league_rosters
+Class: SleeperAPI
+"]
+	"SleeperAPI._print_player" [label="_print_player
+Class: SleeperAPI
+"]
+	"SleeperAPI.format_player_name" [label="format_player_name
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_current_week" [label="get_current_week
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_current_season_year" [label="get_current_season_year
+Class: SleeperAPI
+"]
+	"SleeperAPI._get_week_ranges" [label="_get_week_ranges
+Class: SleeperAPI
+"]
+	"SleeperAPI.load_cache" [label="load_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.save_cache" [label="save_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.clear_cache" [label="clear_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_stats" [label="get_stats
+Class: SleeperAPI
+"]
+	"SleeperAPI._calculate_fantasy_points" [label="_calculate_fantasy_points
+Class: SleeperAPI
+"]
+	"SleeperAPI.load_stats_cache" [label="load_stats_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.save_stats_cache" [label="save_stats_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.load_projections_cache" [label="load_projections_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.save_projections_cache" [label="save_projections_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.load_matchups_cache" [label="load_matchups_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI.save_matchups_cache" [label="save_matchups_cache
+Class: SleeperAPI
+"]
+	"SleeperAPI._reconstruct_player_projection" [label="_reconstruct_player_projection
+Class: SleeperAPI
+"]
+	"SleeperAPI.get_league_transactions" [label="get_league_transactions
+Class: SleeperAPI
+Description: Get transactions for a specific league and week. A..."]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.fetch_players_from_api" [label="fetch_players_from_api
+Class: nan
+"]
+	"nan.save_players_to_file" [label="save_players_to_file
+Class: nan
+"]
+	"nan.load_players_from_file" [label="load_players_from_file
+Class: nan
+"]
+	"nan.get_player_position" [label="get_player_position
+Class: nan
+"]
+	"nan.get_player_name" [label="get_player_name
+Class: nan
+"]
+	"nan.get_league" [label="get_league
+Class: nan
+"]
+	"nan.get_projections" [label="get_projections
+Class: nan
+"]
+	"nan.get_league_users" [label="get_league_users
+Class: nan
+"]
+	"nan.get_league_rosters" [label="get_league_rosters
+Class: nan
+"]
+	"nan._associate_rosters_with_teams" [label="_associate_rosters_with_teams
+Class: nan
+"]
+	"nan.get_matchups" [label="get_matchups
+Class: nan
+"]
+	"nan.get_all_matchups" [label="get_all_matchups
+Class: nan
+"]
+	"nan.get_player_fields" [label="get_player_fields
+Class: nan
+"]
+	"nan.print_team_fields" [label="print_team_fields
+Class: nan
+"]
+	"nan._make_request" [label="_make_request
+Class: nan
+"]
+	"nan.print_league_rosters" [label="print_league_rosters
+Class: nan
+"]
+	"nan._print_player" [label="_print_player
+Class: nan
+"]
+	"nan.format_player_name" [label="format_player_name
+Class: nan
+"]
+	"nan.get_current_week" [label="get_current_week
+Class: nan
+"]
+	"nan.get_current_season_year" [label="get_current_season_year
+Class: nan
+"]
+	"nan._get_week_ranges" [label="_get_week_ranges
+Class: nan
+"]
+	"nan.load_cache" [label="load_cache
+Class: nan
+"]
+	"nan.save_cache" [label="save_cache
+Class: nan
+"]
+	"nan.clear_cache" [label="clear_cache
+Class: nan
+"]
+	"nan.get_stats" [label="get_stats
+Class: nan
+"]
+	"nan._calculate_fantasy_points" [label="_calculate_fantasy_points
+Class: nan
+"]
+	"nan.load_stats_cache" [label="load_stats_cache
+Class: nan
+"]
+	"nan.save_stats_cache" [label="save_stats_cache
+Class: nan
+"]
+	"nan.load_projections_cache" [label="load_projections_cache
+Class: nan
+"]
+	"nan.save_projections_cache" [label="save_projections_cache
+Class: nan
+"]
+	"nan.load_matchups_cache" [label="load_matchups_cache
+Class: nan
+"]
+	"nan.save_matchups_cache" [label="save_matchups_cache
+Class: nan
+"]
+	"nan._reconstruct_player_projection" [label="_reconstruct_player_projection
+Class: nan
+"]
+	"nan.get_league_transactions" [label="get_league_transactions
+Class: nan
+Description: Get transactions for a specific league and week. A..."]
+	"CodeAnalyzer.__init__" [label="__init__
+Class: CodeAnalyzer
+"]
+	"CodeAnalyzer.analyze_file" [label="analyze_file
+Class: CodeAnalyzer
+Description: Analyze a Python file and extract class/function i..."]
+	"CodeAnalyzer._process_class" [label="_process_class
+Class: CodeAnalyzer
+Description: Process a class node and extract its methods."]
+	"CodeAnalyzer._process_function" [label="_process_function
+Class: CodeAnalyzer
+Description: Process a function node and extract its calls."]
+	"CodeAnalyzer.export_to_csv" [label="export_to_csv
+Class: CodeAnalyzer
+Description: Export the analysis results to CSV format."]
+	"nan.analyze_directory" [label="analyze_directory
+Class: nan
+Description: Analyze Python files in a directory (not including..."]
+	"nan.create_flow_diagram" [label="create_flow_diagram
+Class: nan
+"]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.analyze_file" [label="analyze_file
+Class: nan
+Description: Analyze a Python file and extract class/function i..."]
+	"nan._process_class" [label="_process_class
+Class: nan
+Description: Process a class node and extract its methods."]
+	"nan._process_function" [label="_process_function
+Class: nan
+Description: Process a function node and extract its calls."]
+	"nan.export_to_csv" [label="export_to_csv
+Class: nan
+Description: Export the analysis results to CSV format."]
+	"CustomJSONEncoder.default" [label="default
+Class: CustomJSONEncoder
+"]
+	"nan.default" [label="default
+Class: nan
+"]
+	"DraftKingsAPI.get_nfl_player_props" [label="get_nfl_player_props
+Class: DraftKingsAPI
+"]
+	"DraftKingsAPI.get_nfl_player_props_2" [label="get_nfl_player_props_2
+Class: DraftKingsAPI
+"]
+	"DraftKingsAPI.extract_player_props" [label="extract_player_props
+Class: DraftKingsAPI
+"]
+	"DraftKingsAPI.get_all_subcategories" [label="get_all_subcategories
+Class: DraftKingsAPI
+"]
+	"DraftKingsAPI.get_subcategory_id" [label="get_subcategory_id
+Class: DraftKingsAPI
+"]
+	"DraftKingsAPI.get_all_subcategories" [label="get_all_subcategories
+Class: DraftKingsAPI
+"]
+	"nan.get_nfl_player_props" [label="get_nfl_player_props
+Class: nan
+"]
+	"nan.get_nfl_player_props_2" [label="get_nfl_player_props_2
+Class: nan
+"]
+	"nan.extract_player_props" [label="extract_player_props
+Class: nan
+"]
+	"nan.get_all_subcategories" [label="get_all_subcategories
+Class: nan
+"]
+	"nan.get_subcategory_id" [label="get_subcategory_id
+Class: nan
+"]
+	"nan.get_all_subcategories" [label="get_all_subcategories
+Class: nan
+"]
+	"LeagueAnalytics.__init__" [label="__init__
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_top_half_scorers" [label="get_top_half_scorers
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.print_weekly_top_half_scorers" [label="print_weekly_top_half_scorers
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics._calculate_best_ball_points" [label="_calculate_best_ball_points
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_best_ball_scores" [label="get_best_ball_scores
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_team_best_ball" [label="get_team_best_ball
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.print_team_best_ball" [label="print_team_best_ball
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.print_season_best_ball_total" [label="print_season_best_ball_total
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_season_best_ball_total" [label="get_season_best_ball_total
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics._calculate_actual_points" [label="_calculate_actual_points
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics._calculate_offensive_best_ball_points" [label="_calculate_offensive_best_ball_points
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_weekly_best_ball_scores" [label="get_weekly_best_ball_scores
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.print_weekly_best_ball_scores" [label="print_weekly_best_ball_scores
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.is_offensive_position" [label="is_offensive_position
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_league_standings" [label="get_league_standings
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.print_league_standings" [label="print_league_standings
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.get_player_stats" [label="get_player_stats
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.write_offensive_best_ball_to_csv" [label="write_offensive_best_ball_to_csv
+Class: LeagueAnalytics
+Description: Write each team's offensive best ball lineup to a ..."]
+	"LeagueAnalytics.players_dropped_before_waivers_cleared" [label="players_dropped_before_waivers_cleared
+Class: LeagueAnalytics
+Description: Get all players dropped between Sunday 5 PM and We..."]
+	"LeagueAnalytics.get_weekly_drops" [label="get_weekly_drops
+Class: LeagueAnalytics
+Description: Get all players dropped in a given week, including..."]
+	"LeagueAnalytics.get_all_league_transactions" [label="get_all_league_transactions
+Class: LeagueAnalytics
+Description: Get all transactions for a league, starting from w..."]
+	"LeagueAnalytics.load_league_transactions" [label="load_league_transactions
+Class: LeagueAnalytics
+Description: Load transactions from the JSON file for a given l..."]
+	"LeagueAnalytics.add_to_lineup" [label="add_to_lineup
+Class: LeagueAnalytics
+"]
+	"LeagueAnalytics.is_time_in_range" [label="is_time_in_range
+Class: LeagueAnalytics
+Description: Check if the datetime falls between Sunday 5 PM an..."]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.get_top_half_scorers" [label="get_top_half_scorers
+Class: nan
+"]
+	"nan.print_weekly_top_half_scorers" [label="print_weekly_top_half_scorers
+Class: nan
+"]
+	"nan._calculate_best_ball_points" [label="_calculate_best_ball_points
+Class: nan
+"]
+	"nan.get_best_ball_scores" [label="get_best_ball_scores
+Class: nan
+"]
+	"nan.get_team_best_ball" [label="get_team_best_ball
+Class: nan
+"]
+	"nan.print_team_best_ball" [label="print_team_best_ball
+Class: nan
+"]
+	"nan.print_season_best_ball_total" [label="print_season_best_ball_total
+Class: nan
+"]
+	"nan.get_season_best_ball_total" [label="get_season_best_ball_total
+Class: nan
+"]
+	"nan._calculate_actual_points" [label="_calculate_actual_points
+Class: nan
+"]
+	"nan._calculate_offensive_best_ball_points" [label="_calculate_offensive_best_ball_points
+Class: nan
+"]
+	"nan.get_weekly_best_ball_scores" [label="get_weekly_best_ball_scores
+Class: nan
+"]
+	"nan.print_weekly_best_ball_scores" [label="print_weekly_best_ball_scores
+Class: nan
+"]
+	"nan.is_offensive_position" [label="is_offensive_position
+Class: nan
+"]
+	"nan.get_league_standings" [label="get_league_standings
+Class: nan
+"]
+	"nan.print_league_standings" [label="print_league_standings
+Class: nan
+"]
+	"nan.get_player_stats" [label="get_player_stats
+Class: nan
+"]
+	"nan.write_offensive_best_ball_to_csv" [label="write_offensive_best_ball_to_csv
+Class: nan
+Description: Write each team's offensive best ball lineup to a ..."]
+	"nan.players_dropped_before_waivers_cleared" [label="players_dropped_before_waivers_cleared
+Class: nan
+Description: Get all players dropped between Sunday 5 PM and We..."]
+	"nan.get_weekly_drops" [label="get_weekly_drops
+Class: nan
+Description: Get all players dropped in a given week, including..."]
+	"nan.get_all_league_transactions" [label="get_all_league_transactions
+Class: nan
+Description: Get all transactions for a league, starting from w..."]
+	"nan.load_league_transactions" [label="load_league_transactions
+Class: nan
+Description: Load transactions from the JSON file for a given l..."]
+	"nan.add_to_lineup" [label="add_to_lineup
+Class: nan
+"]
+	"nan.is_time_in_range" [label="is_time_in_range
+Class: nan
+Description: Check if the datetime falls between Sunday 5 PM an..."]
+	"LeagueMetadata.__post_init__" [label="__post_init__
+Class: LeagueMetadata
+"]
+	"LeagueSettings.__post_init__" [label="__post_init__
+Class: LeagueSettings
+"]
+	"League.__post_init__" [label="__post_init__
+Class: League
+"]
+	"League.__str__" [label="__str__
+Class: League
+"]
+	"League.__repr__" [label="__repr__
+Class: League
+"]
+	"Team.team_name" [label="team_name
+Class: Team
+"]
+	"Team.__str__" [label="__str__
+Class: Team
+"]
+	"Team.__repr__" [label="__repr__
+Class: Team
+"]
+	"Player.__init__" [label="__init__
+Class: Player
+"]
+	"Player.format_name" [label="format_name
+Class: Player
+"]
+	"Player.__str__" [label="__str__
+Class: Player
+"]
+	"Player.__repr__" [label="__repr__
+Class: Player
+"]
+	"Team.__init__" [label="__init__
+Class: Team
+"]
+	"Team.__str__" [label="__str__
+Class: Team
+"]
+	"Team.__repr__" [label="__repr__
+Class: Team
+"]
+	"Matchup.__post_init__" [label="__post_init__
+Class: Matchup
+"]
+	"Roster.__init__" [label="__init__
+Class: Roster
+"]
+	"Roster.__str__" [label="__str__
+Class: Roster
+"]
+	"Roster.__repr__" [label="__repr__
+Class: Roster
+"]
+	"SleeperProjections.get_projections" [label="get_projections
+Class: SleeperProjections
+"]
+	"Transaction.from_dict" [label="from_dict
+Class: Transaction
+"]
+	"nan.__post_init__" [label="__post_init__
+Class: nan
+"]
+	"nan.__post_init__" [label="__post_init__
+Class: nan
+"]
+	"nan.__post_init__" [label="__post_init__
+Class: nan
+"]
+	"nan.__str__" [label="__str__
+Class: nan
+"]
+	"nan.__repr__" [label="__repr__
+Class: nan
+"]
+	"nan.team_name" [label="team_name
+Class: nan
+"]
+	"nan.__str__" [label="__str__
+Class: nan
+"]
+	"nan.__repr__" [label="__repr__
+Class: nan
+"]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.format_name" [label="format_name
+Class: nan
+"]
+	"nan.__str__" [label="__str__
+Class: nan
+"]
+	"nan.__repr__" [label="__repr__
+Class: nan
+"]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.__str__" [label="__str__
+Class: nan
+"]
+	"nan.__repr__" [label="__repr__
+Class: nan
+"]
+	"nan.__post_init__" [label="__post_init__
+Class: nan
+"]
+	"nan.__init__" [label="__init__
+Class: nan
+"]
+	"nan.__str__" [label="__str__
+Class: nan
+"]
+	"nan.__repr__" [label="__repr__
+Class: nan
+"]
+	"nan.get_projections" [label="get_projections
+Class: nan
+"]
+	"nan.from_dict" [label="from_dict
+Class: nan
+"]
+	"nan.format_name" [label="format_name
+Class: nan
+"]
+	"nan.get_player_stats_from_api" [label="get_player_stats_from_api
+Class: nan
+Description: Get stats for all players for a specific week."]
+	"SleeperAPI.load_players_from_file" -> "SleeperAPI.fetch_players_from_api"
+	"SleeperAPI.get_all_matchups" -> "SleeperAPI.get_matchups"
+	"SleeperAPI.print_league_rosters" -> "SleeperAPI.get_league"
+	"SleeperAPI.clear_cache" -> "SleeperAPI.save_cache"
+	"nan.__init__" -> "SleeperAPI.load_cache"
+	"nan.__init__" -> "SleeperAPI.load_matchups_cache"
+	"nan.__init__" -> "SleeperAPI.load_players_from_file"
+	"nan.__init__" -> "SleeperAPI.load_projections_cache"
+	"nan.__init__" -> "SleeperAPI.load_stats_cache"
+	"nan.fetch_players_from_api" -> "SleeperAPI.save_players_to_file"
+	"nan.load_players_from_file" -> "SleeperAPI.fetch_players_from_api"
+	"nan.get_league" -> "SleeperAPI._associate_rosters_with_teams"
+	"nan.get_league" -> "SleeperAPI.get_league_rosters"
+	"nan.get_league" -> "SleeperAPI.get_league_users"
+	"nan.get_league" -> "SleeperAPI.save_cache"
+	"nan.get_projections" -> "SleeperAPI.get_projections"
+	"nan.get_projections" -> "SleeperAPI.save_projections_cache"
+	"nan.get_league_users" -> "SleeperAPI._make_request"
+	"nan.get_league_rosters" -> "SleeperAPI._make_request"
+	"nan.get_matchups" -> "SleeperAPI.save_matchups_cache"
+	"nan.get_all_matchups" -> "SleeperAPI.get_matchups"
+	"nan.print_team_fields" -> "SleeperAPI._make_request"
+	"nan._make_request" -> "SleeperAPI.save_cache"
+	"nan.print_league_rosters" -> "SleeperAPI._print_player"
+	"nan.print_league_rosters" -> "SleeperAPI.get_league"
+	"nan._print_player" -> "SleeperAPI.format_player_name"
+	"nan.get_current_week" -> "SleeperAPI._get_week_ranges"
+	"nan.get_current_season_year" -> "SleeperAPI._get_week_ranges"
+	"nan.clear_cache" -> "SleeperAPI.save_cache"
+	"nan.clear_cache" -> "SleeperAPI.save_matchups_cache"
+	"nan.clear_cache" -> "SleeperAPI.save_projections_cache"
+	"nan.clear_cache" -> "SleeperAPI.save_stats_cache"
+	"nan.get_stats" -> "SleeperAPI._calculate_fantasy_points"
+	"nan.get_stats" -> "SleeperAPI.save_stats_cache"
+	"nan.load_projections_cache" -> "SleeperAPI._reconstruct_player_projection"
+	"nan.analyze_directory" -> "CodeAnalyzer.analyze_file"
+	"nan.analyze_directory" -> "CodeAnalyzer.export_to_csv"
+	"nan.analyze_file" -> "CodeAnalyzer._process_class"
+	"nan.analyze_file" -> "CodeAnalyzer._process_function"
+	"nan._process_class" -> "CodeAnalyzer._process_function"
+	"nan.default" -> "CustomJSONEncoder.default"
+	"DraftKingsAPI.get_subcategory_id" -> "DraftKingsAPI.get_all_subcategories"
+	"nan.get_nfl_player_props" -> "DraftKingsAPI.extract_player_props"
+	"nan.get_nfl_player_props_2" -> "DraftKingsAPI.extract_player_props"
+	"nan.get_nfl_player_props_2" -> "DraftKingsAPI.get_subcategory_id"
+	"nan.get_subcategory_id" -> "DraftKingsAPI.get_all_subcategories"
+	"LeagueAnalytics.__init__" -> "SleeperAPI.get_current_season_year"
+	"LeagueAnalytics.__init__" -> "SleeperAPI.get_current_week"
+	"LeagueAnalytics.get_top_half_scorers" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_top_half_scorers" -> "SleeperAPI.get_matchups"
+	"LeagueAnalytics.print_weekly_top_half_scorers" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.print_weekly_top_half_scorers" -> "LeagueAnalytics.get_top_half_scorers"
+	"LeagueAnalytics._calculate_best_ball_points" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics._calculate_best_ball_points" -> "SleeperAPI.get_player_position"
+	"LeagueAnalytics.get_best_ball_scores" -> "LeagueAnalytics._calculate_best_ball_points"
+	"LeagueAnalytics.get_best_ball_scores" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_best_ball_scores" -> "SleeperAPI.get_matchups"
+	"LeagueAnalytics.get_team_best_ball" -> "LeagueAnalytics.get_best_ball_scores"
+	"LeagueAnalytics.print_team_best_ball" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics.print_team_best_ball" -> "LeagueAnalytics.get_team_best_ball"
+	"LeagueAnalytics.get_season_best_ball_total" -> "LeagueAnalytics._calculate_best_ball_points"
+	"LeagueAnalytics.get_season_best_ball_total" -> "SleeperAPI.get_current_week"
+	"LeagueAnalytics.get_season_best_ball_total" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_season_best_ball_total" -> "SleeperAPI.get_matchups"
+	"LeagueAnalytics.get_season_best_ball_total" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics.get_season_best_ball_total" -> "SleeperAPI.get_player_position"
+	"LeagueAnalytics._calculate_actual_points" -> "SleeperAPI.get_player_position"
+	"LeagueAnalytics.get_weekly_best_ball_scores" -> "LeagueAnalytics._calculate_actual_points"
+	"LeagueAnalytics.get_weekly_best_ball_scores" -> "LeagueAnalytics._calculate_best_ball_points"
+	"LeagueAnalytics.get_weekly_best_ball_scores" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_weekly_best_ball_scores" -> "SleeperAPI.get_matchups"
+	"LeagueAnalytics.print_weekly_best_ball_scores" -> "LeagueAnalytics.get_best_ball_scores"
+	"LeagueAnalytics.print_weekly_best_ball_scores" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_league_standings" -> "LeagueAnalytics.get_best_ball_scores"
+	"LeagueAnalytics.get_league_standings" -> "SleeperAPI.get_current_week"
+	"LeagueAnalytics.get_league_standings" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_league_standings" -> "SleeperAPI.get_matchups"
+	"LeagueAnalytics.print_league_standings" -> "LeagueAnalytics.get_league_standings"
+	"LeagueAnalytics.get_player_stats" -> "SleeperAPI.get_stats"
+	"LeagueAnalytics.write_offensive_best_ball_to_csv" -> "LeagueAnalytics.get_best_ball_scores"
+	"LeagueAnalytics.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_current_week"
+	"LeagueAnalytics.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_league_transactions"
+	"LeagueAnalytics.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics.get_weekly_drops" -> "SleeperAPI.get_league"
+	"LeagueAnalytics.get_weekly_drops" -> "SleeperAPI.get_league_transactions"
+	"LeagueAnalytics.get_weekly_drops" -> "SleeperAPI.get_player_name"
+	"LeagueAnalytics.get_all_league_transactions" -> "SleeperAPI.get_league_transactions"
+	"LeagueAnalytics.load_league_transactions" -> "LeagueAnalytics.get_all_league_transactions"
+	"LeagueAnalytics.add_to_lineup" -> "SleeperAPI.get_player_name"
+	"nan.__init__" -> "SleeperAPI.get_current_season_year"
+	"nan.__init__" -> "SleeperAPI.get_current_week"
+	"nan.get_top_half_scorers" -> "SleeperAPI.get_league"
+	"nan.get_top_half_scorers" -> "SleeperAPI.get_matchups"
+	"nan.print_weekly_top_half_scorers" -> "SleeperAPI.get_league"
+	"nan.print_weekly_top_half_scorers" -> "LeagueAnalytics.get_top_half_scorers"
+	"nan._calculate_best_ball_points" -> "LeagueAnalytics.add_to_lineup"
+	"nan._calculate_best_ball_points" -> "SleeperAPI.get_player_name"
+	"nan._calculate_best_ball_points" -> "SleeperAPI.get_player_position"
+	"nan.get_best_ball_scores" -> "LeagueAnalytics._calculate_best_ball_points"
+	"nan.get_best_ball_scores" -> "SleeperAPI.get_league"
+	"nan.get_best_ball_scores" -> "SleeperAPI.get_matchups"
+	"nan.get_team_best_ball" -> "LeagueAnalytics.get_best_ball_scores"
+	"nan.print_team_best_ball" -> "SleeperAPI.get_player_name"
+	"nan.print_team_best_ball" -> "LeagueAnalytics.get_team_best_ball"
+	"nan.print_season_best_ball_total" -> "LeagueAnalytics.get_season_best_ball_total"
+	"nan.get_season_best_ball_total" -> "LeagueAnalytics._calculate_actual_points"
+	"nan.get_season_best_ball_total" -> "LeagueAnalytics._calculate_best_ball_points"
+	"nan.get_season_best_ball_total" -> "LeagueAnalytics._calculate_offensive_best_ball_points"
+	"nan.get_season_best_ball_total" -> "SleeperAPI.get_current_week"
+	"nan.get_season_best_ball_total" -> "SleeperAPI.get_league"
+	"nan.get_season_best_ball_total" -> "SleeperAPI.get_matchups"
+	"nan.get_season_best_ball_total" -> "SleeperAPI.get_player_name"
+	"nan.get_season_best_ball_total" -> "SleeperAPI.get_player_position"
+	"nan._calculate_actual_points" -> "SleeperAPI.get_player_position"
+	"nan.get_weekly_best_ball_scores" -> "LeagueAnalytics._calculate_actual_points"
+	"nan.get_weekly_best_ball_scores" -> "LeagueAnalytics._calculate_best_ball_points"
+	"nan.get_weekly_best_ball_scores" -> "SleeperAPI.get_league"
+	"nan.get_weekly_best_ball_scores" -> "SleeperAPI.get_matchups"
+	"nan.print_weekly_best_ball_scores" -> "LeagueAnalytics.get_best_ball_scores"
+	"nan.print_weekly_best_ball_scores" -> "SleeperAPI.get_league"
+	"nan.get_league_standings" -> "LeagueAnalytics.get_best_ball_scores"
+	"nan.get_league_standings" -> "SleeperAPI.get_current_week"
+	"nan.get_league_standings" -> "SleeperAPI.get_league"
+	"nan.get_league_standings" -> "SleeperAPI.get_matchups"
+	"nan.print_league_standings" -> "LeagueAnalytics.get_league_standings"
+	"nan.get_player_stats" -> "SleeperAPI.get_stats"
+	"nan.write_offensive_best_ball_to_csv" -> "LeagueAnalytics.get_best_ball_scores"
+	"nan.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_current_week"
+	"nan.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_league"
+	"nan.write_offensive_best_ball_to_csv" -> "SleeperAPI.get_player_name"
+	"nan.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_league"
+	"nan.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_league_transactions"
+	"nan.players_dropped_before_waivers_cleared" -> "SleeperAPI.get_player_name"
+	"nan.players_dropped_before_waivers_cleared" -> "LeagueAnalytics.is_time_in_range"
+	"nan.get_weekly_drops" -> "SleeperAPI.get_league"
+	"nan.get_weekly_drops" -> "SleeperAPI.get_league_transactions"
+	"nan.get_weekly_drops" -> "SleeperAPI.get_player_name"
+	"nan.get_all_league_transactions" -> "SleeperAPI.get_league_transactions"
+	"nan.load_league_transactions" -> "LeagueAnalytics.get_all_league_transactions"
+	"nan.add_to_lineup" -> "SleeperAPI.get_player_name"
+	"nan.__init__" -> "Player.format_name"
+}

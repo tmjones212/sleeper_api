@@ -2,7 +2,8 @@ from datetime import datetime
 from client import SleeperAPI
 from league_analytics import LeagueAnalytics
 from draft_kings_api import DraftKingsAPI
-
+import json
+from sleeper_api_calls import get_player_stats_from_api
 
 # subcategories = DraftKingsAPI.get_all_subcategories()
 # for sub in subcategories:
@@ -32,6 +33,28 @@ league_id = "1048308938824937472" # 2024
 
 client = SleeperAPI()
 analytics = LeagueAnalytics(client)
+
+year = 2024
+positions = ["QB", "RB", "WR", "TE",'DB']
+
+# for position in positions:
+# 	for week in range(1,18):
+# 		stats = analytics.get_player_stats_from_api(year, week, position)
+# 		# Print stats in JSON format
+# 		print(json.dumps(stats, indent=4))
+# 		# Convert stats objects to dictionaries
+# 		stats_dict = {player_id: stat.__dict__ for player_id, stat in stats.items()}
+# 		# Create filename with the specified pattern
+# 		filename = f"{year}_Week_{week}_{position}.json"
+# 		# Write stats to JSON file
+# 		with open(filename, 'w') as f:
+# 			json.dump(stats_dict, f, indent=4)
+
+
+# print(stats)
+# print('---')
+
+
 # league = client.get_league(league_id, fetch_all=True)
 # week = 7
 
@@ -55,7 +78,7 @@ analytics = LeagueAnalytics(client)
 #     if transaction['drops'] and not transaction['adds']:
 #         transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
 #         formatted_time = transaction_time.strftime('%Y-%m-%d %I:%M %p')
-        
+		
 #         print(f"Drop Transaction {transaction['transaction_id']} ({formatted_time}):")
 #         print(f"  Status: {transaction['status']}")
 #         print("  Drops:")
@@ -70,7 +93,7 @@ analytics = LeagueAnalytics(client)
 #         # Convert Unix timestamp (milliseconds) to datetime
 #         transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
 #         formatted_time = transaction_time.strftime('%Y-%m-%d %I:%M %p')
-        
+		
 #         print(f"Waiver Transaction {transaction['transaction_id']} ({formatted_time}):")
 #         print(f"  Status: {transaction['status']}")
 #         if transaction['adds']:
@@ -87,7 +110,7 @@ analytics = LeagueAnalytics(client)
 #                 print(f"    {player_name} from {team_name}")
 #         print("---")
 
-        
+		
 # positions = ["QB", "RB", "WR", "TE"]  # Add or remove positions as needed
 # year = 2024
 # week = 1
@@ -148,26 +171,26 @@ projections = client.get_projections(2024, 1, "RB")
 sorted_projections = sorted(projections, key=lambda p: p.stats.pts_ppr, reverse=True)
 counter = 0
 for projection in sorted_projections:
-    counter += 1
-    if counter > 30:
-        break
-    # Skip players with 0 projected pts_ppr
-    if projection.stats.pts_ppr == 0:
-        continue
+	counter += 1
+	if counter > 30:
+		break
+	# Skip players with 0 projected pts_ppr
+	if projection.stats.pts_ppr == 0:
+		continue
 
-    print(f"Player ID: {projection.player.player_id}")
-    print(f"Name: {projection.player.first_name} {projection.player.last_name}")
-    print(f"Team: {projection.player.team}")
-    print(f"Opponent: {projection.opponent}")
-    print("Projections:")
-    print(f"  PPR Points: {projection.stats.pts_ppr:.2f}")
-    print(f"  Rush Att: {projection.stats.rush_att:.1f}")
-    print(f"  Rush Yards: {projection.stats.rush_yd:.1f}")
-    print(f"  Rush TDs: {projection.stats.rush_td:.1f}")
-    print(f"  Receptions: {projection.stats.rec:.1f}")
-    print(f"  Rec Yards: {projection.stats.rec_yd:.1f}")
-    print(f"  Rec TDs: {projection.stats.rec_td:.1f}")
-    print("---")
+	print(f"Player ID: {projection.player.player_id}")
+	print(f"Name: {projection.player.first_name} {projection.player.last_name}")
+	print(f"Team: {projection.player.team}")
+	print(f"Opponent: {projection.opponent}")
+	print("Projections:")
+	print(f"  PPR Points: {projection.stats.pts_ppr:.2f}")
+	print(f"  Rush Att: {projection.stats.rush_att:.1f}")
+	print(f"  Rush Yards: {projection.stats.rush_yd:.1f}")
+	print(f"  Rush TDs: {projection.stats.rush_td:.1f}")
+	print(f"  Receptions: {projection.stats.rec:.1f}")
+	print(f"  Rec Yards: {projection.stats.rec_yd:.1f}")
+	print(f"  Rec TDs: {projection.stats.rec_td:.1f}")
+	print("---")
 """
 
 
