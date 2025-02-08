@@ -76,8 +76,12 @@ class LeagueSettings:
     last_scored_leg: Optional[int] = None
     sub_start_time_eligibility: Optional[int] = None
     max_subs: Optional[int] = None
+<<<<<<< HEAD
     was_auto_archived: Optional[bool] = None
     divisions: Optional[int] = None
+=======
+    sub_lock_if_starter_active: Optional[int] = None
+>>>>>>> Mostly_Working_Standings
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -112,14 +116,17 @@ class League:
     last_pinned_message_id: Optional[str]
     last_read_id: Optional[str]
     league_id: str
+    loser_bracket_overrides_id: Optional[str]  # Added this field
     previous_league_id: str
     roster_positions: List[str]
     group_id: Optional[str]
     bracket_id: Optional[str]
+    bracket_overrides_id: Optional[str]  # Added this field
     loser_bracket_id: Optional[str]
     total_rosters: int
     teams: List['Team'] = field(default_factory=list)
     extra_fields: Dict[str, Any] = field(default_factory=dict)
+    
 
     def __post_init__(self):
         # Convert metadata dict to LeagueMetadata object if it's not already
@@ -422,6 +429,7 @@ class PlayerStats:
     fum_lost: float = 0
 
 @dataclass
+<<<<<<< HEAD
 class DraftPick:
     round: int
     season: str
@@ -439,6 +447,8 @@ class DraftPick:
             delattr(self, k)
 
 @dataclass
+=======
+>>>>>>> Mostly_Working_Standings
 class Transaction:
     status: str
     type: str
@@ -447,8 +457,13 @@ class Transaction:
     roster_ids: List[int]
     adds: Optional[Dict[str, int]] = None
     drops: Optional[Dict[str, int]] = None
+<<<<<<< HEAD
     draft_picks: List[DraftPick] = field(default_factory=list)
     waiver_budget: List[Dict[str, Any]] = field(default_factory=list)
+=======
+    waiver_budget: List[Dict[str, Any]] = field(default_factory=list)
+    draft_picks: List[Dict[str, Any]] = field(default_factory=list)
+>>>>>>> Mostly_Working_Standings
     creator: Optional[str] = None
     created: Optional[int] = None
     consenter_ids: List[int] = field(default_factory=list)
@@ -458,6 +473,7 @@ class Transaction:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Transaction':
+<<<<<<< HEAD
         draft_picks = [DraftPick(**pick) for pick in data.get('draft_picks', [])]
         return cls(
             status=data['status'],
@@ -476,3 +492,8 @@ class Transaction:
             settings=data.get('settings'),
             leg=data.get('leg')
         )
+=======
+        # Remove any fields that aren't in the dataclass
+        valid_fields = {k: v for k, v in data.items() if k in cls.__annotations__}
+        return cls(**valid_fields)
+>>>>>>> Mostly_Working_Standings
