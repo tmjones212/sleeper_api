@@ -1,3 +1,4 @@
+from datetime import datetime
 from client import SleeperAPI
 from league_analytics import LeagueAnalytics
 from draft_kings_api import DraftKingsAPI
@@ -24,12 +25,69 @@ from draft_kings_api import DraftKingsAPI
 # for prop in sorted_props:
 #     print(f"{prop.player_name:<20} | {prop.prop_type:<16} | {prop.prop_value:>5} | {prop.over_line:>8} | {prop.under_line:>9}")
 
+# 2024-10-16 01:39 PM - BRAYDEN NARVESON dropped by Halteclere
+
 league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
 analytics = LeagueAnalytics(client)
+# league = client.get_league(league_id, fetch_all=True)
+# week = 7
 
+# transactions = analytics.get_all_league_transactions(league_id)
+# transactions = [x for x in analytics.load_league_transactions(league_id) if x['status'] == "complete" and x['type'] == "waiver" and x['week'] == 10]
+# dates = [x['datetime'] for x in transactions]
+# print(dates)
+# drops = analytics.get_weekly_drops(league_id, week)
+# for drop in drops:
+#     if drop['player_name'].lower() == "brayden narveson":
+#         print(f"{drop['dropped_at']} - {drop['player_name']} dropped by {drop['team_name']}")
+
+#dropped_players = analytics.players_dropped_before_waivers_cleared(league_id, week)
+# print(dropped_players)
+
+# transactions = client.get_league_transactions(league_id, week)
+# team_names = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+
+# for transaction in transactions:
+#     # Only process transactions that have drops but no adds
+#     if transaction['drops'] and not transaction['adds']:
+#         transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
+#         formatted_time = transaction_time.strftime('%Y-%m-%d %I:%M %p')
+        
+#         print(f"Drop Transaction {transaction['transaction_id']} ({formatted_time}):")
+#         print(f"  Status: {transaction['status']}")
+#         print("  Drops:")
+#         for player_id, roster_id in transaction['drops'].items():
+#             player_name = client.get_player_name(player_id)
+#             team_name = team_names.get(roster_id, f"Team {roster_id}")
+#             print(f"    {player_name} from {team_name}")
+#         print("---")
+
+# for transaction in transactions:
+#     if transaction['type'] == 'waiver':
+#         # Convert Unix timestamp (milliseconds) to datetime
+#         transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
+#         formatted_time = transaction_time.strftime('%Y-%m-%d %I:%M %p')
+        
+#         print(f"Waiver Transaction {transaction['transaction_id']} ({formatted_time}):")
+#         print(f"  Status: {transaction['status']}")
+#         if transaction['adds']:
+#             print("  Adds:")
+#             for player_id, roster_id in transaction['adds'].items():
+#                 player_name = client.get_player_name(player_id)
+#                 team_name = team_names.get(roster_id, f"Team {roster_id}")
+#                 print(f"    {player_name} to {team_name}")
+#         if transaction['drops']:
+#             print("  Drops:")
+#             for player_id, roster_id in transaction['drops'].items():
+#                 player_name = client.get_player_name(player_id)
+#                 team_name = team_names.get(roster_id, f"Team {roster_id}")
+#                 print(f"    {player_name} from {team_name}")
+#         print("---")
+
+        
 # positions = ["QB", "RB", "WR", "TE"]  # Add or remove positions as needed
 # year = 2024
 # week = 1
@@ -42,7 +100,7 @@ analytics = LeagueAnalytics(client)
 # print("Season Best Ball Total for All Teams:")
 # analytics.print_season_best_ball_total(league_id)
 
-analytics.print_league_standings(league_id)
+
 # analytics.write_offensive_best_ball_to_csv(league_id)
 
 # print("Season Best Ball Total for All Teams:")
@@ -53,13 +111,16 @@ analytics.print_league_standings(league_id)
 # analytics.print_weekly_best_ball_scores(league_id)
 
 
-print("\nWeekly Best Ball Scores for a Specific Team:")
-team_name = "tmjones212"
+# print("\nWeekly Best Ball Scores for a Specific Team:")
+# team_name = "tmjones212"
 # analytics.print_weekly_best_ball_scores(league_id, team_name)
 
 # print("\n\nSeason Best Ball Total for a Specific Team:")
 # team_name = "tmjones212"
-analytics.print_season_best_ball_total(league_id)
+
+
+analytics.print_league_standings(league_id) # this gets the real standings I think
+# analytics.print_season_best_ball_total(league_id)
 
 
 # team_name = "tmjones212"

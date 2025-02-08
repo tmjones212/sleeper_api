@@ -422,3 +422,27 @@ class PlayerStats:
     pass_td: float = 0
     pass_int: float = 0
     fum_lost: float = 0
+
+@dataclass
+class Transaction:
+    status: str
+    type: str
+    transaction_id: str
+    status_updated: int
+    roster_ids: List[int]
+    adds: Optional[Dict[str, int]] = None
+    drops: Optional[Dict[str, int]] = None
+    waiver_budget: List[Dict[str, Any]] = field(default_factory=list)
+    draft_picks: List[Dict[str, Any]] = field(default_factory=list)
+    creator: Optional[str] = None
+    created: Optional[int] = None
+    consenter_ids: List[int] = field(default_factory=list)
+    metadata: Optional[Dict[str, Any]] = None
+    settings: Optional[Dict[str, Any]] = None
+    leg: Optional[int] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Transaction':
+        # Remove any fields that aren't in the dataclass
+        valid_fields = {k: v for k, v in data.items() if k in cls.__annotations__}
+        return cls(**valid_fields)

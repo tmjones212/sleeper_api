@@ -2,8 +2,10 @@ from typing import List, Dict, Tuple, Any
 from exceptions import SleeperAPIException
 from models import League, Team, Matchup, PlayerStats
 from client import SleeperAPI
-from datetime import datetime
+from datetime import datetime, time
 import csv
+import json
+import os
 
 class LeagueAnalytics:
     def __init__(self, client: SleeperAPI):
@@ -459,3 +461,157 @@ class LeagueAnalytics:
                         ])
         
         print(f"Data written to {filename}")
+
+    def players_dropped_before_waivers_cleared(self, league_id: str, week: int) -> List[Dict[str, str]]:
+        """
+        Get all players dropped between Sunday 5 PM and Wednesday 9 AM for a specific week.
+        
+        Args:
+            league_id (str): The league ID
+            week (int): The week number to check
+            
+        Returns:
+            List[Dict[str, str]]: List of dictionaries containing player_name and team_name
+        """
+        def is_time_in_range(dt: datetime) -> bool:
+            """Check if the datetime falls between Sunday 5 PM and Wednesday 9 AM"""
+            weekday = dt.weekday()
+            current_time = dt.time()
+            
+            if weekday == 6:  # Sunday
+                return current_time >= time(17, 0)  # After 5 PM
+            elif weekday in [0, 1]:  # Monday or Tuesday
+                return True  # All day
+            elif weekday == 2:  # Wednesday
+                return current_time <= time(9, 0)  # Before 9 AM
+            return False
+
+        # Get league data to map roster_ids to team names
+        league = self.client.get_league(league_id, fetch_all=True)
+        team_names = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+        
+        transactions = self.client.get_league_transactions(league_id, week)
+        dropped_players = []
+        
+        for transaction in transactions:
+            # Only process transactions that have drops but no adds
+            if transaction['drops'] and not transaction['adds']:
+                transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
+                
+                # Check if the transaction falls within our time window
+                if is_time_in_range(transaction_time):
+                    for player_id, roster_id in transaction['drops'].items():
+                        dropped_players.append({
+                            'player_name': self.client.get_player_name(player_id),
+                            'team_name': team_names.get(roster_id, f"Team {roster_id}"),
+                            'dropped_at': transaction_time.strftime('%Y-%m-%d %I:%M %p')
+                        })
+        
+        return dropped_players
+
+    def get_weekly_drops(self, league_id: str, week: int) -> List[Dict[str, str]]:
+        """
+        Get all players dropped in a given week, including when they were dropped and by whom.
+        
+        Args:
+            league_id (str): The league ID
+            week (int): The week number to check
+            
+        Returns:
+            List[Dict[str, str]]: List of dictionaries containing player_name, team_name, and dropped_at
+        """
+        # Get league data to map roster_ids to team names
+        league = self.client.get_league(league_id, fetch_all=True)
+        team_names = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+        
+        transactions = self.client.get_league_transactions(league_id, week)
+        drops = []
+        
+        for transaction in transactions:
+            if transaction['drops']:
+                transaction_time = datetime.fromtimestamp(transaction['created'] / 1000)
+                
+                for player_id, roster_id in transaction['drops'].items():
+                    drops.append({
+                        'player_name': self.client.get_player_name(player_id),
+                        'team_name': team_names.get(roster_id, f"Team {roster_id}"),
+                        'dropped_at': transaction_time.strftime('%Y-%m-%d %I:%M %p')
+                    })
+        
+        # Sort drops by time
+        drops.sort(key=lambda x: x['dropped_at'])
+        return drops
+
+    def get_all_league_transactions(self, league_id: str) -> List[Dict[str, Any]]:
+        """
+        Get all transactions for a league, starting from week 1 until no more transactions are found.
+        
+        Args:
+            league_id (str): The league ID
+            
+        Returns:
+            List[Dict[str, Any]]: List of all transactions with week number and datetime fields added
+        """
+        all_transactions = []
+        week = 1
+        
+        while True:
+            transactions = self.client.get_league_transactions(league_id, week)
+            if not transactions:  # If no transactions are found for this week
+                break
+            
+            # Add week number and datetime fields to each transaction
+            for transaction in transactions:
+                transaction['week'] = week
+                
+                # Add status updated datetime
+                if transaction.get('status_updated'):
+                    dt = datetime.fromtimestamp(transaction['status_updated'] / 1000)
+                    transaction['datetime'] = dt.strftime('%Y-%m-%d %I:%M %p')
+                
+                # Add created datetime
+                if transaction.get('created'):
+                    dt = datetime.fromtimestamp(transaction['created'] / 1000)
+                    transaction['created_datetime'] = dt.strftime('%Y-%m-%d %I:%M %p')
+            
+            all_transactions.extend(transactions)
+            week += 1
+        
+        # Sort transactions by status_updated time
+        all_transactions.sort(key=lambda x: x.get('status_updated', 0))
+        
+        # Save to JSON file
+        filename = f"league_{league_id}_transactions.json"
+        with open(filename, 'w') as f:
+            json.dump(all_transactions, f, indent=2)
+        
+        return all_transactions
+
+    def load_league_transactions(self, league_id: str) -> List[Dict[str, Any]]:
+        """
+        Load transactions from the JSON file for a given league.
+        If the file doesn't exist, fetch and create it.
+        
+        Args:
+            league_id (str): The league ID
+            
+        Returns:
+            List[Dict[str, Any]]: List of all transactions with week numbers
+        """
+        filename = f"league_{league_id}_transactions.json"
+        
+        # If file doesn't exist, fetch and create it
+        if not os.path.exists(filename):
+            return self.get_all_league_transactions(league_id)
+        
+        # Load existing file
+        try:
+            with open(filename, 'r') as f:
+                transactions = json.load(f)
+                
+            # Sort transactions by creation time
+            transactions.sort(key=lambda x: x.get('created', 0))
+            return transactions
+            
+        except json.JSONDecodeError as e:
+            raise SleeperAPIException(f"Error reading transactions file: {str(e)}")

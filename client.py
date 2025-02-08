@@ -416,3 +416,23 @@ class SleeperAPI:
             year=data['year'],
             opponent=data['opponent']
         )
+
+    def get_league_transactions(self, league_id: str, week: int) -> List[Dict[str, Any]]:
+        """
+        Get transactions for a specific league and week.
+        
+        Args:
+            league_id (str): The league ID
+            week (int): The week number to get transactions for
+            
+        Returns:
+            List[Dict]: List of transaction objects
+        """
+        url = f"{self.BASE_URL}/league/{league_id}/transactions/{week}"
+        
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            raise SleeperAPIException(f"Error fetching league transactions: {str(e)}")
