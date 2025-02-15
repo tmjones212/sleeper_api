@@ -1,5 +1,10 @@
 from typing import List, Dict, Any
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+import re
+
+from player_extensions import format_name
 
 class DraftManager:
 	def __init__(self, client):
@@ -267,3 +272,158 @@ class DraftManager:
 		self.client.cache_manager.save_api_cache()
 		
 		return response 
+
+	def get_ktc_player_history(self) -> List[Dict[str, Any]]:
+		"""Get player value history and names from KeepTradeCut."""
+		# First get the player values
+		url = "https://keeptradecut.com/dynasty-rankings/histories"
+		
+		headers = {
+			"Accept": "application/json, text/javascript, */*; q=0.01",
+			"Accept-Language": "en-US,en;q=0.9",
+			"Connection": "keep-alive",
+			"Content-Type": "application/json",
+			"Origin": "https://keeptradecut.com",
+			"Referer": "https://keeptradecut.com/dynasty-rankings",
+			"Sec-Fetch-Dest": "empty",
+			"Sec-Fetch-Mode": "cors", 
+			"Sec-Fetch-Site": "same-origin",
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+			"X-Requested-With": "XMLHttpRequest"
+		}
+		
+		cookies = {
+			"ARRAffinity": "3cfe43e121151906f301d84ba09e1280bdfbed94ab77a00eab300271f29564bd",
+			"ARRAffinitySameSite": "3cfe43e121151906f301d84ba09e1280bdfbed94ab77a00eab300271f29564bd",
+			"prView": "1"
+		}
+		
+		try:
+			# Get player values
+			response = requests.post(url, headers=headers, cookies=cookies)
+			response.raise_for_status()
+			player_values = response.json()
+			
+			# Get player names from the rankings page
+			rankings_url = "https://keeptradecut.com/dynasty-rankings"
+			response = requests.get(rankings_url, headers=headers)
+			response.raise_for_status()
+			
+			soup = BeautifulSoup(response.text, 'html.parser')
+			
+			# Create a mapping of KTC ID to player name
+			id_to_name = {}
+			player_nodes = soup.select('.player-name a')  # Using CSS selector to get <a> tags directly
+			
+			for node in player_nodes:
+				name = node.get_text().strip().replace('FA', '')
+				name = format_name(name)
+				href = node.get('href', '')
+				ktc_id = int(href.split('-')[-1])  # Just get the last number after the final hyphen
+				id_to_name[ktc_id] = name
+				print(f"Found player: {name} (ID: {ktc_id})")  # Debug output
+			
+			# Add names to the player values data
+			for player in player_values:
+				player_id = player.get('id')
+				if player_id in id_to_name:
+					player['name'] = id_to_name[player_id]
+				else:
+					player['name'] = f"Unknown Player ({player_id})"
+			
+			return player_values
+			
+		except requests.RequestException as e:
+			print(f"Error fetching KTC data: {str(e)}")
+			return []
+
+	def get_draft_pick_ktc_ids(self) -> Dict[int, str]:
+		"""Get KTC IDs and names for draft picks."""
+		url = "https://keeptradecut.com/dynasty-rankings?page=0&filters=RDP"
+		
+		headers = {
+			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Language": "en-US,en;q=0.9",
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+		}
+		
+		ktc_id_to_pick = {}
+		
+		try:
+			response = requests.get(url, headers=headers)
+			response.raise_for_status()
+			
+			# Use BeautifulSoup to parse the HTML
+			soup = BeautifulSoup(response.text, 'html.parser')
+			
+			# Find all elements with class 'player-name'
+			player_nodes = soup.find_all(class_='player-name')
+			
+			for node in player_nodes:
+				# Extract player name and clean it
+				pick_name = node.get_text().strip().replace('FA', '')
+				print(f"PickName: {pick_name}")
+				
+				# Find the anchor tag and extract the href
+				href_node = node.find('a')
+				if href_node and href_node.get('href'):
+					href = href_node['href'].strip()
+					
+					# Extract the ID using regex
+					match = re.search(r'\d+$', href)
+					if match:
+						ktc_id = int(match.group())
+						ktc_id_to_pick[ktc_id] = pick_name
+						print(f"KeepTradeCutId: {ktc_id}")
+					else:
+						print("No KeepTradeCutId found in href.")
+				else:
+					print("No href found for this player.")
+			
+			# Print the dictionary for debugging
+			for ktc_id, name in ktc_id_to_pick.items():
+				print(f"Key = {ktc_id}, Value = {name}")
+				
+			return ktc_id_to_pick
+			
+		except requests.RequestException as e:
+			print(f"Error fetching KTC draft pick data: {str(e)}")
+			return {}
+
+	def enhance_draft_picks_with_ktc(self, picks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+		"""Add KTC values to draft picks data."""
+		ktc_data = self.get_ktc_player_history()
+		ktc_pick_ids = self.get_draft_pick_ktc_ids()
+		
+		# Create reverse lookup from pick name to KTC ID
+		pick_name_to_ktc_id = {name.upper(): ktc_id for ktc_id, name in ktc_pick_ids.items()}
+		
+		for pick in picks:
+			player_id = pick.get('player_id')
+			if player_id:
+				# Try to find matching player in KTC data
+				ktc_value = next(
+					(p.get('value', 0) for p in ktc_data 
+					 if self._match_player_name(p.get('name', ''), pick.get('player_name', ''))),
+					0
+				)
+				pick['ktc_value'] = ktc_value
+				
+				# If it's a draft pick, also try to match by pick name
+				if not ktc_value and pick.get('player_name', '').upper().startswith('20'):
+					pick_name = pick.get('player_name', '').upper()
+					if pick_name in pick_name_to_ktc_id:
+						ktc_id = pick_name_to_ktc_id[pick_name]
+						ktc_value = next(
+							(p.get('value', 0) for p in ktc_data if p.get('id') == ktc_id),
+							0
+						)
+						pick['ktc_value'] = ktc_value
+		
+		return picks
+
+	def _match_player_name(self, ktc_name: str, sleeper_name: str) -> bool:
+		"""Match player names between KTC and Sleeper formats."""
+		ktc_name = self.client.player_manager.format_player_name(ktc_name)
+		sleeper_name = self.client.player_manager.format_player_name(sleeper_name)
+		return ktc_name == sleeper_name 
