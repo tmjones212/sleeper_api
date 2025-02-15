@@ -9,66 +9,101 @@ class DraftManager:
 	def get_league_drafts(self, league_id: str) -> List[Dict[str, Any]]:
 		"""Get all drafts for a league."""
 		endpoint = f"{self.base_url}/league/{league_id}/drafts"
-		response = self._make_request(endpoint)
-		return response
+		drafts = self._make_request(endpoint)
+		
+		# For each draft, get and process the draft details
+		for draft in drafts:
+			draft_id = draft['draft_id']
+			draft_details = self.get_draft_details(draft_id)
+			
+			# Print draft order information for debugging
+			print(f"\nDraft Order for draft {draft_id}:")
+			draft_order = draft_details.get('draft_order', {})
+			
+			# Get league data to map user IDs to team names
+			league = self.client.league_manager.get_league(league_id, fetch_all=True)
+			user_id_to_team = {
+				team.user_id: team.display_name 
+				for team in league.teams
+			}
+			
+			print("\nDraft Order Mapping:")
+			for user_id, position in draft_order.items():
+				team_name = user_id_to_team.get(user_id, f"Unknown Team ({user_id})")
+				print(f"Position {position}: {team_name} (User ID: {user_id})")
+			
+			# Store the processed draft order in the draft object
+			draft['processed_draft_order'] = {
+				position: user_id_to_team.get(user_id, f"Team {position}")
+				for user_id, position in draft_order.items()
+			}
+		
+		return drafts
 
 	def get_draft_picks(self, draft_id: str) -> List[Dict[str, Any]]:
-		"""
-		Get all picks for a draft with enhanced information including:
-		- Team that made the pick
-		- Original owner of the pick
-		- Player name that was picked
-		- Pick number and round
-		"""
-		# Get the raw draft picks
+		"""Get all picks for a draft with enhanced information."""
 		endpoint = f"{self.base_url}/draft/{draft_id}/picks"
 		picks = self._make_request(endpoint)
 		
-		# Get the draft details to get league_id and slot_to_roster_id mapping
+		# Get the draft details
 		draft_details = self.get_draft_details(draft_id)
 		league_id = draft_details['league_id']
-		slot_to_roster_id = draft_details.get('slot_to_roster_id', {})
+		draft_order = draft_details.get('draft_order', {})
 		
-		# Get traded picks during the draft
-		traded_picks = self.get_traded_picks(draft_id)
+		# Get league data
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
 		
-		# Get team mapping
-		teams = {team.user_id: team.display_name 
-				for team in self.client.league_manager.get_league_users(league_id)}
+		# Create user_id to team name mapping
+		user_id_to_team = {
+			team.user_id: team.display_name 
+			for team in league.teams
+		}
 		
 		# Create roster_id to team name mapping
-		rosters = self.client.league_manager.get_league_rosters(league_id)
-		roster_to_team = {}
-		for roster in rosters:
-			team = next((team for team in self.client.league_manager.get_league_users(league_id) 
-						if team.user_id == roster.owner_id), None)
-			if team:
-				roster_to_team[roster.roster_id] = team.display_name
+		roster_to_team = {
+			team.roster.roster_id: team.display_name 
+			for team in league.teams 
+			if team.roster
+		}
 		
-		# Get number of teams in the draft
-		teams_count = draft_details['settings']['teams']
+		# Create position to team name mapping
+		position_to_team = {}
+		for user_id, position in draft_order.items():
+			team_name = user_id_to_team.get(user_id)
+			if team_name:
+				position_to_team[position] = team_name
 		
-		# Enhance each pick with additional information
+		# Debug print
+		print("\nDraft Position to Team Mapping:")
+		for pos, team in position_to_team.items():
+			print(f"Position {pos}: {team}")
+		
 		enhanced_picks = []
+		teams_count = len(draft_order)
+		
 		for pick in picks:
 			picked_player_id = pick.get('player_id')
 			player_name = self.client.player_manager.get_player_name(picked_player_id)
 			
-			# Determine original owner based on draft slot
-			pick_slot = pick.get('draft_slot')
-			original_roster_id = slot_to_roster_id.get(str(pick_slot))
-			original_owner = roster_to_team.get(original_roster_id, 'Unknown Team')
+			# Get the team that made the pick
+			roster_id = pick.get('roster_id')
+			picking_team = roster_to_team.get(roster_id, f"Team {pick.get('picked_by')}")
 			
-			# Check if this pick was traded
-			pick_key = f"{pick['round']}.{original_roster_id}"
-			if pick_key in traded_picks:
-				original_owner = traded_picks[pick_key]['from_team']
+			# Get original owner based on draft position
+			pick_number = pick['pick_no']
+			draft_position = ((pick_number - 1) % teams_count) + 1  # Convert pick number to draft position
+			original_owner = position_to_team.get(draft_position, f"Team {draft_position}")
+			
+			# Debug print for each pick
+			print(f"\nPick {pick_number}:")
+			print(f"Draft Position: {draft_position}")
+			print(f"Original Owner: {original_owner}")
 			
 			enhanced_pick = {
 				'round': pick['round'],
 				'pick_in_round': pick['pick_no'] - ((pick['round'] - 1) * teams_count),
 				'overall_pick': pick['pick_no'],
-				'team': teams.get(pick['picked_by'], 'Unknown Team'),
+				'team': picking_team,
 				'original_owner': original_owner,
 				'player_name': player_name,
 				'player_id': picked_player_id,
