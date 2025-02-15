@@ -37,6 +37,14 @@ analytics = LeagueAnalytics(client)
 year = 2024
 positions = ["QB", "RB", "WR", "TE",'DB']
 
+rosters = client.league_manager.get_league_rosters(league_id)
+
+transactions = analytics.get_all_league_transactions(league_id)
+
+for transaction in transactions:
+	d = 2
+	print(transaction)
+
 # for position in positions:
 # 	for week in range(1,18):
 # 		stats = analytics.get_player_stats_from_api(year, week, position)

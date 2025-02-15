@@ -1,4 +1,7 @@
 from typing import List, Dict, Tuple, Any
+from week_manager import WeekManager
+from season_manager import SeasonManager
+from league_manager import LeagueManager
 
 import requests
 from exceptions import SleeperAPIException
@@ -15,8 +18,11 @@ class LeagueAnalytics:
 		self.valid_positions = ["QB", "RB", "WR", "TE","K","DB","LB","DE","DL","DT","CB","S"]
 		self.defensive_positions = ["DB", "LB", "DE", "DL", "DT", "CB", "S"]
 		self.stats_cache = {}
-		self.current_year = self.client.get_current_season_year()
-		self.current_week = self.client.get_current_week()
+		self.week_manager = WeekManager()
+		self.season_manager = SeasonManager()
+		self.league_manager = LeagueManager(self.client.BASE_URL, self.client.cache_manager)
+		self.current_year = self.season_manager.get_current_season_year()
+		self.current_week = self.week_manager.get_current_week()
 		self.league_id = None  # Initialize league_id as None
 
 	def get_top_half_scorers(self, league_id: str, week: int) -> List[Dict[str, any]]:
@@ -59,15 +65,15 @@ class LeagueAnalytics:
 	def _calculate_best_ball_points(self, players_points: Dict[str, float], roster_positions: List[str]) -> Tuple[float, List[Dict[str, any]]]:
 		print("Debug: Entering _calculate_best_ball_points method")
 		for player_id, points in players_points.items():
-			player_name = self.client.get_player_name(player_id)
-			player_position = self.client.get_player_position(player_id)
+			player_name = self.client.player_manager.get_player_name(player_id)
+			player_position = self.client.player_manager.get_player_position(player_id)
 			print(f"Player: {player_name} ({player_position}) - ID: {player_id}, Points: {points}")
 		print("---")
 
 		position_players = {pos: [] for pos in self.valid_positions + ["FLEX", "SUPER_FLEX", "IDP_FLEX"]}
 		
 		for player_id, points in players_points.items():
-			position = self.client.get_player_position(player_id)
+			position = self.client.player_manager.get_player_position(player_id)
 			if position in self.valid_positions:
 				position_players[position].append({"id": player_id, "points": points, "position": position})
 		
@@ -84,7 +90,7 @@ class LeagueAnalytics:
 				player = position_players[pos].pop(0)
 				best_lineup.append({"position": pos, "player": player})
 				total_points += player["points"]
-				player_name = self.client.get_player_name(player['id'])
+				player_name = self.client.player_manager.get_player_name(player['id'])
 				print(f"Debug: Added {pos}: {player_name} (ID: {player['id']}) with {player['points']} points")
 				return True
 			return False
@@ -104,7 +110,7 @@ class LeagueAnalytics:
 					best_lineup.append({"position": "FLEX", "player": best_flex})
 					total_points += best_flex["points"]
 					position_players[best_flex["position"]].remove(best_flex)
-					player_name = self.client.get_player_name(best_flex['id'])
+					player_name = self.client.player_manager.get_player_name(best_flex['id'])
 					print(f"Debug: Added FLEX: {player_name} (ID: {best_flex['id']}) with {best_flex['points']} points")
 		
 		# Handle SUPER_FLEX spots
@@ -117,7 +123,7 @@ class LeagueAnalytics:
 					best_lineup.append({"position": "SUPER_FLEX", "player": best_superflex})
 					total_points += best_superflex["points"]
 					position_players[best_superflex["position"]].remove(best_superflex)
-					player_name = self.client.get_player_name(best_superflex['id'])
+					player_name = self.client.player_manager.get_player_name(best_superflex['id'])
 					print(f"Debug: Added SUPER_FLEX: {player_name} (ID: {best_superflex['id']}) with {best_superflex['points']} points")
 
 		# Handle IDP_FLEX spots
@@ -129,22 +135,22 @@ class LeagueAnalytics:
 					best_lineup.append({"position": "IDP_FLEX", "player": best_idp})
 					total_points += best_idp["points"]
 					position_players[best_idp["position"]].remove(best_idp)
-					player_name = self.client.get_player_name(best_idp['id'])
+					player_name = self.client.player_manager.get_player_name(best_idp['id'])
 					print(f"Debug: Added IDP_FLEX: {player_name} (ID: {best_idp['id']}) with {best_idp['points']} points")
 		
 		print(f"Debug: Total Best Ball Points: {total_points}")
 		print("Debug: Best Lineup:")
 		for slot in best_lineup:
 			player = slot['player']
-			player_name = self.client.get_player_name(player['id'])
+			player_name = self.client.player_manager.get_player_name(player['id'])
 			print(f"{slot['position']}: {player_name} - {player['points']:.2f}")
 		print("---")
 
 		return total_points, best_lineup
 
 	def get_best_ball_scores(self, league_id: str, week: int) -> List[Dict[str, any]]:
-		league = self.client.get_league(league_id, fetch_all=True)
-		matchups = self.client.get_matchups(league_id, week)
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
+		matchups = self.client.matchup_manager.get_matchups(league_id, week)
 		
 		self.current_year = int(league.season)
 		self.current_week = week
@@ -236,8 +242,8 @@ class LeagueAnalytics:
 			for matchup in matchups:
 				print(f"\nTeam: {team_totals[matchup.roster_id]['team_name']}")
 				for player_id, points in matchup.players_points.items():
-					player_name = self.client.get_player_name(player_id)
-					player_position = self.client.get_player_position(player_id)
+					player_name = self.client.player_manager.get_player_name(player_id)
+					player_position = self.client.player_manager.get_player_position(player_id)
 					print(f"Player: {player_name} ({player_position}) - ID: {player_id}, Points: {points}")
 				print("---")
 				
@@ -270,20 +276,20 @@ class LeagueAnalytics:
 				print("Best Ball Lineup:")
 				for slot in best_lineup:
 					player = slot['player']
-					player_name = self.client.get_player_name(player['id'])
+					player_name = self.client.player_manager.get_player_name(player['id'])
 					print(f"{slot['position']}: {player_name} - {player['points']:.2f}")
 
 		return {'teams': sorted(team_totals.values(), key=lambda x: x['total_best_ball_points'], reverse=True)}
 
 	def _calculate_actual_points(self, players_points: Dict[str, float], starters: List[str]) -> float:
-		return sum(players_points[player] for player in starters if self.client.get_player_position(player) in self.valid_positions)
+		return sum(players_points[player] for player in starters if self.client.player_manager.get_player_position(player) in self.valid_positions)
 
 	def _calculate_offensive_best_ball_points(self, best_lineup: List[Dict[str, Any]]) -> float:
 		offensive_positions = ["QB", "RB", "WR", "TE", "FLEX", "SUPER_FLEX"]
 		return sum(slot['player']['points'] for slot in best_lineup if slot['position'] in offensive_positions)
 
 	def get_weekly_best_ball_scores(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
-		league = self.client.get_league(league_id, fetch_all=True)
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
 		team_scores = {team.roster.roster_id: {
 			'team_name': team.display_name,
 			'weekly_scores': []
@@ -293,7 +299,7 @@ class LeagueAnalytics:
 		end_week = league.settings.playoff_week_start
 
 		for week in range(start_week, end_week):
-			matchups = self.client.get_matchups(league_id, week)
+			matchups = self.client.matchup_manager.get_matchups(league_id, week)
 			for matchup in matchups:
 				best_ball_points, _ = self._calculate_best_ball_points(matchup.players_points, league.roster_positions)
 				actual_points = self._calculate_actual_points(matchup.players_points, matchup.starters)
@@ -308,7 +314,7 @@ class LeagueAnalytics:
 		return team_scores
 
 	def print_weekly_best_ball_scores(self, league_id: str, team_name: str = None):
-		league = self.client.get_league(league_id, fetch_all=True)
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
 		start_week = league.settings.start_week
 		end_week = league.settings.playoff_week_start
 
@@ -354,8 +360,8 @@ class LeagueAnalytics:
 		return position in offensive_positions
 
 	def get_league_standings(self, league_id: str) -> List[Dict[str, Any]]:
-		league = self.client.get_league(league_id, fetch_all=True)
-		current_week = self.client.get_current_week()
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
+		current_week = self.week_manager.get_current_week()
 		offensive_positions = ["QB", "RB", "WR", "TE", "FLEX", "SUPER_FLEX"]
 		
 		standings = {team.roster.roster_id: {
@@ -372,7 +378,7 @@ class LeagueAnalytics:
 
 		for week in range(1, current_week + 1):
 			try:
-				matchups = self.client.get_matchups(league_id, week)
+				matchups = self.client.matchup_manager.get_matchups(league_id, week)
 				best_ball_scores = self.get_best_ball_scores(league_id, week)
 				
 				# Sort teams by best ball points for this week
@@ -561,7 +567,7 @@ class LeagueAnalytics:
 		week = 1
 		
 		while True:
-			transactions = self.client.get_league_transactions(league_id, week)
+			transactions = self.league_manager.get_league_transactions(league_id, week)
 			if not transactions:  # If no transactions are found for this week
 				break
 			
