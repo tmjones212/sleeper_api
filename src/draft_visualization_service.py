@@ -44,19 +44,28 @@ class DraftVisualizationService:
 				team_name = "mlum20" if position == 9 else f"Team {position}"
 			team_headers.append(team_name)
 		
+		# Sort all picks by draft position
+		sorted_picks = sorted(picks, key=lambda x: (x['round'] - 1) * teams_count + x['pick_in_round'])
+		
 		# Organize picks into a 2D grid
 		draft_grid = []
 		for round_num in range(1, rounds + 1):
 			round_picks = []
-			for pick_num in range(1, teams_count + 1):
-				pick = next(
-					(p for p in picks 
-					 if p['round'] == round_num and p['pick_in_round'] == pick_num),
-					None
-				)
+			start_idx = (round_num - 1) * teams_count
+			end_idx = start_idx + teams_count
+			
+			# Get this round's picks
+			round_picks_slice = sorted_picks[start_idx:end_idx]
+			
+			# Fill in any missing picks to maintain grid structure
+			while len(round_picks_slice) < teams_count:
+				round_picks_slice.append(None)
+			
+			for pick in round_picks_slice:
 				if pick:
 					pick['image_url'] = self._get_player_image_url(pick['player_id'])
 				round_picks.append(pick)
+			
 			draft_grid.append(round_picks)
 		
 		# Render template
@@ -66,7 +75,7 @@ class DraftVisualizationService:
 			rounds=rounds,
 			teams_count=teams_count,
 			default_image=self.default_player_image,
-			team_order=team_headers  # Using the actual draft order
+			team_order=team_headers
 		)
 		
 		# Save to file
