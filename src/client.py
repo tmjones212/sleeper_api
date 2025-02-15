@@ -19,6 +19,7 @@ from transaction_manager import TransactionManager
 from best_ball_manager import BestBallManager
 from standings_manager import StandingsManager
 from team_manager import TeamManager
+from draft_manager import DraftManager
 
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
@@ -36,6 +37,7 @@ class SleeperAPI:
 		self.best_ball_manager = BestBallManager(self)
 		self.standings_manager = StandingsManager(self)
 		self.team_manager = TeamManager()
+		self.draft_manager = DraftManager(self)
 
 	def get_player_fields(self):
 		url = f"{self.BASE_URL}/players/nfl"
