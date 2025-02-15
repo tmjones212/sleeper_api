@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+import os
 
 from player_extensions import format_name
 
@@ -274,8 +275,24 @@ class DraftManager:
 		
 		return response 
 
-	def get_ktc_player_history(self) -> List[Dict[str, Any]]:
-		"""Get current player values and names from KeepTradeCut."""
+	def get_ktc_player_value(self) -> List[Dict[str, Any]]:
+		"""Get current player values from KeepTradeCut with caching."""
+		# Define cache file path
+		cache_dir = "cache"
+		today = datetime.now().strftime('%Y%m%d')
+		cache_file = os.path.join(cache_dir, f'ktc_values_{today}.json')
+		
+		# Create cache directory if it doesn't exist
+		if not os.path.exists(cache_dir):
+			os.makedirs(cache_dir)
+		
+		# Check if we have cached data from today
+		if os.path.exists(cache_file):
+			print(f"Loading KTC values from cache: {cache_file}")
+			with open(cache_file, 'r') as f:
+				return json.load(f)
+		
+		# If no cache, fetch new data
 		headers = {
 			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
 			"Accept-Language": "en-US,en;q=0.9",
@@ -307,7 +324,7 @@ class DraftManager:
 				
 				players.append({
 					'id': player['playerID'],
-					'name': format_name(player['playerName']),
+					'name': player['playerName'],
 					'value': value
 				})
 				
@@ -316,6 +333,12 @@ class DraftManager:
 					print(f"Added player: {player['playerName']} (ID: {player['playerID']}, Value: {value})")
 			
 			print(f"Total players processed: {len(players)}")
+			
+			# Save to cache
+			print(f"Saving KTC values to cache: {cache_file}")
+			with open(cache_file, 'w') as f:
+				json.dump(players, f, indent=2)
+			
 			return players
 			
 		except requests.RequestException as e:
@@ -381,7 +404,7 @@ class DraftManager:
 
 	def enhance_draft_picks_with_ktc(self, picks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 		"""Add KTC values to draft picks data."""
-		ktc_data = self.get_ktc_player_history()
+		ktc_data = self.get_ktc_player_value()
 		ktc_pick_ids = self.get_draft_pick_ktc_ids()
 		
 		# Create reverse lookup from pick name to KTC ID
