@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import re
+import json
 
 from player_extensions import format_name
 
@@ -274,67 +275,55 @@ class DraftManager:
 		return response 
 
 	def get_ktc_player_history(self) -> List[Dict[str, Any]]:
-		"""Get player value history and names from KeepTradeCut."""
-		# First get the player values
-		url = "https://keeptradecut.com/dynasty-rankings/histories"
-		
+		"""Get current player values and names from KeepTradeCut."""
 		headers = {
-			"Accept": "application/json, text/javascript, */*; q=0.01",
+			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
 			"Accept-Language": "en-US,en;q=0.9",
 			"Connection": "keep-alive",
-			"Content-Type": "application/json",
-			"Origin": "https://keeptradecut.com",
-			"Referer": "https://keeptradecut.com/dynasty-rankings",
-			"Sec-Fetch-Dest": "empty",
-			"Sec-Fetch-Mode": "cors", 
-			"Sec-Fetch-Site": "same-origin",
-			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-			"X-Requested-With": "XMLHttpRequest"
-		}
-		
-		cookies = {
-			"ARRAffinity": "3cfe43e121151906f301d84ba09e1280bdfbed94ab77a00eab300271f29564bd",
-			"ARRAffinitySameSite": "3cfe43e121151906f301d84ba09e1280bdfbed94ab77a00eab300271f29564bd",
-			"prView": "1"
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
 		}
 		
 		try:
-			# Get player values
-			response = requests.post(url, headers=headers, cookies=cookies)
-			response.raise_for_status()
-			player_values = response.json()
-			
-			# Get player names from the rankings page
+			# Get player data from the rankings page
 			rankings_url = "https://keeptradecut.com/dynasty-rankings"
 			response = requests.get(rankings_url, headers=headers)
 			response.raise_for_status()
 			
-			soup = BeautifulSoup(response.text, 'html.parser')
+			# Find the playersArray in the JavaScript
+			# Extract the players array from the JavaScript
+			players_match = re.search(r'var playersArray = (\[.*?\]);', response.text, re.DOTALL)
+			if not players_match:
+				print("Could not find players array in response")
+				return []
+				
+			players_json = players_match.group(1)
+			players_data = json.loads(players_json)
 			
-			# Create a mapping of KTC ID to player name
-			id_to_name = {}
-			player_nodes = soup.select('.player-name a')  # Using CSS selector to get <a> tags directly
+			# Convert to our format
+			players = []
+			for player in players_data:
+				# Get superflex value by default
+				value = player.get('superflexValues', {}).get('value', 0)
+				
+				players.append({
+					'id': player['playerID'],
+					'name': format_name(player['playerName']),
+					'value': value
+				})
+				
+				# Debug output for first few players
+				if len(players) < 3:
+					print(f"Added player: {player['playerName']} (ID: {player['playerID']}, Value: {value})")
 			
-			for node in player_nodes:
-				name = node.get_text().strip().replace('FA', '')
-				name = format_name(name)
-				href = node.get('href', '')
-				ktc_id = int(href.split('-')[-1])  # Just get the last number after the final hyphen
-				id_to_name[ktc_id] = name
-				print(f"Found player: {name} (ID: {ktc_id})")  # Debug output
-			
-			# Add names to the player values data
-			for player in player_values:
-				player_id = player.get('id')
-				if player_id in id_to_name:
-					player['name'] = id_to_name[player_id]
-				else:
-					player['name'] = f"Unknown Player ({player_id})"
-			
-			return player_values
+			print(f"Total players processed: {len(players)}")
+			return players
 			
 		except requests.RequestException as e:
 			print(f"Error fetching KTC data: {str(e)}")
+			return []
+		except Exception as e:
+			print(f"Unexpected error processing KTC data: {str(e)}")
+			print(f"Error details: {type(e).__name__}: {str(e)}")
 			return []
 
 	def get_draft_pick_ktc_ids(self) -> Dict[int, str]:

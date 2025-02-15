@@ -34,7 +34,7 @@ league_id = "1048308938824937472" # 2024
 client = SleeperAPI()
 ktc = client.draft_manager.get_ktc_player_history()
 
-x = [k for k in ktc if k['playerID'] == "1552"]
+# x = [k for k in ktc if k['playerID'] == "1552"]
 
 drafts = client.draft_manager.get_league_drafts(league_id)
 picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
