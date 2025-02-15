@@ -114,4 +114,46 @@ class TransactionManager:
 
             formatted_trades.append(trade_info)
 
-        return formatted_trades 
+        return formatted_trades
+
+    def get_trades_by_manager(self, league_id: str, manager_name: str) -> List[Dict[str, Any]]:
+        """
+        Get all trades involving a specific manager (case insensitive).
+        Handles multiple aliases for the same manager.
+        """
+        primary_team_name = self.client.team_manager.get_primary_name(manager_name)
+        if not primary_team_name:
+            return []
+        
+        team_aliases = set(self.client.team_manager.get_all_aliases(primary_team_name))
+        all_trades = self.get_trades(league_id)
+        manager_trades = []
+        
+        for trade in all_trades:
+            # Check if any team alias is involved in either receiving or giving
+            manager_involved = any(
+                move['team'].lower() in team_aliases 
+                for moves in (trade['received'], trade['given'])
+                for move in moves
+            )
+            
+            if manager_involved:
+                manager_trades.append(trade)
+        
+        return manager_trades
+
+    def get_trades_by_player(self, league_id: str, player_name: str) -> List[Dict[str, Any]]:
+        """Get all trades involving a specific player (case insensitive)."""
+        player_name = player_name.lower()
+        all_trades = self.get_trades(league_id)
+        
+        player_trades = []
+        for trade in all_trades:
+            # Check if player is involved in either receiving or giving
+            player_involved = any(move['player'].lower() == player_name for move in trade['received'])
+            player_involved |= any(move['player'].lower() == player_name for move in trade['given'])
+            
+            if player_involved:
+                player_trades.append(trade)
+        
+        return player_trades 

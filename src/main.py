@@ -1,6 +1,5 @@
 from datetime import datetime
 from client import SleeperAPI
-from league_analytics import LeagueAnalytics
 from draft_kings_api import DraftKingsAPI
 import json
 from sleeper_api_calls import get_player_stats_from_api
@@ -32,11 +31,9 @@ league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
-analytics = LeagueAnalytics(client)
+trades = client.transaction_manager.get_trades_by_manager(league_id, "tjones")
 
-year = 2024
-positions = ["QB", "RB", "WR", "TE",'DB']
-
+# Get and print trades using transaction_manager
 trades = client.transaction_manager.get_trades(league_id)
 for trade in trades:
 	print(f"\nTrade on {trade['date']}:")
@@ -52,6 +49,8 @@ for trade in trades:
 			print(f"  {move['player']} from {move['team']}")
 	print("-" * 50)
 
+# Print standings using standings_manager
+client.standings_manager.print_league_standings(league_id)
 
 # rosters = client.league_manager.get_league_rosters(league_id)
 
@@ -197,7 +196,7 @@ for trade in trades:
 # team_name = "tmjones212"
 
 
-analytics.print_league_standings(league_id) # this gets the real standings I think
+# analytics.print_league_standings(league_id) # this gets the real standings I think
 # analytics.print_season_best_ball_total(league_id)
 
 
