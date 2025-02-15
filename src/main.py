@@ -36,6 +36,9 @@ client = SleeperAPI()
 
 drafts = client.draft_manager.get_league_drafts(league_id)
 picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
+
+# client.draft_manager.print_picks(drafts[0]['draft_id'])
+client.draft_manager.print_picks_csv(drafts[0]['draft_id'])
 for pick in picks:
 	print(pick)
 	

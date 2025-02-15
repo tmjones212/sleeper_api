@@ -73,17 +73,16 @@ class DraftManager:
 			if team_name:
 				position_to_team[position] = team_name
 		
-		# Debug print
-		print("\nDraft Position to Team Mapping:")
-		for pos, team in position_to_team.items():
-			print(f"Position {pos}: {team}")
-		
 		enhanced_picks = []
 		teams_count = len(draft_order)
+		
+		print("\nDraft Picks:")
+		print("-" * 80)
 		
 		for pick in picks:
 			picked_player_id = pick.get('player_id')
 			player_name = self.client.player_manager.get_player_name(picked_player_id)
+			player_position = self.client.player_manager.get_player_position(picked_player_id)
 			
 			# Get the team that made the pick
 			roster_id = pick.get('roster_id')
@@ -91,26 +90,36 @@ class DraftManager:
 			
 			# Get original owner based on draft position
 			pick_number = pick['pick_no']
-			draft_position = ((pick_number - 1) % teams_count) + 1  # Convert pick number to draft position
+			draft_position = ((pick_number - 1) % teams_count) + 1
 			original_owner = position_to_team.get(draft_position, f"Team {draft_position}")
 			
-			# Debug print for each pick
-			print(f"\nPick {pick_number}:")
-			print(f"Draft Position: {draft_position}")
-			print(f"Original Owner: {original_owner}")
+			# Calculate pick in round (with leading zero for single digits)
+			pick_in_round = pick['pick_no'] - ((pick['round'] - 1) * teams_count)
+			formatted_pick = f"{pick['round']}.{pick_in_round:02d}"
+			
+			# Format the pick display
+			pick_display = (
+				f"{formatted_pick:<6} "  # e.g., "4.05  "
+				f"(#{pick['pick_no']:<3}) "  # e.g., "(#35) "
+				f"{picking_team:<20} "  # e.g., "tmjones212          "
+				f"[orig: {original_owner:<20}] "  # e.g., "[orig: baodown          ] "
+				f"{player_name} ({player_position})"  # e.g., "Brock Bowers (TE)"
+			)
+			print(pick_display)
 			
 			enhanced_pick = {
 				'round': pick['round'],
-				'pick_in_round': pick['pick_no'] - ((pick['round'] - 1) * teams_count),
+				'pick_in_round': pick_in_round,
 				'overall_pick': pick['pick_no'],
 				'team': picking_team,
 				'original_owner': original_owner,
 				'player_name': player_name,
 				'player_id': picked_player_id,
-				'position': self.client.player_manager.get_player_position(picked_player_id),
+				'position': player_position,
 			}
 			enhanced_picks.append(enhanced_pick)
 		
+		print("-" * 80)
 		return enhanced_picks
 
 	def get_draft_details(self, draft_id: str) -> Dict[str, Any]:
@@ -196,6 +205,54 @@ class DraftManager:
 			}
 		
 		return traded_picks
+
+	def print_picks(self, draft_id: str):
+		"""Print all picks for a draft in a formatted way."""
+		picks = self.get_draft_picks(draft_id)
+		print("\nDraft Picks:")
+		print("-" * 100)
+		
+		# Print column headers
+		print(
+			f"{'PICK':<5}"
+			f"{'#':<4}"
+			f"{'ORIGINAL OWNER':<22}"
+			f"{'TEAM':<18}"
+			f"{'PLAYER':<20}"
+			f"{'POS'}"
+		)
+		print("-" * 100)
+		
+		for pick in picks:
+			formatted_pick = f"{pick['round']}.{pick['pick_in_round']:02d}"
+			print(
+				f"{formatted_pick:<5}"  # e.g., "4.05"
+				f"{pick['overall_pick']:<3} "  # e.g., "#35"
+				f"orig: {pick['original_owner']:<16} "  # e.g., "orig: baodown"
+				f"{pick['team']:<18}"  # e.g., "tmjones212"
+				f"{pick['player_name']:<20}"  # e.g., "BROCK BOWERS"
+				f"{pick['position']}"  # e.g., "TE"
+			)
+		print("-" * 100)
+
+	def print_picks_csv(self, draft_id: str):
+		"""Print all picks for a draft in CSV format."""
+		picks = self.get_draft_picks(draft_id)
+		
+		# Print header
+		print("PICK,#,ORIGINAL OWNER,TEAM,PLAYER,POS")
+		
+		# Print data
+		for pick in picks:
+			formatted_pick = f"{pick['round']}.{pick['pick_in_round']:02d}"
+			print(
+				f"{formatted_pick},"
+				f"{pick['overall_pick']},"
+				f"{pick['original_owner']},"
+				f"{pick['team']},"
+				f"{pick['player_name']},"
+				f"{pick['position']}"
+			)
 
 	def _make_request(self, endpoint: str) -> Any:
 		"""Make a cached API request."""
