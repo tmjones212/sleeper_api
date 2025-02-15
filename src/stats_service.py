@@ -3,9 +3,9 @@ import requests
 from models import PlayerStats
 
 class StatsService:
-    def __init__(self, base_url: str, cache_manager, scoring_settings: Dict[str, Dict[str, float]]):
+    def __init__(self, base_url: str, cache_service, scoring_settings: Dict[str, Dict[str, float]]):
         self.base_url = base_url
-        self.cache_manager = cache_manager
+        self.cache_service = cache_service
         self.scoring_settings = scoring_settings
 
     def get_stats(self, year: int, week: int, position: str, league_id: str) -> Dict[str, PlayerStats]:

@@ -48,12 +48,12 @@ for pick in picks:
 	
 # trades = client.transaction_service.get_trades_by_player(league_id, "amon ra st brown")
 	
-# # Get and print trades using transaction_manager
+# # Get and print trades using transaction_service
 # trades = client.transaction_service.get_trades(league_id)
 # jd = client.player_service.get_players(search="jayden daniels")
-trades = client.transaction_service.get_trades_by_manager(league_id, "tjones")
+trades = client.transaction_service.get_trades_by_service(league_id, "tjones")
 
-# Get and print trades using transaction_manager
+# Get and print trades using transaction_service
 trades = client.transaction_service.get_trades(league_id)
 for trade in trades:
 	print(f"\nTrade on {trade['date']}:")
@@ -77,7 +77,7 @@ for trade in trades:
 				print(f"  {pick['season']} Round {pick['round']} from {pick['from_team']} to {pick['to_team']}")
 	print("-" * 50)
 
-# Print standings using standings_manager
+# Print standings using standings_service
 client.standings_service.print_league_standings(league_id)
 
 # rosters = client.league_service.get_league_rosters(league_id)

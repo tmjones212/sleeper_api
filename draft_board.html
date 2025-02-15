@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Football Draft Board</title>
+    <style>
+        :root {
+            --card-width: 160px;
+            --card-height: 200px;
+            --round-label-width: 40px;
+            --gap-size: 10px;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        
+        .draft-board {
+            display: flex;
+            flex-direction: column;
+            gap: var(--gap-size);
+            max-width: fit-content;
+            margin: 0 auto;
+        }
+        
+        .team-headers {
+            display: flex;
+            gap: var(--gap-size);
+            margin-left: var(--round-label-width);
+        }
+        
+        .team-header {
+            width: var(--card-width);
+            height: 30px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+        }
+        
+        .round {
+            display: flex;
+            gap: var(--gap-size);
+        }
+        
+        .round-label {
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            min-height: var(--card-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--round-label-width);
+            box-sizing: border-box;
+        }
+        
+        .pick-card {
+            width: var(--card-width);
+            height: var(--card-height);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            box-sizing: border-box;
+        }
+        
+        .pick-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .pick-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .pick-info {
+            padding: 8px;
+        }
+        
+        .player-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .team-position {
+            color: #666;
+            font-size: 12px;
+            margin: 4px 0;
+        }
+        
+        .ktc-value {
+            font-size: 12px;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .empty-pick {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="draft-board">
+        <!-- Team Headers -->
+        <div class="team-headers">
+            
+                <div class="team-header">Column 1</div>
+            
+                <div class="team-header">Column 2</div>
+            
+                <div class="team-header">Column 3</div>
+            
+                <div class="team-header">Column 4</div>
+            
+                <div class="team-header">Column 5</div>
+            
+                <div class="team-header">Column 6</div>
+            
+                <div class="team-header">Column 7</div>
+            
+                <div class="team-header">Column 8</div>
+            
+                <div class="team-header">Column 9</div>
+            
+        </div>
+        
+        
+        <div class="round">
+            <div class="round-label">Round 1</div>
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11628.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="MARVIN HARRISON">
+                <div class="pick-info">
+                    <p class="player-name">MARVIN HARRISON</p>
+                    <p class="team-position">WR - ShadyCommish88</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11560.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="CALEB WILLIAMS">
+                <div class="pick-info">
+                    <p class="player-name">CALEB WILLIAMS</p>
+                    <p class="team-position">QB - androooooo</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11632.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="MALIK NABERS">
+                <div class="pick-info">
+                    <p class="player-name">MALIK NABERS</p>
+                    <p class="team-position">WR - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11620.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="ROME ODUNZE">
+                <div class="pick-info">
+                    <p class="player-name">ROME ODUNZE</p>
+                    <p class="team-position">WR - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11566.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JAYDEN DANIELS">
+                <div class="pick-info">
+                    <p class="player-name">JAYDEN DANIELS</p>
+                    <p class="team-position">QB - ShadyCommish88</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11564.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="DRAKE MAYE">
+                <div class="pick-info">
+                    <p class="player-name">DRAKE MAYE</p>
+                    <p class="team-position">QB - BaoDown</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11604.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BROCK BOWERS">
+                <div class="pick-info">
+                    <p class="player-name">BROCK BOWERS</p>
+                    <p class="team-position">TE - ShadyCommish88</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11565.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JJ MCCARTHY">
+                <div class="pick-info">
+                    <p class="player-name">JJ MCCARTHY</p>
+                    <p class="team-position">QB - tmjones212</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11631.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BRIAN THOMAS">
+                <div class="pick-info">
+                    <p class="player-name">BRIAN THOMAS</p>
+                    <p class="team-position">WR - tmjones212</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <div class="round">
+            <div class="round-label">Round 2</div>
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11635.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="LADD MCCONKEY">
+                <div class="pick-info">
+                    <p class="player-name">LADD MCCONKEY</p>
+                    <p class="team-position">WR - mlum20</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11637.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="KEON COLEMAN">
+                <div class="pick-info">
+                    <p class="player-name">KEON COLEMAN</p>
+                    <p class="team-position">WR - androooooo</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11583.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JONATHON BROOKS">
+                <div class="pick-info">
+                    <p class="player-name">JONATHON BROOKS</p>
+                    <p class="team-position">RB - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11589.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="TREY BENSON">
+                <div class="pick-info">
+                    <p class="player-name">TREY BENSON</p>
+                    <p class="team-position">RB - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11559.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="MIKE PENIX">
+                <div class="pick-info">
+                    <p class="player-name">MIKE PENIX</p>
+                    <p class="team-position">QB - ShadyCommish88</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11563.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BO NIX">
+                <div class="pick-info">
+                    <p class="player-name">BO NIX</p>
+                    <p class="team-position">QB - EBao</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11626.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="XAVIER LEGETTE">
+                <div class="pick-info">
+                    <p class="player-name">XAVIER LEGETTE</p>
+                    <p class="team-position">WR - tmjones212</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11638.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="RICKY PEARSALL">
+                <div class="pick-info">
+                    <p class="player-name">RICKY PEARSALL</p>
+                    <p class="team-position">WR - connerstafford11</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <div class="round">
+            <div class="round-label">Round 3</div>
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11617.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="MALACHI CORLEY">
+                <div class="pick-info">
+                    <p class="player-name">MALACHI CORLEY</p>
+                    <p class="team-position">WR - mlum20</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11627.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="TROY FRANKLIN">
+                <div class="pick-info">
+                    <p class="player-name">TROY FRANKLIN</p>
+                    <p class="team-position">WR - androooooo</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11618.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JALEN MCMILLAN">
+                <div class="pick-info">
+                    <p class="player-name">JALEN MCMILLAN</p>
+                    <p class="team-position">WR - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11645.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JAVON BAKER">
+                <div class="pick-info">
+                    <p class="player-name">JAVON BAKER</p>
+                    <p class="team-position">WR - emanueljd3</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11586.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BLAKE CORUM">
+                <div class="pick-info">
+                    <p class="player-name">BLAKE CORUM</p>
+                    <p class="team-position">RB - lamjohnson56</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11630.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="ROMAN WILSON">
+                <div class="pick-info">
+                    <p class="player-name">ROMAN WILSON</p>
+                    <p class="team-position">WR - BaoDown</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11581.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="MARSHAWN LLOYD">
+                <div class="pick-info">
+                    <p class="player-name">MARSHAWN LLOYD</p>
+                    <p class="team-position">RB - androooooo</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <div class="round">
+            <div class="round-label">Round 4</div>
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card empty-pick">
+                <span>Empty Pick</span>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11562.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="SPENCER RATTLER">
+                <div class="pick-info">
+                    <p class="player-name">SPENCER RATTLER</p>
+                    <p class="team-position">QB - lamjohnson56</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11600.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="JATAVION SANDERS">
+                <div class="pick-info">
+                    <p class="player-name">JATAVION SANDERS</p>
+                    <p class="team-position">TE - emanueljd3</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11621.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BRENDEN RICE">
+                <div class="pick-info">
+                    <p class="player-name">BRENDEN RICE</p>
+                    <p class="team-position">WR - Halteclere</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11584.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="BUCKY IRVING">
+                <div class="pick-info">
+                    <p class="player-name">BUCKY IRVING</p>
+                    <p class="team-position">RB - tmjones212</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11579.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="AUDRIC ESTIME">
+                <div class="pick-info">
+                    <p class="player-name">AUDRIC ESTIME</p>
+                    <p class="team-position">RB - emanueljd3</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+            
+            <div class="pick-card">
+                <img src="https://sleepercdn.com/content/nfl/players/11575.jpg" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'" alt="RAY DAVIS">
+                <div class="pick-info">
+                    <p class="player-name">RAY DAVIS</p>
+                    <p class="team-position">RB - BaoDown</p>
+                    
+                    <p class="ktc-value">KTC: </p>
+                    
+                </div>
+            </div>
+            
+            
+        </div>
+        
+    </div>
+</body>
+</html> 

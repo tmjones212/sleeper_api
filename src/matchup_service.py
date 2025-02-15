@@ -3,9 +3,9 @@ import requests
 from models import Matchup
 
 class MatchupService:
-    def __init__(self, base_url: str, cache_manager):
+    def __init__(self, base_url: str, cache_service):
         self.base_url = base_url
-        self.cache_manager = cache_manager
+        self.cache_service = cache_service
 
     def get_matchups(self, league_id: str, week: int, current_week: Optional[int] = None) -> List[Matchup]:
         cache_key = f"{league_id}_{week}"

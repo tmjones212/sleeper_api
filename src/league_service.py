@@ -2,11 +2,12 @@ from typing import Dict, List, Any
 import requests
 from models import League, Team, Roster
 from exceptions import SleeperAPIException
+import player_service
 
 class LeagueService:
-    def __init__(self, base_url: str, cache_manager):
+    def __init__(self, base_url: str, cache_service):
         self.base_url = base_url
-        self.cache_manager = cache_manager
+        self.cache_service = cache_service
         self.scoring_settings = {}
 
     def get_league(self, league_id: str, fetch_all: bool = False) -> League:
@@ -50,7 +51,7 @@ class LeagueService:
         except requests.RequestException as e:
             raise SleeperAPIException(f"Error fetching league transactions: {str(e)}")
 
-    def print_league_rosters(self, league_id: str, player_manager):
+    def print_league_rosters(self, league_id: str, player_service):
         league = self.get_league(league_id, fetch_all=True)
         players = player_service.players
 
@@ -58,15 +59,15 @@ class LeagueService:
         for team in league.teams:
             print(f"\n{team.display_name} ({team.team_name}):")
             if team.roster:
-                self._print_roster_section(team.roster, players, player_manager)
+                self._print_roster_section(team.roster, players, player_service)
             else:
                 print("  No roster data available")
             print("---")
 
-    def _print_roster_section(self, roster, players, player_manager):
+    def _print_roster_section(self, roster, players, player_service):
         print("  Starters:")
         for player_id in roster.starters:
-            self._print_player(players, player_id, "    ", player_manager)
+            self._print_player(players, player_id, "    ", player_service)
         
         bench = set(roster.players) - set(roster.starters)
         if roster.reserve:
@@ -77,19 +78,19 @@ class LeagueService:
         if bench:
             print("  Bench:")
             for player_id in bench:
-                self._print_player(players, player_id, "    ", player_manager)
+                self._print_player(players, player_id, "    ", player_service)
         
         if roster.reserve:
             print("  IR:")
             for player_id in roster.reserve:
-                self._print_player(players, player_id, "    ", player_manager)
+                self._print_player(players, player_id, "    ", player_service)
         
         if roster.taxi:
             print("  Taxi Squad:")
             for player_id in roster.taxi:
-                self._print_player(players, player_id, "    ", player_manager)
+                self._print_player(players, player_id, "    ", player_service)
 
-    def _print_player(self, players, player_id: str, indent: str, player_manager):
+    def _print_player(self, players, player_id: str, indent: str, player_service):
         player = players.get(player_id)
         if player:
             formatted_name = player_service.format_player_name(f"{player.first_name} {player.last_name}")

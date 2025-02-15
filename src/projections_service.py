@@ -2,8 +2,8 @@ from typing import List
 from models import PlayerProjection, SleeperProjections
 
 class ProjectionsService:
-    def __init__(self, cache_manager):
-        self.cache_manager = cache_manager
+    def __init__(self, cache_service):
+        self.cache_service = cache_service
 
     def get_projections(self, year: int, week: int, position: str) -> List[PlayerProjection]:
         cache_key = f"{year}_{week}_{position}"

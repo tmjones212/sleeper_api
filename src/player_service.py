@@ -121,3 +121,15 @@ class PlayerService:
         filtered_players.sort(key=lambda x: x.name)
         
         return filtered_players 
+
+    def get_player_image_url(self, player_id: str) -> str:
+        """
+        Get the URL for a player's image from Sleeper CDN.
+        
+        Args:
+            player_id (str): The player's ID
+            
+        Returns:
+            str: The complete URL to the player's image on Sleeper CDN
+        """
+        return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg" 
