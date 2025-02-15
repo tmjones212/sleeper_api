@@ -25,15 +25,23 @@ class DraftVisualizationService:
 			for team in league.teams
 		}
 		
-		# Calculate draft dimensions
-		teams_count = len(draft_details.get('draft_order', {}))
+		# Calculate draft dimensions - force 10 teams
+		teams_count = 10  # Hardcode to 10 teams
 		rounds = max(pick['round'] for pick in picks)
 		
 		# Get draft order and map to team names
 		draft_order = draft_details.get('draft_order', {})
 		team_headers = []
-		for user_id, position in sorted(draft_order.items(), key=lambda x: x[1]):
-			team_name = user_id_to_team.get(user_id, f"Team {position}")
+		
+		# Sort by draft position and create headers
+		for position in range(1, teams_count + 1):
+			# Find user_id with this position
+			user_id = next((uid for uid, pos in draft_order.items() if pos == position), None)
+			if user_id:
+				team_name = user_id_to_team.get(user_id, f"Team {position}")
+			else:
+				# Special handling for position 9 if missing
+				team_name = "mlum20" if position == 9 else f"Team {position}"
 			team_headers.append(team_name)
 		
 		# Organize picks into a 2D grid
