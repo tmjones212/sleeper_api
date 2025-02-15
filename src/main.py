@@ -27,17 +27,17 @@ from sleeper_api_calls import get_player_stats_from_api
 
 # 2024-10-16 01:39 PM - BRAYDEN NARVESON dropped by Halteclere
 
-league_id = "1181025001438806016" # 2025
-# league_id = "1048308938824937472" # 2024
+# league_id = "1181025001438806016" # 2025
+league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
 
 
-# drafts = client.draft_manager.get_league_drafts(league_id)
-# picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
-# for pick in picks:
-# 	print(pick)
+drafts = client.draft_manager.get_league_drafts(league_id)
+picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
+for pick in picks:
+	print(pick)
 	
 # trades = client.transaction_manager.get_trades_by_player(league_id, "amon ra st brown")
 	
@@ -53,13 +53,21 @@ for trade in trades:
 	
 	if trade['received']:
 		print("Received:")
-		for move in trade['received']:
-			print(f"  {move['player']} to {move['team']}")
+		if trade['received']['players']:
+			for move in trade['received']['players']:
+				print(f"  {move['player']} to {move['team']}")
+		if trade['received']['draft_picks']:
+			for pick in trade['received']['draft_picks']:
+				print(f"  {pick['season']} Round {pick['round']} from {pick['from_team']} to {pick['to_team']}")
 	
 	if trade['given']:
 		print("Given:")
-		for move in trade['given']:
-			print(f"  {move['player']} from {move['team']}")
+		if trade['given']['players']:
+			for move in trade['given']['players']:
+				print(f"  {move['player']} from {move['team']}")
+		if trade['given']['draft_picks']:
+			for pick in trade['given']['draft_picks']:
+				print(f"  {pick['season']} Round {pick['round']} from {pick['from_team']} to {pick['to_team']}")
 	print("-" * 50)
 
 # Print standings using standings_manager

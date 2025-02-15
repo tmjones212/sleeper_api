@@ -65,56 +65,73 @@ class TransactionManager:
         all_transactions.sort(key=lambda x: x.get('status_updated', 0))
         
         # Save to JSON file
-        filename = f"data/league_{league_id}_transactions.json"
+        filename = os.path.join('data', f'league_{league_id}_transactions.json')
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, 'w') as f:
             json.dump(all_transactions, f, indent=2)
         
         return all_transactions
 
-    def get_trades(self, league_id):
-        """Get and format all trades for a league."""
-        # Get all transactions through league_analytics
-        transactions = self.get_all_league_transactions(league_id)
-        # Filter for trades
-        trade_transactions = [t for t in transactions if t['type'] == 'trade']
+    def get_trades(self, league_id: str) -> List[Dict[str, Any]]:
+        """Get all trades for a league, including historical trades."""
+        all_transactions = self.get_all_historical_transactions(league_id)
         
-        formatted_trades = []
-        for trade in trade_transactions:
-            trade_info = {
-                'date': datetime.fromtimestamp(trade['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
-                'received': [],
-                'given': []
-            }
-
-            # Get roster mapping once per trade
-            rosters = self.client.league_manager.get_league_rosters(league_id)
-            roster_id_to_team = {}
-            for roster in rosters:
-                users = self.client.league_manager.get_league_users(league_id)
-                team = next((team for team in users if team.user_id == roster.owner_id), None)
-                if team:
-                    roster_id_to_team[roster.roster_id] = team.display_name
-
-            # Process adds (received players)
-            if trade['adds']:
-                for player_id, roster_id in trade['adds'].items():
-                    trade_info['received'].append({
-                        'player': self.client.player_manager.get_player_name(player_id),
-                        'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
-                    })
-
-            # Process drops (given players)
-            if trade['drops']:
-                for player_id, roster_id in trade['drops'].items():
-                    trade_info['given'].append({
-                        'player': self.client.player_manager.get_player_name(player_id),
-                        'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
-                    })
-
-            formatted_trades.append(trade_info)
-
-        return formatted_trades
+        # Get roster mapping
+        rosters = self.client.league_manager.get_league_rosters(league_id)
+        users = self.client.league_manager.get_league_users(league_id)
+        roster_to_team = {}
+        for roster in rosters:
+            team = next((u for u in users if u.user_id == roster.owner_id), None)
+            if team:
+                roster_to_team[roster.roster_id] = team.display_name
+        
+        # Filter for trade transactions and enhance them
+        trades = []
+        for transaction in all_transactions:
+            if transaction['type'] == 'trade':
+                trade_info = {
+                    'date': datetime.fromtimestamp(transaction['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
+                    'league_id': league_id,
+                    'received': {
+                        'players': [],
+                        'draft_picks': []
+                    },
+                    'given': {
+                        'players': [],
+                        'draft_picks': []
+                    }
+                }
+                
+                # Process players
+                if transaction.get('adds'):
+                    for player_id, roster_id in transaction['adds'].items():
+                        trade_info['received']['players'].append({
+                            'player': self.client.player_manager.get_player_name(player_id),
+                            'team': roster_to_team.get(roster_id, f"Team {roster_id}")
+                        })
+                
+                if transaction.get('drops'):
+                    for player_id, roster_id in transaction['drops'].items():
+                        trade_info['given']['players'].append({
+                            'player': self.client.player_manager.get_player_name(player_id),
+                            'team': roster_to_team.get(roster_id, f"Team {roster_id}")
+                        })
+                
+                # Process draft picks
+                if transaction.get('draft_picks'):
+                    for pick in transaction['draft_picks']:
+                        # For each pick, determine if it's being received or given based on owner_id
+                        pick_info = {
+                            'round': pick['round'],
+                            'season': pick['season'],
+                            'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
+                            'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
+                        }
+                        trade_info['received']['draft_picks'].append(pick_info)
+                
+                trades.append(trade_info)
+        
+        return trades
 
     def get_trades_by_manager(self, league_id: str, manager_name: str) -> List[Dict[str, Any]]:
         """
@@ -222,52 +239,4 @@ class TransactionManager:
             all_transactions.extend(self.get_all_league_transactions(previous_league_id))
             current_league = self.client.league_manager.get_league(previous_league_id)
         
-        return all_transactions
-
-    def get_trades(self, league_id: str) -> List[Dict[str, Any]]:
-        """Get all trades for a league, including historical trades."""
-        all_transactions = self.get_all_historical_transactions(league_id)
-        
-        # Filter for trade transactions and enhance them
-        trades = []
-        for transaction in all_transactions:
-            if transaction['type'] == 'trade':
-                trade_info = self._process_trade_transaction(transaction, league_id)
-                trades.append(trade_info)
-        
-        return trades
-
-    def _process_trade_transaction(self, transaction: Dict[str, Any], league_id: str) -> Dict[str, Any]:
-        """Process a trade transaction and format it with team names and player names."""
-        trade_info = {
-            'date': datetime.fromtimestamp(transaction['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
-            'received': [],
-            'given': []
-        }
-
-        # Get roster mapping once per trade
-        rosters = self.client.league_manager.get_league_rosters(league_id)
-        roster_id_to_team = {}
-        for roster in rosters:
-            users = self.client.league_manager.get_league_users(league_id)
-            team = next((team for team in users if team.user_id == roster.owner_id), None)
-            if team:
-                roster_id_to_team[roster.roster_id] = team.display_name
-
-        # Process adds (received players)
-        if transaction.get('adds'):
-            for player_id, roster_id in transaction['adds'].items():
-                trade_info['received'].append({
-                    'player': self.client.player_manager.get_player_name(player_id),
-                    'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
-                })
-
-        # Process drops (given players)
-        if transaction.get('drops'):
-            for player_id, roster_id in transaction['drops'].items():
-                trade_info['given'].append({
-                    'player': self.client.player_manager.get_player_name(player_id),
-                    'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
-                })
-
-        return trade_info 
+        return all_transactions 
