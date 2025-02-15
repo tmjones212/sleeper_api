@@ -27,7 +27,8 @@ from sleeper_api_calls import get_player_stats_from_api
 
 # 2024-10-16 01:39 PM - BRAYDEN NARVESON dropped by Halteclere
 
-league_id = "1048308938824937472" # 2024
+league_id = "1181025001438806016" # 2025
+# league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
@@ -36,7 +37,11 @@ drafts = client.draft_manager.get_league_drafts(league_id)
 picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
 for pick in picks:
 	print(pick)
-
+	
+trades = client.transaction_manager.get_trades_by_player(league_id, "amon ra st brown")
+	
+# Get and print trades using transaction_manager
+trades = client.transaction_manager.get_trades(league_id)
 
 trades = client.transaction_manager.get_trades_by_manager(league_id, "tjones")
 

@@ -1,0 +1,1300 @@
+[
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941244589,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1181026815733665792",
+    "adds": null,
+    "consenter_ids": [
+      8
+    ],
+    "drops": {
+      "8160": 8
+    },
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1735941244589,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "8160": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-03 03:54 PM",
+    "created_datetime": "2025-01-03 03:54 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941260171,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1181026881089310720",
+    "adds": null,
+    "consenter_ids": [
+      8
+    ],
+    "drops": {
+      "2197": 8
+    },
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1735941260171,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "2197": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-03 03:54 PM",
+    "created_datetime": "2025-01-03 03:54 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941271184,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1181026927281180672",
+    "adds": null,
+    "consenter_ids": [
+      8
+    ],
+    "drops": {
+      "8255": 8
+    },
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1735941271184,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "8255": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-03 03:54 PM",
+    "created_datetime": "2025-01-03 03:54 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941326150,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1181027157825294336",
+    "adds": {
+      "8157": 8
+    },
+    "consenter_ids": [
+      8
+    ],
+    "drops": {
+      "4574": 8
+    },
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1735941326150,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "8157": "lamjohnson56"
+    },
+    "drops_teams": {
+      "4574": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-03 03:55 PM",
+    "created_datetime": "2025-01-03 03:55 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941578958,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822489391795666944",
+    "transaction_id": "1181028218178899968",
+    "adds": {
+      "8147": 6
+    },
+    "consenter_ids": [
+      6
+    ],
+    "drops": {
+      "167": 6
+    },
+    "roster_ids": [
+      6
+    ],
+    "status_updated": 1735941578958,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "8147": "ShadyCommish88"
+    },
+    "drops_teams": {
+      "167": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-03 03:59 PM",
+    "created_datetime": "2025-01-03 03:59 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941637521,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1181028463809925120",
+    "adds": null,
+    "consenter_ids": [
+      2
+    ],
+    "drops": {
+      "6216": 2
+    },
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1735941637521,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "6216": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-01-03 04:00 PM",
+    "created_datetime": "2025-01-03 04:00 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735941756680,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822489391795666944",
+    "transaction_id": "1181028963598995456",
+    "adds": {
+      "7648": 6
+    },
+    "consenter_ids": [
+      6
+    ],
+    "drops": {
+      "8147": 6
+    },
+    "roster_ids": [
+      6
+    ],
+    "status_updated": 1735941756680,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "7648": "ShadyCommish88"
+    },
+    "drops_teams": {
+      "8147": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-03 04:02 PM",
+    "created_datetime": "2025-01-03 04:02 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1735946144979,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "818218723906318336",
+    "transaction_id": "1181047369459044352",
+    "adds": null,
+    "consenter_ids": [
+      1
+    ],
+    "drops": {
+      "7083": 1
+    },
+    "roster_ids": [
+      1
+    ],
+    "status_updated": 1735946144979,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "7083": "tmjones212"
+    },
+    "roster_names": [
+      "tmjones212"
+    ],
+    "datetime": "2025-01-03 05:15 PM",
+    "created_datetime": "2025-01-03 05:15 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736175043085,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 2
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1182007437702594560",
+    "adds": {
+      "11557": 8
+    },
+    "consenter_ids": [
+      8
+    ],
+    "drops": null,
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11557": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-06 08:50 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736175032488,
+    "settings": {
+      "seq": 4,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1182007393257091072",
+    "adds": {
+      "9230": 8
+    },
+    "consenter_ids": [
+      8
+    ],
+    "drops": null,
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "9230": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-06 08:50 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736168764840,
+    "settings": {
+      "priority": 0,
+      "seq": 3,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822489391795666944",
+    "transaction_id": "1181981104835493888",
+    "adds": {
+      "11615": 6
+    },
+    "consenter_ids": [
+      6
+    ],
+    "drops": null,
+    "roster_ids": [
+      6
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11615": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-06 07:06 AM"
+  },
+  {
+    "status": "failed",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Unfortunately, your roster will have too many players after this transaction."
+    },
+    "created": 1736168735314,
+    "settings": {
+      "priority": 1,
+      "seq": 6,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822489391795666944",
+    "transaction_id": "1181980980995297280",
+    "adds": {
+      "8129": 6
+    },
+    "consenter_ids": [
+      6
+    ],
+    "drops": null,
+    "roster_ids": [
+      6
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "8129": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-06 07:05 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736088372093,
+    "settings": {
+      "seq": 2,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491257283674112",
+    "transaction_id": "1181643913215057920",
+    "adds": {
+      "7608": 3
+    },
+    "consenter_ids": [
+      3
+    ],
+    "drops": null,
+    "roster_ids": [
+      3
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "7608": "EBao"
+    },
+    "roster_names": [
+      "EBao"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-05 08:46 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736030890759,
+    "settings": {
+      "seq": 5,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1181402819026452480",
+    "adds": {
+      "8147": 2
+    },
+    "consenter_ids": [
+      2
+    ],
+    "drops": null,
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "8147": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-04 04:48 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1735949331445,
+    "settings": {
+      "seq": 1,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1181060734468911104",
+    "adds": {
+      "11592": 2
+    },
+    "consenter_ids": [
+      2
+    ],
+    "drops": null,
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1736179472207,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11592": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-01-06 10:04 AM",
+    "created_datetime": "2025-01-03 06:08 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1736274896455,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1182426253089845248",
+    "adds": null,
+    "consenter_ids": [
+      8
+    ],
+    "drops": {
+      "8157": 8
+    },
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1736274896455,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "8157": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-07 12:34 PM",
+    "created_datetime": "2025-01-07 12:34 PM"
+  },
+  {
+    "status": "complete",
+    "type": "trade",
+    "metadata": null,
+    "created": 1736426056924,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [
+      {
+        "round": 1,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 1,
+        "owner_id": 6,
+        "previous_owner_id": 1
+      },
+      {
+        "round": 4,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 1,
+        "owner_id": 6,
+        "previous_owner_id": 1
+      },
+      {
+        "round": 3,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 2,
+        "owner_id": 1,
+        "previous_owner_id": 6
+      }
+    ],
+    "creator": "822489391795666944",
+    "transaction_id": "1183060266052972544",
+    "adds": {
+      "11566": 1,
+      "7547": 6
+    },
+    "consenter_ids": [
+      1,
+      6
+    ],
+    "drops": {
+      "11566": 6,
+      "7547": 1
+    },
+    "roster_ids": [
+      1,
+      6
+    ],
+    "status_updated": 1736426455564,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11566": "tmjones212",
+      "7547": "ShadyCommish88"
+    },
+    "drops_teams": {
+      "11566": "ShadyCommish88",
+      "7547": "tmjones212"
+    },
+    "roster_names": [
+      "tmjones212",
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-09 06:40 AM",
+    "created_datetime": "2025-01-09 06:34 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736694944950,
+    "settings": {
+      "seq": 2,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822489391795666944",
+    "transaction_id": "1184188064174329856",
+    "adds": {
+      "11599": 6
+    },
+    "consenter_ids": [
+      6
+    ],
+    "drops": {
+      "11615": 6
+    },
+    "roster_ids": [
+      6
+    ],
+    "status_updated": 1736784314578,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11599": "ShadyCommish88"
+    },
+    "drops_teams": {
+      "11615": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88"
+    ],
+    "datetime": "2025-01-13 10:05 AM",
+    "created_datetime": "2025-01-12 09:15 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736335348521,
+    "settings": {
+      "seq": 4,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491257283674112",
+    "transaction_id": "1182679807435321344",
+    "adds": {
+      "11821": 3
+    },
+    "consenter_ids": [
+      3
+    ],
+    "drops": null,
+    "roster_ids": [
+      3
+    ],
+    "status_updated": 1736784314578,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "11821": "EBao"
+    },
+    "roster_names": [
+      "EBao"
+    ],
+    "datetime": "2025-01-13 10:05 AM",
+    "created_datetime": "2025-01-08 05:22 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736229941209,
+    "settings": {
+      "seq": 3,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "823601698038743040",
+    "transaction_id": "1182237697123573760",
+    "adds": {
+      "8129": 7
+    },
+    "consenter_ids": [
+      7
+    ],
+    "drops": null,
+    "roster_ids": [
+      7
+    ],
+    "status_updated": 1736784314578,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "8129": "emanueljd3"
+    },
+    "roster_names": [
+      "emanueljd3"
+    ],
+    "datetime": "2025-01-13 10:05 AM",
+    "created_datetime": "2025-01-07 12:05 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736229897929,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "823601698038743040",
+    "transaction_id": "1182237515594829824",
+    "adds": {
+      "6151": 7
+    },
+    "consenter_ids": [
+      7
+    ],
+    "drops": null,
+    "roster_ids": [
+      7
+    ],
+    "status_updated": 1736784314578,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "6151": "emanueljd3"
+    },
+    "roster_names": [
+      "emanueljd3"
+    ],
+    "datetime": "2025-01-13 10:05 AM",
+    "created_datetime": "2025-01-07 12:04 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1736183019080,
+    "settings": {
+      "seq": 1,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491257283674112",
+    "transaction_id": "1182040891450486784",
+    "adds": {
+      "2617": 3
+    },
+    "consenter_ids": [
+      3
+    ],
+    "drops": null,
+    "roster_ids": [
+      3
+    ],
+    "status_updated": 1736784314578,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "2617": "EBao"
+    },
+    "roster_names": [
+      "EBao"
+    ],
+    "datetime": "2025-01-13 10:05 AM",
+    "created_datetime": "2025-01-06 11:03 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1737255140167,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1186537693213794304",
+    "adds": {
+      "7587": 8
+    },
+    "consenter_ids": [
+      8
+    ],
+    "drops": null,
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1737389133126,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "7587": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-01-20 10:05 AM",
+    "created_datetime": "2025-01-18 08:52 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1737685183003,
+    "settings": {
+      "seq": 3,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "823601698038743040",
+    "transaction_id": "1188341423602089984",
+    "adds": {
+      "6945": 7
+    },
+    "consenter_ids": [
+      7
+    ],
+    "drops": null,
+    "roster_ids": [
+      7
+    ],
+    "status_updated": 1737993911641,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "6945": "emanueljd3"
+    },
+    "roster_names": [
+      "emanueljd3"
+    ],
+    "datetime": "2025-01-27 10:05 AM",
+    "created_datetime": "2025-01-23 08:19 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1737684981143,
+    "settings": {
+      "seq": 2,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "823601698038743040",
+    "transaction_id": "1188340576939421696",
+    "adds": {
+      "7670": 7
+    },
+    "consenter_ids": [
+      7
+    ],
+    "drops": null,
+    "roster_ids": [
+      7
+    ],
+    "status_updated": 1737993911641,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "7670": "emanueljd3"
+    },
+    "roster_names": [
+      "emanueljd3"
+    ],
+    "datetime": "2025-01-27 10:05 AM",
+    "created_datetime": "2025-01-23 08:16 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1737684847595,
+    "settings": {
+      "seq": 1,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "823601698038743040",
+    "transaction_id": "1188340016798588928",
+    "adds": {
+      "5185": 7
+    },
+    "consenter_ids": [
+      7
+    ],
+    "drops": null,
+    "roster_ids": [
+      7
+    ],
+    "status_updated": 1737993911641,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "5185": "emanueljd3"
+    },
+    "roster_names": [
+      "emanueljd3"
+    ],
+    "datetime": "2025-01-27 10:05 AM",
+    "created_datetime": "2025-01-23 08:14 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1737389507900,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1187101272335806464",
+    "adds": {
+      "3271": 2
+    },
+    "consenter_ids": [
+      2
+    ],
+    "drops": {
+      "8583": 2
+    },
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1737993911641,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "3271": "BaoDown"
+    },
+    "drops_teams": {
+      "8583": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-01-27 10:05 AM",
+    "created_datetime": "2025-01-20 10:11 AM"
+  },
+  {
+    "status": "complete",
+    "type": "trade",
+    "metadata": null,
+    "created": 1738183373761,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [
+      {
+        "round": 4,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 2,
+        "owner_id": 9,
+        "previous_owner_id": 4
+      },
+      {
+        "round": 3,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 4,
+        "owner_id": 9,
+        "previous_owner_id": 4
+      },
+      {
+        "round": 4,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 4,
+        "owner_id": 9,
+        "previous_owner_id": 4
+      },
+      {
+        "round": 2,
+        "season": "2025",
+        "league_id": null,
+        "roster_id": 6,
+        "owner_id": 4,
+        "previous_owner_id": 9
+      }
+    ],
+    "creator": "671474743249010688",
+    "transaction_id": "1190430987091693568",
+    "adds": {
+      "10232": 9,
+      "4066": 9,
+      "6806": 9,
+      "7596": 9,
+      "9508": 9
+    },
+    "consenter_ids": [
+      4,
+      9
+    ],
+    "drops": {
+      "10232": 4,
+      "4066": 4,
+      "6806": 4,
+      "7596": 4,
+      "9508": 4
+    },
+    "roster_ids": [
+      4,
+      9
+    ],
+    "status_updated": 1738199326446,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "10232": "caviar89",
+      "4066": "caviar89",
+      "6806": "caviar89",
+      "7596": "caviar89",
+      "9508": "caviar89"
+    },
+    "drops_teams": {
+      "10232": "Halteclere",
+      "4066": "Halteclere",
+      "6806": "Halteclere",
+      "7596": "Halteclere",
+      "9508": "Halteclere"
+    },
+    "roster_names": [
+      "Halteclere",
+      "caviar89"
+    ],
+    "datetime": "2025-01-29 07:08 PM",
+    "created_datetime": "2025-01-29 02:42 PM"
+  },
+  {
+    "status": "complete",
+    "type": "free_agent",
+    "metadata": null,
+    "created": 1738263876565,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1190768640321130496",
+    "adds": null,
+    "consenter_ids": [
+      2
+    ],
+    "drops": {
+      "1264": 2
+    },
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1738263876565,
+    "waiver_budget": [],
+    "week": 1,
+    "drops_teams": {
+      "1264": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-01-30 01:04 PM",
+    "created_datetime": "2025-01-30 01:04 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1738298035942,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "822491698306334720",
+    "transaction_id": "1190911915135156224",
+    "adds": {
+      "9497": 8
+    },
+    "consenter_ids": [
+      8
+    ],
+    "drops": null,
+    "roster_ids": [
+      8
+    ],
+    "status_updated": 1738598694146,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "9497": "lamjohnson56"
+    },
+    "roster_names": [
+      "lamjohnson56"
+    ],
+    "datetime": "2025-02-03 10:04 AM",
+    "created_datetime": "2025-01-30 10:33 PM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1738770479035,
+    "settings": {
+      "seq": 1,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1192893485090299904",
+    "adds": {
+      "3286": 2
+    },
+    "consenter_ids": [
+      2
+    ],
+    "drops": null,
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1739203485030,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "3286": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-02-10 10:04 AM",
+    "created_datetime": "2025-02-05 09:47 AM"
+  },
+  {
+    "status": "complete",
+    "type": "waiver",
+    "metadata": {
+      "notes": "Your waiver claim was processed successfully!"
+    },
+    "created": 1738770449678,
+    "settings": {
+      "seq": 0,
+      "waiver_bid": 0
+    },
+    "leg": 1,
+    "draft_picks": [],
+    "creator": "671474340218351616",
+    "transaction_id": "1192893361957421056",
+    "adds": {
+      "6650": 2
+    },
+    "consenter_ids": [
+      2
+    ],
+    "drops": null,
+    "roster_ids": [
+      2
+    ],
+    "status_updated": 1739203485030,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "6650": "BaoDown"
+    },
+    "roster_names": [
+      "BaoDown"
+    ],
+    "datetime": "2025-02-10 10:04 AM",
+    "created_datetime": "2025-02-05 09:47 AM"
+  },
+  {
+    "status": "complete",
+    "type": "trade",
+    "metadata": null,
+    "created": 1739291095485,
+    "settings": null,
+    "leg": 1,
+    "draft_picks": [
+      {
+        "round": 3,
+        "season": "2026",
+        "league_id": null,
+        "roster_id": 2,
+        "owner_id": 6,
+        "previous_owner_id": 8
+      }
+    ],
+    "creator": "822491698306334720",
+    "transaction_id": "1195077108750061568",
+    "adds": {
+      "4199": 6,
+      "8205": 8
+    },
+    "consenter_ids": [
+      6,
+      8
+    ],
+    "drops": {
+      "4199": 8,
+      "8205": 6
+    },
+    "roster_ids": [
+      6,
+      8
+    ],
+    "status_updated": 1739291282902,
+    "waiver_budget": [],
+    "week": 1,
+    "adds_teams": {
+      "4199": "ShadyCommish88",
+      "8205": "lamjohnson56"
+    },
+    "drops_teams": {
+      "4199": "lamjohnson56",
+      "8205": "ShadyCommish88"
+    },
+    "roster_names": [
+      "ShadyCommish88",
+      "lamjohnson56"
+    ],
+    "datetime": "2025-02-11 10:28 AM",
+    "created_datetime": "2025-02-11 10:24 AM"
+  }
+]

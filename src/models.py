@@ -28,7 +28,6 @@ class LeagueSettings:
     best_ball: int
     waiver_budget: int
     disable_adds: int
-    divisions: int
     capacity_override: int
     waiver_bid_min: int
     taxi_deadline: int
@@ -72,11 +71,14 @@ class LeagueSettings:
     reserve_slots: int
     reserve_allow_cov: int
     daily_waivers_last_ran: int
+    divisions: Optional[int] = None
     last_report: Optional[int] = None
     last_scored_leg: Optional[int] = None
     sub_start_time_eligibility: Optional[int] = None
     max_subs: Optional[int] = None
     sub_lock_if_starter_active: Optional[int] = None
+    was_auto_archived: Optional[int] = None
+    faab_suggestions: Optional[int] = None
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):

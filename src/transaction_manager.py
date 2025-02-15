@@ -156,4 +156,68 @@ class TransactionManager:
             if player_involved:
                 player_trades.append(trade)
         
-        return player_trades 
+        return player_trades
+
+    def get_all_historical_transactions(self, league_id: str) -> List[Dict[str, Any]]:
+        """Get all transactions from the current league and all previous leagues."""
+        all_transactions = []
+        current_league = self.client.league_manager.get_league(league_id)
+        
+        # Process current league
+        all_transactions.extend(self.get_all_league_transactions(league_id))
+        
+        # Follow the previous_league_id chain
+        while hasattr(current_league, 'previous_league_id') and current_league.previous_league_id:
+            previous_league_id = current_league.previous_league_id
+            all_transactions.extend(self.get_all_league_transactions(previous_league_id))
+            current_league = self.client.league_manager.get_league(previous_league_id)
+        
+        return all_transactions
+
+    def get_trades(self, league_id: str) -> List[Dict[str, Any]]:
+        """Get all trades for a league, including historical trades."""
+        all_transactions = self.get_all_historical_transactions(league_id)
+        
+        # Filter for trade transactions and enhance them
+        trades = []
+        for transaction in all_transactions:
+            if transaction['type'] == 'trade':
+                trade_info = self._process_trade_transaction(transaction, league_id)
+                trades.append(trade_info)
+        
+        return trades
+
+    def _process_trade_transaction(self, transaction: Dict[str, Any], league_id: str) -> Dict[str, Any]:
+        """Process a trade transaction and format it with team names and player names."""
+        trade_info = {
+            'date': datetime.fromtimestamp(transaction['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
+            'received': [],
+            'given': []
+        }
+
+        # Get roster mapping once per trade
+        rosters = self.client.league_manager.get_league_rosters(league_id)
+        roster_id_to_team = {}
+        for roster in rosters:
+            users = self.client.league_manager.get_league_users(league_id)
+            team = next((team for team in users if team.user_id == roster.owner_id), None)
+            if team:
+                roster_id_to_team[roster.roster_id] = team.display_name
+
+        # Process adds (received players)
+        if transaction.get('adds'):
+            for player_id, roster_id in transaction['adds'].items():
+                trade_info['received'].append({
+                    'player': self.client.player_manager.get_player_name(player_id),
+                    'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
+                })
+
+        # Process drops (given players)
+        if transaction.get('drops'):
+            for player_id, roster_id in transaction['drops'].items():
+                trade_info['given'].append({
+                    'player': self.client.player_manager.get_player_name(player_id),
+                    'team': roster_id_to_team.get(roster_id, f"Team {roster_id}")
+                })
+
+        return trade_info 

@@ -30,14 +30,20 @@ class SleeperAPI:
 		self.scoring_settings = self.league_manager.scoring_settings
 		self.player_manager = PlayerManager()
 		self.season_manager = SeasonManager()
-		self.stats_manager = StatsManager(self.BASE_URL, self.cache_manager, self.scoring_settings)
-		self.matchup_manager = MatchupManager(self.BASE_URL, self.cache_manager)
+		self.stats_manager = StatsManager(self, self.cache_manager, self.scoring_settings)
+		self.matchup_manager = MatchupManager(self, self.cache_manager)
 		self.projections_manager = ProjectionsManager(self.cache_manager)
 		self.transaction_manager = TransactionManager(self)
 		self.best_ball_manager = BestBallManager(self)
 		self.standings_manager = StandingsManager(self)
 		self.team_manager = TeamManager()
 		self.draft_manager = DraftManager(self)
+		
+		# Pre-load historical transactions into cache
+		if len(self.cache_manager.api_cache) == 0:  # Only load if cache is empty
+			print("Loading historical transaction data...")
+			current_league_id = "1048308938824937472"  # 2024 league
+			self.transaction_manager.get_all_historical_transactions(current_league_id)
 
 	def get_player_fields(self):
 		url = f"{self.BASE_URL}/players/nfl"
