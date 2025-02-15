@@ -15,6 +15,7 @@ from stats_manager import StatsManager
 from matchup_manager import MatchupManager
 from league_manager import LeagueManager
 from projections_manager import ProjectionsManager
+from transaction_manager import TransactionManager
 
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
@@ -29,6 +30,7 @@ class SleeperAPI:
 		self.matchup_manager = MatchupManager(self.BASE_URL, self.cache_manager)
 		# self.league_manager = LeagueManager(self.BASE_URL, self.cache_manager)
 		self.projections_manager = ProjectionsManager(self.cache_manager)
+		self.transaction_manager = TransactionManager(self)
 
 	def get_player_fields(self):
 		url = f"{self.BASE_URL}/players/nfl"

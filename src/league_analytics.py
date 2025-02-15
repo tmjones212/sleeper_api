@@ -556,13 +556,12 @@ class LeagueAnalytics:
 	def get_all_league_transactions(self, league_id: str) -> List[Dict[str, Any]]:
 		"""
 		Get all transactions for a league, starting from week 1 until no more transactions are found.
-		
-		Args:
-			league_id (str): The league ID
-			
-		Returns:
-			List[Dict[str, Any]]: List of all transactions with week number and datetime fields added
+		Enhances transactions with team name information.
 		"""
+		# Get league data to map roster_ids to team names
+		league = self.client.league_manager.get_league(league_id, fetch_all=True)
+		team_names = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+		
 		all_transactions = []
 		week = 1
 		
@@ -574,6 +573,26 @@ class LeagueAnalytics:
 			# Add week number and datetime fields to each transaction
 			for transaction in transactions:
 				transaction['week'] = week
+				
+				# Add team names for adds and drops
+				if transaction.get('adds'):
+					transaction['adds_teams'] = {
+						player_id: team_names.get(roster_id, f"Team {roster_id}")
+						for player_id, roster_id in transaction['adds'].items()
+					}
+				
+				if transaction.get('drops'):
+					transaction['drops_teams'] = {
+						player_id: team_names.get(roster_id, f"Team {roster_id}")
+						for player_id, roster_id in transaction['drops'].items()
+					}
+				
+				# Add team names for roster_ids array
+				if transaction.get('roster_ids'):
+					transaction['roster_names'] = [
+						team_names.get(roster_id, f"Team {roster_id}")
+						for roster_id in transaction['roster_ids']
+					]
 				
 				# Add status updated datetime
 				if transaction.get('status_updated'):

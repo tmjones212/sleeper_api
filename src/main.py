@@ -37,13 +37,60 @@ analytics = LeagueAnalytics(client)
 year = 2024
 positions = ["QB", "RB", "WR", "TE",'DB']
 
-rosters = client.league_manager.get_league_rosters(league_id)
+trades = client.transaction_manager.get_trades(league_id)
+for trade in trades:
+	print(f"\nTrade on {trade['date']}:")
+	
+	if trade['received']:
+		print("Received:")
+		for move in trade['received']:
+			print(f"  {move['player']} to {move['team']}")
+	
+	if trade['given']:
+		print("Given:")
+		for move in trade['given']:
+			print(f"  {move['player']} from {move['team']}")
+	print("-" * 50)
 
-transactions = analytics.get_all_league_transactions(league_id)
 
-for transaction in transactions:
-	d = 2
-	print(transaction)
+# rosters = client.league_manager.get_league_rosters(league_id)
+
+# transactions = analytics.get_all_league_transactions(league_id)
+
+# Filter for trade transactions and print them
+# trade_transactions = [t for t in transactions if t['type'] == 'trade']
+# for trade in trade_transactions:
+# 	# Convert timestamp to readable date
+# 	trade_date = datetime.fromtimestamp(trade['created'] / 1000).strftime('%Y-%m-%d %I:%M %p')
+# 	print(f"\nTrade on {trade_date}:")
+	
+# 	# Get all rosters once
+# 	rosters = client.league_manager.get_league_rosters(league_id)
+# 	roster_id_to_team = {}
+# 	for roster in rosters:
+# 		team = next((team for team in client.league_manager.get_league_users(league_id) 
+# 					if team.user_id == roster.owner_id), None)
+# 		if team:
+# 			roster_id_to_team[roster.roster_id] = team.display_name
+	
+# 	# Print adds (players received)
+# 	if trade['adds']:
+# 		print("Received:")
+# 		for player_id, roster_id in trade['adds'].items():
+# 			player_name = client.player_manager.get_player_name(player_id)
+# 			team_name = roster_id_to_team.get(roster_id, f"Team {roster_id}")
+# 			print(f"  {player_name} to {team_name}")
+	
+# 	# Print drops (players given)
+# 	if trade['drops']:
+# 		print("Given:")
+# 		for player_id, roster_id in trade['drops'].items():
+# 			player_name = client.player_manager.get_player_name(player_id)
+# 			team_name = roster_id_to_team.get(roster_id, f"Team {roster_id}")
+# 			print(f"  {player_name} from {team_name}")
+# 	print("-" * 50)
+	
+	
 
 # for position in positions:
 # 	for week in range(1,18):
@@ -247,3 +294,5 @@ for projection in sorted_projections:
 
 # for player_id, player in players.items():
 #     print(player.name)
+
+# Get and display trades
