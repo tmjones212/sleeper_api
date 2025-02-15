@@ -29,6 +29,13 @@ class DraftVisualizationService:
 		teams_count = len(draft_details.get('draft_order', {}))
 		rounds = max(pick['round'] for pick in picks)
 		
+		# Get draft order and map to team names
+		draft_order = draft_details.get('draft_order', {})
+		team_headers = []
+		for user_id, position in sorted(draft_order.items(), key=lambda x: x[1]):
+			team_name = user_id_to_team.get(user_id, f"Team {position}")
+			team_headers.append(team_name)
+		
 		# Organize picks into a 2D grid
 		draft_grid = []
 		for round_num in range(1, rounds + 1):
@@ -44,9 +51,6 @@ class DraftVisualizationService:
 				round_picks.append(pick)
 			draft_grid.append(round_picks)
 		
-		# Create simple test headers
-		test_headers = [f"Column {i+1}" for i in range(teams_count)]
-		
 		# Render template
 		template = self.env.get_template('draft_board.html')
 		html_content = template.render(
@@ -54,7 +58,7 @@ class DraftVisualizationService:
 			rounds=rounds,
 			teams_count=teams_count,
 			default_image=self.default_player_image,
-			team_order=test_headers  # Using test headers
+			team_order=team_headers  # Using the actual draft order
 		)
 		
 		# Save to file
