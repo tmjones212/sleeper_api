@@ -8,7 +8,7 @@ import os
 
 from player_extensions import format_name
 
-class DraftManager:
+class DraftService:
 	def __init__(self, client):
 		self.client = client
 		self.base_url = "https://api.sleeper.app/v1"
@@ -28,7 +28,7 @@ class DraftManager:
 			draft_order = draft_details.get('draft_order', {})
 			
 			# Get league data to map user IDs to team names
-			league = self.client.league_manager.get_league(league_id, fetch_all=True)
+			league = self.client.league_service.get_league(league_id, fetch_all=True)
 			user_id_to_team = {
 				team.user_id: team.display_name 
 				for team in league.teams
@@ -58,7 +58,7 @@ class DraftManager:
 		draft_order = draft_details.get('draft_order', {})
 		
 		# Get league data
-		league = self.client.league_manager.get_league(league_id, fetch_all=True)
+		league = self.client.league_service.get_league(league_id, fetch_all=True)
 		
 		# Create user_id to team name mapping
 		user_id_to_team = {
@@ -88,8 +88,8 @@ class DraftManager:
 		
 		for pick in picks:
 			picked_player_id = pick.get('player_id')
-			player_name = self.client.player_manager.get_player_name(picked_player_id)
-			player_position = self.client.player_manager.get_player_position(picked_player_id)
+			player_name = self.client.player_service.get_player_name(picked_player_id)
+			player_position = self.client.player_service.get_player_position(picked_player_id)
 			
 			# Get the team that made the pick
 			roster_id = pick.get('roster_id')
@@ -152,11 +152,11 @@ class DraftManager:
 		all_picks = self.get_draft_picks(draft_id)
 		
 		# Get the primary team name and all aliases
-		primary_name = self.client.team_manager.get_primary_name(username)
+		primary_name = self.client.team_service.get_primary_name(username)
 		if not primary_name:
 			return []
 		
-		team_aliases = set(self.client.team_manager.get_all_aliases(primary_name))
+		team_aliases = set(self.client.team_service.get_all_aliases(primary_name))
 		
 		# Filter picks for the specified user (checking against all aliases)
 		user_picks = [
@@ -176,10 +176,10 @@ class DraftManager:
 		league_id = draft_details['league_id']
 		
 		# Get roster_id to team name mapping
-		rosters = self.client.league_manager.get_league_rosters(league_id)
+		rosters = self.client.league_service.get_league_rosters(league_id)
 		roster_to_team = {}
 		for roster in rosters:
-			team = next((team for team in self.client.league_manager.get_league_users(league_id)
+			team = next((team for team in self.client.league_service.get_league_users(league_id)
 						if team.user_id == roster.owner_id), None)
 			if team:
 				roster_to_team[roster.roster_id] = team.display_name
@@ -264,14 +264,14 @@ class DraftManager:
 	def _make_request(self, endpoint: str) -> Any:
 		"""Make a cached API request."""
 		cache_key = endpoint
-		cache = self.client.cache_manager.api_cache
+		cache = self.client.cache_service.api_cache
 		
 		if cache_key in cache:
 			return cache[cache_key]
 
-		response = self.client.league_manager._make_request(endpoint)
+		response = self.client.league_service._make_request(endpoint)
 		cache[cache_key] = response
-		self.client.cache_manager.save_api_cache()
+		self.client.cache_service.save_api_cache()
 		
 		return response 
 
@@ -436,6 +436,6 @@ class DraftManager:
 
 	def _match_player_name(self, ktc_name: str, sleeper_name: str) -> bool:
 		"""Match player names between KTC and Sleeper formats."""
-		ktc_name = self.client.player_manager.format_player_name(ktc_name)
-		sleeper_name = self.client.player_manager.format_player_name(sleeper_name)
+		ktc_name = self.client.player_service.format_player_name(ktc_name)
+		sleeper_name = self.client.player_service.format_player_name(sleeper_name)
 		return ktc_name == sleeper_name 

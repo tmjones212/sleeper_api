@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 import requests
 from models import Matchup
 
-class MatchupManager:
+class MatchupService:
     def __init__(self, base_url: str, cache_manager):
         self.base_url = base_url
         self.cache_manager = cache_manager
@@ -11,8 +11,8 @@ class MatchupManager:
         cache_key = f"{league_id}_{week}"
         current_week = current_week or week
 
-        if cache_key in self.cache_manager.matchups_cache:
-            cached_matchups = self.cache_manager.matchups_cache[cache_key]
+        if cache_key in self.cache_service.matchups_cache:
+            cached_matchups = self.cache_service.matchups_cache[cache_key]
             if not (week < current_week and any(matchup.points == 0 for matchup in cached_matchups)):
                 return cached_matchups
 
@@ -41,8 +41,8 @@ class MatchupManager:
             )
             matchups.append(matchup)
 
-        self.cache_manager.matchups_cache[cache_key] = matchups
-        self.cache_manager.save_matchups_cache()
+        self.cache_service.matchups_cache[cache_key] = matchups
+        self.cache_service.save_matchups_cache()
         return matchups
 
     def get_all_matchups(self, league_id: str, current_week: int) -> Dict[int, List[Matchup]]:

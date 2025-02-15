@@ -4,7 +4,7 @@ from typing import Dict, Any
 from models import PlayerInfo, PlayerStats, PlayerProjection, Matchup, Player, ProjectedStats
 from customer_json_encoder import CustomJSONEncoder
 
-class CacheManager:
+class CacheService:
     def __init__(self):
         self.api_cache = self._load_api_cache()
         self.stats_cache = self._load_stats_cache()

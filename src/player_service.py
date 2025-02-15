@@ -6,7 +6,7 @@ from typing import Dict, List
 from models import Player
 import requests
 
-class PlayerManager:
+class PlayerService:
     def __init__(self):
         self.players = self._load_players_from_file()
         self.base_url = "https://api.sleeper.app/v1"  # Could also pass this in from client

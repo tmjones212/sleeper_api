@@ -2,7 +2,7 @@ from typing import Dict, Any
 import requests
 from models import PlayerStats
 
-class StatsManager:
+class StatsService:
     def __init__(self, base_url: str, cache_manager, scoring_settings: Dict[str, Dict[str, float]]):
         self.base_url = base_url
         self.cache_manager = cache_manager
@@ -10,9 +10,9 @@ class StatsManager:
 
     def get_stats(self, year: int, week: int, position: str, league_id: str) -> Dict[str, PlayerStats]:
         cache_key = f"{year}_{week}_{position}_{league_id}"
-        if cache_key in self.cache_manager.stats_cache:
+        if cache_key in self.cache_service.stats_cache:
             print(f"Debug: Using cached stats for {cache_key}")
-            return self.cache_manager.stats_cache[cache_key]
+            return self.cache_service.stats_cache[cache_key]
 
         print(f"Debug: Fetching stats for {cache_key}")
         url = f"{self.base_url}/stats/nfl/{year}/{week}?season_type=regular&position[]={position}"
@@ -43,8 +43,8 @@ class StatsManager:
             )
             print(f"Debug: Player {player_id} - Fantasy Points: {fantasy_points}")
 
-        self.cache_manager.stats_cache[cache_key] = stats
-        self.cache_manager.save_stats_cache()
+        self.cache_service.stats_cache[cache_key] = stats
+        self.cache_service.save_stats_cache()
         return stats
 
     def _calculate_fantasy_points(self, player_stats: Dict[str, float], scoring_settings: Dict[str, float]) -> float:

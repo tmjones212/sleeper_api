@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-class TeamManager:
+class TeamService:
 	def __init__(self):
 		self.team_aliases = {
 			'tmjones212': ['trent', 'tjones', 'tmjones212','jj mccarthy waiting room'],

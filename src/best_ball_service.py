@@ -3,7 +3,7 @@ import os
 import csv
 from datetime import datetime
 
-class BestBallManager:
+class BestBallService:
     def __init__(self, client):
         self.client = client
         self.valid_positions = ["QB", "RB", "WR", "TE", "K", "DB", "LB", "DE", "DL", "DT", "CB", "S"]
@@ -14,7 +14,7 @@ class BestBallManager:
         position_players = {pos: [] for pos in self.valid_positions + ["FLEX", "SUPER_FLEX", "IDP_FLEX"]}
         
         for player_id, points in players_points.items():
-            position = self.client.player_manager.get_player_position(player_id)
+            position = self.client.player_service.get_player_position(player_id)
             if position in self.valid_positions:
                 position_players[position].append({"id": player_id, "points": points, "position": position})
         
@@ -73,8 +73,8 @@ class BestBallManager:
         return total_points, best_lineup
 
     def get_best_ball_scores(self, league_id: str, week: int) -> List[Dict[str, any]]:
-        league = self.client.league_manager.get_league(league_id, fetch_all=True)
-        matchups = self.client.matchup_manager.get_matchups(league_id, week)
+        league = self.client.league_service.get_league(league_id, fetch_all=True)
+        matchups = self.client.matchup_service.get_matchups(league_id, week)
         
         team_dict = {team.roster.roster_id: team for team in league.teams if team.roster}
         
@@ -104,7 +104,7 @@ class BestBallManager:
         return best_ball_scores
 
     def get_season_best_ball_total(self, league_id: str) -> Dict[str, List[Dict[str, any]]]:
-        league = self.client.league_manager.get_league(league_id, fetch_all=True)
+        league = self.client.league_service.get_league(league_id, fetch_all=True)
         team_totals = {team.roster.roster_id: {
             'team_name': team.display_name,
             'total_best_ball_points': 0,
@@ -119,7 +119,7 @@ class BestBallManager:
         end_week = league.settings.playoff_week_start
 
         for week in range(start_week, end_week):
-            matchups = self.client.matchup_manager.get_matchups(league_id, week)
+            matchups = self.client.matchup_service.get_matchups(league_id, week)
             
             # Calculate half wins for the week
             week_scores = [(matchup.roster_id, sum(matchup.starters_points)) for matchup in matchups]
@@ -162,8 +162,8 @@ class BestBallManager:
 
     def write_offensive_best_ball_to_csv(self, league_id: str, filename: str = "data/offensive_best_ball.csv"):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-        league = self.client.league_manager.get_league(league_id, fetch_all=True)
-        current_week = self.client.season_manager.get_current_week()
+        league = self.client.league_service.get_league(league_id, fetch_all=True)
+        current_week = self.client.season_service.get_current_week()
         
         with open(filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
@@ -182,7 +182,7 @@ class BestBallManager:
                     
                     for slot in offensive_lineup:
                         player_id = slot['player']['id']
-                        player_name = self.client.player_manager.get_player_name(player_id)
+                        player_name = self.client.player_service.get_player_name(player_id)
                         writer.writerow([
                             week,
                             team_name,

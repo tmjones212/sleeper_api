@@ -8,42 +8,42 @@ from exceptions import SleeperAPIException
 from models import League, PlayerInfo, ProjectedStats, SleeperProjections, Team, Matchup, Player, Roster, PlayerProjection, PlayerStats
 import csv
 from datetime import datetime, timedelta
-from cache_manager import CacheManager
-from player_manager import PlayerManager
-from season_manager import SeasonManager
-from stats_manager import StatsManager
-from matchup_manager import MatchupManager
-from league_manager import LeagueManager
-from projections_manager import ProjectionsManager
-from transaction_manager import TransactionManager
-from best_ball_manager import BestBallManager
-from standings_manager import StandingsManager
-from team_manager import TeamManager
-from draft_manager import DraftManager
+from cache_service import CacheService
+from player_service import PlayerService
+from season_service import SeasonService
+from stats_service import StatsService
+from matchup_service import MatchupService
+from league_service import LeagueService
+from projections_service import ProjectionsService
+from transaction_service import TransactionService
+from best_ball_service import BestBallService
+from standings_service import StandingsService
+from team_service import TeamService
+from draft_service import DraftService
 
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
 
 	def __init__(self):
-		self.cache_manager = CacheManager()
-		self.league_manager = LeagueManager(self.BASE_URL, self.cache_manager)
-		self.scoring_settings = self.league_manager.scoring_settings
-		self.player_manager = PlayerManager()
-		self.season_manager = SeasonManager()
-		self.stats_manager = StatsManager(self, self.cache_manager, self.scoring_settings)
-		self.matchup_manager = MatchupManager(self, self.cache_manager)
-		self.projections_manager = ProjectionsManager(self.cache_manager)
-		self.transaction_manager = TransactionManager(self)
-		self.best_ball_manager = BestBallManager(self)
-		self.standings_manager = StandingsManager(self)
-		self.team_manager = TeamManager()
-		self.draft_manager = DraftManager(self)
+		self.cache_service = CacheService()
+		self.league_service = LeagueService(self.BASE_URL, self.cache_service)
+		self.scoring_settings = self.league_service.scoring_settings
+		self.player_service = PlayerService()
+		self.season_service = SeasonService()
+		self.stats_service = StatsService(self, self.cache_service, self.scoring_settings)
+		self.matchup_service = MatchupService(self, self.cache_service)
+		self.projections_service = ProjectionsService(self.cache_service)
+		self.transaction_service = TransactionService(self)
+		self.best_ball_service = BestBallService(self)
+		self.standings_service = StandingsService(self)
+		self.team_service = TeamService()
+		self.draft_service = DraftService(self)
 		
 		# Pre-load historical transactions into cache
-		if len(self.cache_manager.api_cache) == 0:  # Only load if cache is empty
+		if len(self.cache_service.api_cache) == 0:  # Only load if cache is empty
 			print("Loading historical transaction data...")
 			current_league_id = "1048308938824937472"  # 2024 league
-			self.transaction_manager.get_all_historical_transactions(current_league_id)
+			self.transaction_service.get_all_historical_transactions(current_league_id)
 
 	def get_player_fields(self):
 		url = f"{self.BASE_URL}/players/nfl"
@@ -63,14 +63,14 @@ class SleeperAPI:
 	
 	def _make_request(self, endpoint: str) -> Dict[str, Any]:
 		cache_key = endpoint
-		if cache_key in self.cache_manager.api_cache:
-			return self.cache_manager.api_cache[cache_key]
+		if cache_key in self.cache_service.api_cache:
+			return self.cache_service.api_cache[cache_key]
 
 		response = requests.get(endpoint)
 		if response.status_code == 200:
 			data = response.json()
-			self.cache_manager.api_cache[cache_key] = data
-			self.cache_manager.save_api_cache()
+			self.cache_service.api_cache[cache_key] = data
+			self.cache_service.save_api_cache()
 			return data
 		else:
 			raise SleeperAPIException(f"API request failed: {response.status_code} - {response.text}")

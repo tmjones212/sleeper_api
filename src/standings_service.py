@@ -1,13 +1,13 @@
 from typing import List, Dict, Any
 
-class StandingsManager:
+class StandingsService:
     def __init__(self, client):
         self.client = client
 
     def get_league_standings(self, league_id: str) -> List[Dict[str, Any]]:
         """Get current standings for a league including wins, losses, points for/against."""
-        league = self.client.league_manager.get_league(league_id, fetch_all=True)
-        current_week = self.client.season_manager.get_current_week()
+        league = self.client.league_service.get_league(league_id, fetch_all=True)
+        current_week = self.client.season_service.get_current_week()
         
         # Initialize standings dictionary
         standings = {team.roster.roster_id: {
@@ -24,7 +24,7 @@ class StandingsManager:
 
         # Calculate standings for each week
         for week in range(league.settings.start_week, current_week):
-            matchups = self.client.matchup_manager.get_matchups(league_id, week)
+            matchups = self.client.matchup_service.get_matchups(league_id, week)
             if not matchups:
                 break
 
@@ -35,14 +35,14 @@ class StandingsManager:
                 standings[roster_id]['points_for'] += points
 
                 # Calculate best ball points
-                best_ball_points, best_lineup = self.client.best_ball_manager._calculate_best_ball_points(
+                best_ball_points, best_lineup = self.client.best_ball_service._calculate_best_ball_points(
                     matchup.players_points,
                     league.roster_positions
                 )
                 standings[roster_id]['best_ball_points'] += best_ball_points
                 
                 # Calculate offensive best ball points
-                offensive_best_ball_points = self.client.best_ball_manager._calculate_offensive_best_ball_points(best_lineup)
+                offensive_best_ball_points = self.client.best_ball_service._calculate_offensive_best_ball_points(best_lineup)
                 standings[roster_id]['offensive_best_ball_points'] += offensive_best_ball_points
 
                 # Find opponent in same matchup
@@ -81,8 +81,8 @@ class StandingsManager:
 
     def get_top_half_scorers(self, league_id: str, week: int) -> List[Dict[str, any]]:
         """Get the top half scoring teams for a given week."""
-        league = self.client.league_manager.get_league(league_id, fetch_all=True)
-        matchups = self.client.matchup_manager.get_matchups(league_id, week)
+        league = self.client.league_service.get_league(league_id, fetch_all=True)
+        matchups = self.client.matchup_service.get_matchups(league_id, week)
         
         # Create a dictionary of team names keyed by roster_id
         team_dict = {team.roster.roster_id: team.display_name 
@@ -123,7 +123,7 @@ class StandingsManager:
 
     def print_weekly_top_half_scorers(self, league_id: str):
         """Print top half scorers for each week."""
-        league = self.client.league_manager.get_league(league_id)
+        league = self.client.league_service.get_league(league_id)
         print("Week|Team|Points")
         for week in range(league.settings.start_week, league.settings.playoff_week_start):
             top_scorers = self.get_top_half_scorers(league_id, week)

@@ -32,27 +32,29 @@ league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI()
-ktc = client.draft_manager.get_ktc_player_value()
+players = client.player_service.get_players()
+jd = client.player_service.get_players(search="jayden daniels")
+ktc = client.draft_service.get_ktc_player_value()
 
 # x = [k for k in ktc if k['playerID'] == "1552"]
 
-drafts = client.draft_manager.get_league_drafts(league_id)
-picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
+drafts = client.draft_service.get_league_drafts(league_id)
+picks = client.draft_service.get_draft_picks(drafts[0]['draft_id'])
 
-# client.draft_manager.print_picks(drafts[0]['draft_id'])
-client.draft_manager.print_picks_csv(drafts[0]['draft_id'])
+# client.draft_service.print_picks(drafts[0]['draft_id'])
+client.draft_service.print_picks_csv(drafts[0]['draft_id'])
 for pick in picks:
 	print(pick)
 	
-# trades = client.transaction_manager.get_trades_by_player(league_id, "amon ra st brown")
+# trades = client.transaction_service.get_trades_by_player(league_id, "amon ra st brown")
 	
 # # Get and print trades using transaction_manager
-# trades = client.transaction_manager.get_trades(league_id)
-# jd = client.player_manager.get_players(search="jayden daniels")
-trades = client.transaction_manager.get_trades_by_manager(league_id, "tjones")
+# trades = client.transaction_service.get_trades(league_id)
+# jd = client.player_service.get_players(search="jayden daniels")
+trades = client.transaction_service.get_trades_by_manager(league_id, "tjones")
 
 # Get and print trades using transaction_manager
-trades = client.transaction_manager.get_trades(league_id)
+trades = client.transaction_service.get_trades(league_id)
 for trade in trades:
 	print(f"\nTrade on {trade['date']}:")
 	
@@ -76,9 +78,9 @@ for trade in trades:
 	print("-" * 50)
 
 # Print standings using standings_manager
-client.standings_manager.print_league_standings(league_id)
+client.standings_service.print_league_standings(league_id)
 
-# rosters = client.league_manager.get_league_rosters(league_id)
+# rosters = client.league_service.get_league_rosters(league_id)
 
 # transactions = analytics.get_all_league_transactions(league_id)
 
@@ -90,10 +92,10 @@ client.standings_manager.print_league_standings(league_id)
 # 	print(f"\nTrade on {trade_date}:")
 	
 # 	# Get all rosters once
-# 	rosters = client.league_manager.get_league_rosters(league_id)
+# 	rosters = client.league_service.get_league_rosters(league_id)
 # 	roster_id_to_team = {}
 # 	for roster in rosters:
-# 		team = next((team for team in client.league_manager.get_league_users(league_id) 
+# 		team = next((team for team in client.league_service.get_league_users(league_id) 
 # 					if team.user_id == roster.owner_id), None)
 # 		if team:
 # 			roster_id_to_team[roster.roster_id] = team.display_name
@@ -102,7 +104,7 @@ client.standings_manager.print_league_standings(league_id)
 # 	if trade['adds']:
 # 		print("Received:")
 # 		for player_id, roster_id in trade['adds'].items():
-# 			player_name = client.player_manager.get_player_name(player_id)
+# 			player_name = client.player_service.get_player_name(player_id)
 # 			team_name = roster_id_to_team.get(roster_id, f"Team {roster_id}")
 # 			print(f"  {player_name} to {team_name}")
 	
@@ -110,7 +112,7 @@ client.standings_manager.print_league_standings(league_id)
 # 	if trade['drops']:
 # 		print("Given:")
 # 		for player_id, roster_id in trade['drops'].items():
-# 			player_name = client.player_manager.get_player_name(player_id)
+# 			player_name = client.player_service.get_player_name(player_id)
 # 			team_name = roster_id_to_team.get(roster_id, f"Team {roster_id}")
 # 			print(f"  {player_name} from {team_name}")
 # 	print("-" * 50)

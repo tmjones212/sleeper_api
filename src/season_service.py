@@ -2,7 +2,7 @@ import csv
 from datetime import datetime, timedelta
 from typing import Dict, Tuple
 
-class WeekManager:
+class SeasonService:
     def __init__(self):
         self.week_ranges = self._load_week_ranges()
 

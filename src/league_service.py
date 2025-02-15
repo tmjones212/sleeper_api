@@ -3,7 +3,7 @@ import requests
 from models import League, Team, Roster
 from exceptions import SleeperAPIException
 
-class LeagueManager:
+class LeagueService:
     def __init__(self, base_url: str, cache_manager):
         self.base_url = base_url
         self.cache_manager = cache_manager
@@ -11,15 +11,15 @@ class LeagueManager:
 
     def get_league(self, league_id: str, fetch_all: bool = False) -> League:
         cache_key = f"league_{league_id}"
-        if cache_key in self.cache_manager.api_cache:
-            league_data = self.cache_manager.api_cache[cache_key]
+        if cache_key in self.cache_service.api_cache:
+            league_data = self.cache_service.api_cache[cache_key]
         else:
             url = f"{self.base_url}/league/{league_id}"
             response = requests.get(url)
             response.raise_for_status()
             league_data = response.json()
-            self.cache_manager.api_cache[cache_key] = league_data
-            self.cache_manager.save_api_cache()
+            self.cache_service.api_cache[cache_key] = league_data
+            self.cache_service.save_api_cache()
         
         league = League(**league_data)
         self.scoring_settings[league_id] = league.scoring_settings
@@ -52,7 +52,7 @@ class LeagueManager:
 
     def print_league_rosters(self, league_id: str, player_manager):
         league = self.get_league(league_id, fetch_all=True)
-        players = player_manager.players
+        players = player_service.players
 
         print(f"Rosters for {league.name}:")
         for team in league.teams:
@@ -92,7 +92,7 @@ class LeagueManager:
     def _print_player(self, players, player_id: str, indent: str, player_manager):
         player = players.get(player_id)
         if player:
-            formatted_name = player_manager.format_player_name(f"{player.first_name} {player.last_name}")
+            formatted_name = player_service.format_player_name(f"{player.first_name} {player.last_name}")
             print(f"{indent}- {formatted_name} ({player.position})")
         else:
             print(f"{indent}- Unknown Player (ID: {player_id})")
@@ -104,14 +104,14 @@ class LeagueManager:
 
     def _make_request(self, endpoint: str) -> Dict[str, Any]:
         cache_key = endpoint
-        if cache_key in self.cache_manager.api_cache:
-            return self.cache_manager.api_cache[cache_key]
+        if cache_key in self.cache_service.api_cache:
+            return self.cache_service.api_cache[cache_key]
 
         response = requests.get(endpoint)
         if response.status_code == 200:
             data = response.json()
-            self.cache_manager.api_cache[cache_key] = data
-            self.cache_manager.save_api_cache()
+            self.cache_service.api_cache[cache_key] = data
+            self.cache_service.save_api_cache()
             return data
         else:
             raise SleeperAPIException(f"API request failed: {response.status_code} - {response.text}") 

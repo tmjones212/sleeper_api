@@ -1,8 +1,8 @@
 class RosterDisplay:
     @staticmethod
     def print_league_rosters(league_manager, player_manager, league_id: str):
-        league = league_manager.get_league(league_id, fetch_all=True)
-        players = player_manager.players
+        league = league_service.get_league(league_id, fetch_all=True)
+        players = player_service.players
 
         print(f"Rosters for {league.name}:")
         for team in league.teams:
@@ -44,7 +44,7 @@ class RosterDisplay:
     def _print_player(players, player_id: str, indent: str, player_manager):
         player = players.get(player_id)
         if player:
-            formatted_name = player_manager.format_player_name(f"{player.first_name} {player.last_name}")
+            formatted_name = player_service.format_player_name(f"{player.first_name} {player.last_name}")
             print(f"{indent}- {formatted_name} ({player.position})")
         else:
             print(f"{indent}- Unknown Player (ID: {player_id})") 
