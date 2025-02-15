@@ -33,16 +33,17 @@ league_id = "1181025001438806016" # 2025
 
 client = SleeperAPI()
 
-drafts = client.draft_manager.get_league_drafts(league_id)
-picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
-for pick in picks:
-	print(pick)
-	
-trades = client.transaction_manager.get_trades_by_player(league_id, "amon ra st brown")
-	
-# Get and print trades using transaction_manager
-trades = client.transaction_manager.get_trades(league_id)
 
+# drafts = client.draft_manager.get_league_drafts(league_id)
+# picks = client.draft_manager.get_draft_picks(drafts[0]['draft_id'])
+# for pick in picks:
+# 	print(pick)
+	
+# trades = client.transaction_manager.get_trades_by_player(league_id, "amon ra st brown")
+	
+# # Get and print trades using transaction_manager
+# trades = client.transaction_manager.get_trades(league_id)
+# jd = client.player_manager.get_players(search="jayden daniels")
 trades = client.transaction_manager.get_trades_by_manager(league_id, "tjones")
 
 # Get and print trades using transaction_manager

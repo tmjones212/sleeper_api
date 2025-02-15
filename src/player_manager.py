@@ -1,10 +1,11 @@
 import json
 import os
 import re
-from typing import Dict
+from typing import Dict, List
 # from client import SleeperAPI
 from models import Player
 import requests
+
 class PlayerManager:
     def __init__(self):
         self.players = self._load_players_from_file()
@@ -78,3 +79,45 @@ class PlayerManager:
             name = name.replace(f"{old} ", f"{new} ")
 
         return name 
+
+    def get_players(self, position: str = None, team: str = None, active: bool = True, search: str = None) -> List[Player]:
+        """
+        Get a filtered list of players.
+        
+        Args:
+            position (str, optional): Filter by player position (e.g., "QB", "RB", "WR", etc.)
+            team (str, optional): Filter by team (e.g., "LAR", "SF", etc.)
+            active (bool, optional): Filter for active players only. Defaults to True.
+            search (str, optional): Search player names (case-insensitive partial match)
+        
+        Returns:
+            List[Player]: List of matching Player objects
+        """
+        filtered_players = []
+        
+        for player in self.players.values():
+            # Skip inactive players if active flag is True
+            if active and not player.active:
+                continue
+            
+            # Apply position filter
+            if position and player.position != position:
+                continue
+            
+            # Apply team filter
+            if team and player.team != team:
+                continue
+            
+            # Apply name search
+            if search:
+                search_term = search.upper()
+                player_name = self.format_player_name(f"{player.first_name} {player.last_name}")
+                if search_term not in player_name:
+                    continue
+            
+            filtered_players.append(player)
+        
+        # Sort players by name
+        filtered_players.sort(key=lambda x: x.name)
+        
+        return filtered_players 

@@ -119,27 +119,77 @@ class TransactionManager:
     def get_trades_by_manager(self, league_id: str, manager_name: str) -> List[Dict[str, Any]]:
         """
         Get all trades involving a specific manager (case insensitive).
-        Handles multiple aliases for the same manager.
+        Shows both players and draft picks received/given in trades.
         """
+        # Get primary team name and aliases
         primary_team_name = self.client.team_manager.get_primary_name(manager_name)
         if not primary_team_name:
             return []
         
-        team_aliases = set(self.client.team_manager.get_all_aliases(primary_team_name))
-        all_trades = self.get_trades(league_id)
+        # Get all trades
+        all_trades = self.get_all_league_transactions(league_id)
+        trade_transactions = [t for t in all_trades if t['type'] == 'trade']
+        
+        # Get roster mapping
+        rosters = self.client.league_manager.get_league_rosters(league_id)
+        users = self.client.league_manager.get_league_users(league_id)
+        roster_to_team = {}
+        for roster in rosters:
+            team = next((u for u in users if u.user_id == roster.owner_id), None)
+            if team:
+                roster_to_team[roster.roster_id] = team.display_name
+
+        # Get manager's roster IDs (they might have multiple)
+        manager_roster_ids = {
+            roster.roster_id 
+            for roster in rosters 
+            for user in users 
+            if user.user_id == roster.owner_id 
+            and self.client.team_manager.is_same_team(user.display_name, manager_name)
+        }
+
         manager_trades = []
-        
-        for trade in all_trades:
-            # Check if any team alias is involved in either receiving or giving
-            manager_involved = any(
-                move['team'].lower() in team_aliases 
-                for moves in (trade['received'], trade['given'])
-                for move in moves
-            )
-            
-            if manager_involved:
-                manager_trades.append(trade)
-        
+        for trade in trade_transactions:
+            # Skip if manager not involved
+            if not any(rid in manager_roster_ids for rid in trade['roster_ids']):
+                continue
+
+            trade_info = {
+                'date': datetime.fromtimestamp(trade['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
+                'received': {
+                    'players': [],
+                    'draft_picks': []
+                },
+                'given': {
+                    'players': [],
+                    'draft_picks': []
+                }
+            }
+
+            # Process players
+            if trade.get('adds'):
+                for player_id, roster_id in trade['adds'].items():
+                    is_receiving = roster_id in manager_roster_ids
+                    category = 'received' if is_receiving else 'given'
+                    trade_info[category]['players'].append({
+                        'player': self.client.player_manager.get_player_name(player_id),
+                        'team': roster_to_team.get(roster_id, f"Team {roster_id}")
+                    })
+
+            # Process draft picks
+            if trade.get('draft_picks'):
+                for pick in trade['draft_picks']:
+                    is_receiving = pick['owner_id'] in manager_roster_ids
+                    category = 'received' if is_receiving else 'given'
+                    trade_info[category]['draft_picks'].append({
+                        'round': pick['round'],
+                        'season': pick['season'],
+                        'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
+                        'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
+                    })
+
+            manager_trades.append(trade_info)
+
         return manager_trades
 
     def get_trades_by_player(self, league_id: str, player_name: str) -> List[Dict[str, Any]]:
