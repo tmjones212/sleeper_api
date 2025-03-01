@@ -56,6 +56,10 @@
             font-size: 1.1em;
             color: #7f8c8d;
         }
+        .team-starter-value {
+            font-size: 1.1em;
+            color: #2980b9;
+        }
         .player-table {
             width: 100%;
         }
@@ -84,6 +88,10 @@
         .old-team {
             color: #e74c3c;
         }
+        .high-starter-value {
+            color: #2980b9;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -101,6 +109,7 @@
                     <th class="numeric">WR Value</th>
                     <th class="numeric">TE Value</th>
                     <th class="numeric">Total Value</th>
+                    <th class="numeric">Avg Starter</th>
                     <th class="numeric">Avg Age</th>
                 </tr>
             </thead>
@@ -114,6 +123,7 @@
                     <td class="numeric">{{ team.position_values.WR }}</td>
                     <td class="numeric">{{ team.position_values.TE }}</td>
                     <td class="numeric player-value">{{ team.total_value }}</td>
+                    <td class="numeric high-starter-value">{{ team.avg_starter_value }}</td>
                     <td class="numeric {% if team.avg_age < 25 %}young-team{% elif team.avg_age > 28 %}old-team{% endif %}">
                         {{ team.avg_age }}
                     </td>
@@ -131,6 +141,7 @@
             <h3>{{ loop.index }}. {{ team.team_name }}</h3>
             <div>
                 <div class="team-value">Total Value: {{ team.total_value }}</div>
+                <div class="team-starter-value">Avg Starter Value: {{ team.avg_starter_value }}</div>
                 <div class="team-age">Average Age: {{ team.avg_age }}</div>
             </div>
         </div>
