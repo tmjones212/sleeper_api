@@ -60,28 +60,21 @@ class DraftService:
 		# Get league data
 		league = self.client.league_service.get_league(league_id, fetch_all=True)
 		
-		# Create user_id to team name mapping
-		user_id_to_team = {
-			team.user_id: team.display_name 
-			for team in league.teams
-		}
-		
-		# Create roster_id to team name mapping
-		roster_to_team = {
-			team.roster.roster_id: team.display_name 
-			for team in league.teams 
-			if team.roster
-		}
-		
-		# Create position to team name mapping
-		position_to_team = {}
-		for user_id, position in draft_order.items():
-			team_name = user_id_to_team.get(user_id)
-			if team_name:
-				position_to_team[position] = team_name
+		# Create mappings...
+		user_id_to_team = {team.user_id: team.display_name for team in league.teams}
+		roster_to_team = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+		position_to_team = {position: user_id_to_team.get(user_id) 
+						   for user_id, position in draft_order.items() 
+						   if user_id_to_team.get(user_id)}
 		
 		enhanced_picks = []
 		teams_count = len(draft_order)
+		
+		# Get KTC data once for all picks
+		ktc_data = self.get_ktc_player_value()
+		print("\nDEBUG: First few KTC players:")
+		for player in ktc_data[:5]:
+			print(f"KTC Player: {player.get('player_name', 'NO NAME')} - Value: {player.get('value', 'NO VALUE')}")
 		
 		print("\nDraft Picks:")
 		print("-" * 80)
@@ -91,28 +84,30 @@ class DraftService:
 			player_name = self.client.player_service.get_player_name(picked_player_id)
 			player_position = self.client.player_service.get_player_position(picked_player_id)
 			
-			# Get the team that made the pick
+			# Get KTC value for the player with debug logging
+			ktc_value = None
+			if picked_player_id:
+				print(f"\nDEBUG: Looking for KTC value for {player_name}")
+				for ktc_player in ktc_data:
+					ktc_player_name = ktc_player.get('player_name', '')
+					print(f"Comparing with KTC player: {ktc_player_name}")
+					if self._match_player_name(ktc_player_name, player_name):
+						ktc_value = ktc_player.get('value', 0)
+						print(f"Found match! KTC value: {ktc_value}")
+						break
+				if ktc_value is None:
+					print(f"No KTC match found for {player_name}")
+			
+			# Rest of the pick processing...
 			roster_id = pick.get('roster_id')
 			picking_team = roster_to_team.get(roster_id, f"Team {pick.get('picked_by')}")
 			
-			# Get original owner based on draft position
 			pick_number = pick['pick_no']
 			draft_position = ((pick_number - 1) % teams_count) + 1
 			original_owner = position_to_team.get(draft_position, f"Team {draft_position}")
 			
-			# Calculate pick in round (with leading zero for single digits)
 			pick_in_round = pick['pick_no'] - ((pick['round'] - 1) * teams_count)
 			formatted_pick = f"{pick['round']}.{pick_in_round:02d}"
-			
-			# Format the pick display
-			pick_display = (
-				f"{formatted_pick:<6} "  # e.g., "4.05  "
-				f"(#{pick['pick_no']:<3}) "  # e.g., "(#35) "
-				f"{picking_team:<20} "  # e.g., "tmjones212          "
-				f"[orig: {original_owner:<20}] "  # e.g., "[orig: baodown          ] "
-				f"{player_name} ({player_position})"  # e.g., "Brock Bowers (TE)"
-			)
-			print(pick_display)
 			
 			enhanced_pick = {
 				'round': pick['round'],
@@ -123,10 +118,11 @@ class DraftService:
 				'player_name': player_name,
 				'player_id': picked_player_id,
 				'position': player_position,
+				'ktc_value': ktc_value,
+				'image_url': self.client.player_service.get_player_image_url(picked_player_id)
 			}
 			enhanced_picks.append(enhanced_pick)
 		
-		print("-" * 80)
 		return enhanced_picks
 
 	def get_draft_details(self, draft_id: str) -> Dict[str, Any]:

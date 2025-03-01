@@ -116,9 +116,9 @@
         }
         
         .ktc-value {
-            font-size: 12px;
-            color: #2ecc71;
-            font-weight: bold;
+            font-size: 0.8em;
+            color: #666;
+            margin: 2px 0;
         }
         
         .empty-pick {
@@ -149,9 +149,7 @@
                 <div class="pick-info">
                     <p class="player-name">{{ pick.player_name }}</p>
                     <p class="team-position">{{ pick.position }} - {{ pick.team }}</p>
-                    {% if pick.ktc_value != 'N/A' %}
-                    <p class="ktc-value">KTC: {{ pick.ktc_value }}</p>
-                    {% endif %}
+                    <p class="ktc-value">KTC: {{ pick.ktc_value|default('N/A') }}</p>
                 </div>
             </div>
             {% else %}

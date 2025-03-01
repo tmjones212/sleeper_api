@@ -1,0 +1,2502 @@
+[
+  {
+    "id": 1004,
+    "name": "Ja'Marr Chase",
+    "value": 9999
+  },
+  {
+    "id": 365,
+    "name": "Josh Allen",
+    "value": 9998
+  },
+  {
+    "id": 1552,
+    "name": "Jayden Daniels",
+    "value": 9998
+  },
+  {
+    "id": 372,
+    "name": "Lamar Jackson",
+    "value": 9947
+  },
+  {
+    "id": 542,
+    "name": "Justin Jefferson",
+    "value": 9276
+  },
+  {
+    "id": 601,
+    "name": "Joe Burrow",
+    "value": 8343
+  },
+  {
+    "id": 1586,
+    "name": "Malik Nabers",
+    "value": 8339
+  },
+  {
+    "id": 1415,
+    "name": "Jahmyr Gibbs",
+    "value": 8288
+  },
+  {
+    "id": 1612,
+    "name": "Brock Bowers",
+    "value": 8175
+  },
+  {
+    "id": 595,
+    "name": "Jalen Hurts",
+    "value": 8152
+  },
+  {
+    "id": 1414,
+    "name": "Bijan Robinson",
+    "value": 7989
+  },
+  {
+    "id": 546,
+    "name": "CeeDee Lamb",
+    "value": 7809
+  },
+  {
+    "id": 1426,
+    "name": "Puka Nacua",
+    "value": 7692
+  },
+  {
+    "id": 1589,
+    "name": "Brian Thomas Jr.",
+    "value": 7667
+  },
+  {
+    "id": 1010,
+    "name": "Amon-Ra St. Brown",
+    "value": 7644
+  },
+  {
+    "id": 272,
+    "name": "Patrick Mahomes",
+    "value": 7101
+  },
+  {
+    "id": 1040,
+    "name": "Nico Collins",
+    "value": 6883
+  },
+  {
+    "id": 1742,
+    "name": "Ashton Jeanty",
+    "value": 6881
+  },
+  {
+    "id": 599,
+    "name": "Justin Herbert",
+    "value": 6859
+  },
+  {
+    "id": 1551,
+    "name": "Drake Maye",
+    "value": 6854
+  },
+  {
+    "id": 1550,
+    "name": "Caleb Williams",
+    "value": 6690
+  },
+  {
+    "id": 1403,
+    "name": "C.J. Stroud",
+    "value": 6679
+  },
+  {
+    "id": 1268,
+    "name": "Drake London",
+    "value": 6667
+  },
+  {
+    "id": 1,
+    "name": "Saquon Barkley",
+    "value": 6640
+  },
+  {
+    "id": 1585,
+    "name": "Marvin Harrison Jr.",
+    "value": 6535
+  },
+  {
+    "id": 1253,
+    "name": "Trey McBride",
+    "value": 6534
+  },
+  {
+    "id": 1598,
+    "name": "Ladd McConkey",
+    "value": 6521
+  },
+  {
+    "id": 1553,
+    "name": "Bo Nix",
+    "value": 6481
+  },
+  {
+    "id": 1437,
+    "name": "Jaxon Smith-Njigba",
+    "value": 6466
+  },
+  {
+    "id": 1398,
+    "name": "De'Von Achane",
+    "value": 6367
+  },
+  {
+    "id": 596,
+    "name": "Jordan Love",
+    "value": 6359
+  },
+  {
+    "id": 1361,
+    "name": "2025 Early 1st",
+    "value": 6356
+  },
+  {
+    "id": 1270,
+    "name": "Garrett Wilson",
+    "value": 6281
+  },
+  {
+    "id": 217,
+    "name": "A.J. Brown",
+    "value": 6185
+  },
+  {
+    "id": 1771,
+    "name": "Tetairoa McMilan",
+    "value": 6139
+  },
+  {
+    "id": 1224,
+    "name": "Breece Hall",
+    "value": 6009
+  },
+  {
+    "id": 1569,
+    "name": "Bucky Irving",
+    "value": 5727
+  },
+  {
+    "id": 1527,
+    "name": "2026 Early 1st",
+    "value": 5725
+  },
+  {
+    "id": 379,
+    "name": "Kyler Murray",
+    "value": 5614
+  },
+  {
+    "id": 1214,
+    "name": "Brock Purdy",
+    "value": 5595
+  },
+  {
+    "id": 543,
+    "name": "Tee Higgins",
+    "value": 5556
+  },
+  {
+    "id": 634,
+    "name": "Jonathan Taylor",
+    "value": 5479
+  },
+  {
+    "id": 1730,
+    "name": "Cam Ward",
+    "value": 5468
+  },
+  {
+    "id": 215,
+    "name": "Baker Mayfield",
+    "value": 5466
+  },
+  {
+    "id": 1447,
+    "name": "Rashee Rice",
+    "value": 5447
+  },
+  {
+    "id": 1702,
+    "name": "2027 Early 1st",
+    "value": 5416
+  },
+  {
+    "id": 1226,
+    "name": "Kyren Williams",
+    "value": 5393
+  },
+  {
+    "id": 1587,
+    "name": "Rome Odunze",
+    "value": 5379
+  },
+  {
+    "id": 1554,
+    "name": "Michael Penix Jr.",
+    "value": 5377
+  },
+  {
+    "id": 1744,
+    "name": "Omarion Hampton",
+    "value": 5370
+  },
+  {
+    "id": 1094,
+    "name": "Trevor Lawrence",
+    "value": 5345
+  },
+  {
+    "id": 1231,
+    "name": "James Cook",
+    "value": 5323
+  },
+  {
+    "id": 1429,
+    "name": "Sam LaPorta",
+    "value": 5305
+  },
+  {
+    "id": 1555,
+    "name": "J.J. McCarthy",
+    "value": 5303
+  },
+  {
+    "id": 1362,
+    "name": "2025 Mid 1st",
+    "value": 5296
+  },
+  {
+    "id": 1005,
+    "name": "DeVonta Smith",
+    "value": 5279
+  },
+  {
+    "id": 1456,
+    "name": "Bryce Young",
+    "value": 5138
+  },
+  {
+    "id": 1591,
+    "name": "Xavier Worthy",
+    "value": 5086
+  },
+  {
+    "id": 1743,
+    "name": "TreVeyon Henderson",
+    "value": 5034
+  },
+  {
+    "id": 388,
+    "name": "Jared Goff",
+    "value": 4987
+  },
+  {
+    "id": 1420,
+    "name": "Jordan Addison",
+    "value": 4967
+  },
+  {
+    "id": 303,
+    "name": "Josh Jacobs",
+    "value": 4956
+  },
+  {
+    "id": 1443,
+    "name": "Zay Flowers",
+    "value": 4946
+  },
+  {
+    "id": 1802,
+    "name": "Tyler Warren",
+    "value": 4827
+  },
+  {
+    "id": 1528,
+    "name": "2026 Mid 1st",
+    "value": 4776
+  },
+  {
+    "id": 1227,
+    "name": "Kenneth Walker III",
+    "value": 4768
+  },
+  {
+    "id": 304,
+    "name": "D.J. Moore",
+    "value": 4696
+  },
+  {
+    "id": 1396,
+    "name": "Chase Brown",
+    "value": 4648
+  },
+  {
+    "id": 1770,
+    "name": "Luther Burden",
+    "value": 4645
+  },
+  {
+    "id": 1271,
+    "name": "Chris Olave",
+    "value": 4630
+  },
+  {
+    "id": 1273,
+    "name": "Jameson Williams",
+    "value": 4628
+  },
+  {
+    "id": 1007,
+    "name": "Jaylen Waddle",
+    "value": 4621
+  },
+  {
+    "id": 371,
+    "name": "Dak Prescott",
+    "value": 4609
+  },
+  {
+    "id": 1751,
+    "name": "Quinshon Judkins",
+    "value": 4608
+  },
+  {
+    "id": 1781,
+    "name": "Emeka Egbuka",
+    "value": 4608
+  },
+  {
+    "id": 1363,
+    "name": "2025 Late 1st",
+    "value": 4564
+  },
+  {
+    "id": 224,
+    "name": "DK Metcalf",
+    "value": 4551
+  },
+  {
+    "id": 1703,
+    "name": "2027 Mid 1st",
+    "value": 4536
+  },
+  {
+    "id": 328,
+    "name": "Terry McLaurin",
+    "value": 4517
+  },
+  {
+    "id": 1731,
+    "name": "Shedeur Sanders",
+    "value": 4515
+  },
+  {
+    "id": 296,
+    "name": "Derrick Henry",
+    "value": 4492
+  },
+  {
+    "id": 283,
+    "name": "Christian McCaffrey",
+    "value": 4487
+  },
+  {
+    "id": 538,
+    "name": "Brandon Aiyuk",
+    "value": 4454
+  },
+  {
+    "id": 1279,
+    "name": "George Pickens",
+    "value": 4425
+  },
+  {
+    "id": 1748,
+    "name": "Kaleb Johnson",
+    "value": 4369
+  },
+  {
+    "id": 1774,
+    "name": "Travis Hunter",
+    "value": 4366
+  },
+  {
+    "id": 600,
+    "name": "Tua Tagovailoa",
+    "value": 4365
+  },
+  {
+    "id": 1529,
+    "name": "2026 Late 1st",
+    "value": 4361
+  },
+  {
+    "id": 1014,
+    "name": "Chuba Hubbard",
+    "value": 4332
+  },
+  {
+    "id": 247,
+    "name": "T.J. Hockenson",
+    "value": 4179
+  },
+  {
+    "id": 1704,
+    "name": "2027 Late 1st",
+    "value": 4100
+  },
+  {
+    "id": 545,
+    "name": "Jerry Jeudy",
+    "value": 4063
+  },
+  {
+    "id": 1599,
+    "name": "Jalen McMillan",
+    "value": 4028
+  },
+  {
+    "id": 1419,
+    "name": "Jayden Reed",
+    "value": 4022
+  },
+  {
+    "id": 298,
+    "name": "George Kittle",
+    "value": 4019
+  },
+  {
+    "id": 288,
+    "name": "David Montgomery",
+    "value": 4011
+  },
+  {
+    "id": 331,
+    "name": "Sam Darnold",
+    "value": 4010
+  },
+  {
+    "id": 1405,
+    "name": "Anthony Richardson",
+    "value": 4000
+  },
+  {
+    "id": 286,
+    "name": "Tyreek Hill",
+    "value": 3992
+  },
+  {
+    "id": 275,
+    "name": "Mike Evans",
+    "value": 3991
+  },
+  {
+    "id": 1440,
+    "name": "Josh Downs",
+    "value": 3970
+  },
+  {
+    "id": 1593,
+    "name": "Ricky Pearsall",
+    "value": 3969
+  },
+  {
+    "id": 1364,
+    "name": "2025 Early 2nd",
+    "value": 3951
+  },
+  {
+    "id": 273,
+    "name": "Joe Mixon",
+    "value": 3943
+  },
+  {
+    "id": 1804,
+    "name": "Colston Loveland",
+    "value": 3907
+  },
+  {
+    "id": 1588,
+    "name": "Keon Coleman",
+    "value": 3897
+  },
+  {
+    "id": 1632,
+    "name": "Tyrone Tracy",
+    "value": 3881
+  },
+  {
+    "id": 1278,
+    "name": "Khalil Shakir",
+    "value": 3869
+  },
+  {
+    "id": 299,
+    "name": "Chris Godwin",
+    "value": 3843
+  },
+  {
+    "id": 1232,
+    "name": "Brian Robinson",
+    "value": 3756
+  },
+  {
+    "id": 282,
+    "name": "Alvin Kamara",
+    "value": 3690
+  },
+  {
+    "id": 1384,
+    "name": "Zach Charbonnet",
+    "value": 3674
+  },
+  {
+    "id": 1418,
+    "name": "Tucker Kraft",
+    "value": 3667
+  },
+  {
+    "id": 226,
+    "name": "Courtland Sutton",
+    "value": 3650
+  },
+  {
+    "id": 1428,
+    "name": "Dalton Kincaid",
+    "value": 3620
+  },
+  {
+    "id": 536,
+    "name": "Michael Pittman",
+    "value": 3506
+  },
+  {
+    "id": 1732,
+    "name": "Jaxson Dart",
+    "value": 3497
+  },
+  {
+    "id": 1530,
+    "name": "2026 Early 2nd",
+    "value": 3495
+  },
+  {
+    "id": 1733,
+    "name": "Jalen Milroe",
+    "value": 3488
+  },
+  {
+    "id": 1772,
+    "name": "Tre Harris",
+    "value": 3410
+  },
+  {
+    "id": 1365,
+    "name": "2025 Mid 2nd",
+    "value": 3389
+  },
+  {
+    "id": 366,
+    "name": "Mark Andrews",
+    "value": 3363
+  },
+  {
+    "id": 252,
+    "name": "David Njoku",
+    "value": 3332
+  },
+  {
+    "id": 1030,
+    "name": "Travis Etienne",
+    "value": 3324
+  },
+  {
+    "id": 1266,
+    "name": "Isiah Pacheco",
+    "value": 3318
+  },
+  {
+    "id": 1257,
+    "name": "Isaiah Likely",
+    "value": 3316
+  },
+  {
+    "id": 1051,
+    "name": "Kyle Pitts",
+    "value": 3279
+  },
+  {
+    "id": 268,
+    "name": "James Conner",
+    "value": 3270
+  },
+  {
+    "id": 1746,
+    "name": "Devin Neal",
+    "value": 3234
+  },
+  {
+    "id": 1776,
+    "name": "Isaiah Bond",
+    "value": 3230
+  },
+  {
+    "id": 1565,
+    "name": "Trey Benson",
+    "value": 3198
+  },
+  {
+    "id": 1775,
+    "name": "Matthew Golden",
+    "value": 3170
+  },
+  {
+    "id": 1015,
+    "name": "Justin Fields",
+    "value": 3153
+  },
+  {
+    "id": 1401,
+    "name": "Tank Bigsby",
+    "value": 3099
+  },
+  {
+    "id": 1610,
+    "name": "Xavier Legette",
+    "value": 3091
+  },
+  {
+    "id": 1705,
+    "name": "2027 Early 2nd",
+    "value": 3080
+  },
+  {
+    "id": 1031,
+    "name": "Najee Harris",
+    "value": 3053
+  },
+  {
+    "id": 344,
+    "name": "Tony Pollard",
+    "value": 3037
+  },
+  {
+    "id": 1568,
+    "name": "Jonathon Brooks",
+    "value": 3030
+  },
+  {
+    "id": 1531,
+    "name": "2026 Mid 2nd",
+    "value": 3022
+  },
+  {
+    "id": 1438,
+    "name": "Tank Dell",
+    "value": 3020
+  },
+  {
+    "id": 636,
+    "name": "J.K. Dobbins",
+    "value": 3015
+  },
+  {
+    "id": 1759,
+    "name": "Ollie Gordon",
+    "value": 3012
+  },
+  {
+    "id": 13,
+    "name": "Jakobi Meyers",
+    "value": 3005
+  },
+  {
+    "id": 1773,
+    "name": "Elic Ayomanor",
+    "value": 2984
+  },
+  {
+    "id": 911,
+    "name": "Darnell Mooney",
+    "value": 2980
+  },
+  {
+    "id": 1366,
+    "name": "2025 Late 2nd",
+    "value": 2977
+  },
+  {
+    "id": 1417,
+    "name": "Tyjae Spears",
+    "value": 2973
+  },
+  {
+    "id": 383,
+    "name": "Deebo Samuel",
+    "value": 2967
+  },
+  {
+    "id": 576,
+    "name": "Jauan Jennings",
+    "value": 2958
+  },
+  {
+    "id": 277,
+    "name": "Davante Adams",
+    "value": 2955
+  },
+  {
+    "id": 639,
+    "name": "D'Andre Swift",
+    "value": 2953
+  },
+  {
+    "id": 1360,
+    "name": "Rashid Shaheed",
+    "value": 2953
+  },
+  {
+    "id": 1261,
+    "name": "Cade Otton",
+    "value": 2948
+  },
+  {
+    "id": 1567,
+    "name": "Braelon Allen",
+    "value": 2927
+  },
+  {
+    "id": 671,
+    "name": "Geno Smith",
+    "value": 2900
+  },
+  {
+    "id": 1036,
+    "name": "Rhamondre Stevenson",
+    "value": 2898
+  },
+  {
+    "id": 1747,
+    "name": "Dylan Sampson",
+    "value": 2871
+  },
+  {
+    "id": 356,
+    "name": "Matthew Stafford",
+    "value": 2860
+  },
+  {
+    "id": 1258,
+    "name": "Jake Ferguson",
+    "value": 2854
+  },
+  {
+    "id": 310,
+    "name": "Cooper Kupp",
+    "value": 2853
+  },
+  {
+    "id": 1653,
+    "name": "Jalen Coker",
+    "value": 2849
+  },
+  {
+    "id": 1441,
+    "name": "Quentin Johnston",
+    "value": 2844
+  },
+  {
+    "id": 1442,
+    "name": "Marvin Mims",
+    "value": 2831
+  },
+  {
+    "id": 1238,
+    "name": "Romeo Doubs",
+    "value": 2828
+  },
+  {
+    "id": 1070,
+    "name": "Rashod Bateman",
+    "value": 2819
+  },
+  {
+    "id": 1532,
+    "name": "2026 Late 2nd",
+    "value": 2815
+  },
+  {
+    "id": 1444,
+    "name": "Cedric Tillman",
+    "value": 2812
+  },
+  {
+    "id": 1581,
+    "name": "Jaylen Wright",
+    "value": 2812
+  },
+  {
+    "id": 1734,
+    "name": "Quinn Ewers",
+    "value": 2809
+  },
+  {
+    "id": 1706,
+    "name": "2027 Mid 2nd",
+    "value": 2805
+  },
+  {
+    "id": 1201,
+    "name": "Jaylen Warren",
+    "value": 2801
+  },
+  {
+    "id": 84,
+    "name": "Jonnu Smith",
+    "value": 2771
+  },
+  {
+    "id": 1180,
+    "name": "Rachaad White",
+    "value": 2762
+  },
+  {
+    "id": 1564,
+    "name": "Blake Corum",
+    "value": 2750
+  },
+  {
+    "id": 569,
+    "name": "Cole Kmet",
+    "value": 2749
+  },
+  {
+    "id": 1597,
+    "name": "Adonai Mitchell",
+    "value": 2729
+  },
+  {
+    "id": 301,
+    "name": "Aaron Jones",
+    "value": 2722
+  },
+  {
+    "id": 1574,
+    "name": "Ray Davis",
+    "value": 2679
+  },
+  {
+    "id": 1053,
+    "name": "Pat Freiermuth",
+    "value": 2664
+  },
+  {
+    "id": 293,
+    "name": "Calvin Ridley",
+    "value": 2647
+  },
+  {
+    "id": 1614,
+    "name": "Ja'Tavion Sanders",
+    "value": 2644
+  },
+  {
+    "id": 382,
+    "name": "Dallas Goedert",
+    "value": 2615
+  },
+  {
+    "id": 555,
+    "name": "Rico Dowdle",
+    "value": 2605
+  },
+  {
+    "id": 1248,
+    "name": "Christian Watson",
+    "value": 2602
+  },
+  {
+    "id": 1615,
+    "name": "Ben Sinnott",
+    "value": 2595
+  },
+  {
+    "id": 229,
+    "name": "Evan Engram",
+    "value": 2593
+  },
+  {
+    "id": 1768,
+    "name": "RJ Harvey",
+    "value": 2576
+  },
+  {
+    "id": 1468,
+    "name": "Demario Douglas",
+    "value": 2571
+  },
+  {
+    "id": 1626,
+    "name": "Isaac Guerendo",
+    "value": 2556
+  },
+  {
+    "id": 1448,
+    "name": "Dontayvion Wicks",
+    "value": 2547
+  },
+  {
+    "id": 1707,
+    "name": "2027 Late 2nd",
+    "value": 2539
+  },
+  {
+    "id": 264,
+    "name": "Travis Kelce",
+    "value": 2535
+  },
+  {
+    "id": 311,
+    "name": "Marquise Brown",
+    "value": 2532
+  },
+  {
+    "id": 1228,
+    "name": "Tyler Allgeier",
+    "value": 2526
+  },
+  {
+    "id": 262,
+    "name": "Stefon Diggs",
+    "value": 2511
+  },
+  {
+    "id": 221,
+    "name": "Christian Kirk",
+    "value": 2510
+  },
+  {
+    "id": 1033,
+    "name": "Javonte Williams",
+    "value": 2481
+  },
+  {
+    "id": 1274,
+    "name": "Wan'Dale Robinson",
+    "value": 2480
+  },
+  {
+    "id": 1590,
+    "name": "Troy Franklin",
+    "value": 2464
+  },
+  {
+    "id": 1367,
+    "name": "2025 Early 3rd",
+    "value": 2462
+  },
+  {
+    "id": 1808,
+    "name": "Elijah Arroyo",
+    "value": 2455
+  },
+  {
+    "id": 1756,
+    "name": "Trevor Etienne",
+    "value": 2434
+  },
+  {
+    "id": 1575,
+    "name": "MarShawn Lloyd",
+    "value": 2427
+  },
+  {
+    "id": 1386,
+    "name": "Kendre Miller",
+    "value": 2425
+  },
+  {
+    "id": 1285,
+    "name": "Alec Pierce",
+    "value": 2421
+  },
+  {
+    "id": 1736,
+    "name": "Will Howard",
+    "value": 2417
+  },
+  {
+    "id": 269,
+    "name": "Amari Cooper",
+    "value": 2394
+  },
+  {
+    "id": 1229,
+    "name": "Jerome Ford",
+    "value": 2393
+  },
+  {
+    "id": 1330,
+    "name": "Jordan Mason",
+    "value": 2384
+  },
+  {
+    "id": 1566,
+    "name": "Audric Estime",
+    "value": 2381
+  },
+  {
+    "id": 85,
+    "name": "Derek Carr",
+    "value": 2363
+  },
+  {
+    "id": 257,
+    "name": "Russell Wilson",
+    "value": 2363
+  },
+  {
+    "id": 1777,
+    "name": "Xavier Restrepo",
+    "value": 2344
+  },
+  {
+    "id": 1059,
+    "name": "Noah Gray",
+    "value": 2333
+  },
+  {
+    "id": 1368,
+    "name": "2025 Mid 3rd",
+    "value": 2308
+  },
+  {
+    "id": 1737,
+    "name": "Dillon Gabriel",
+    "value": 2298
+  },
+  {
+    "id": 1422,
+    "name": "Andrei Iosivas",
+    "value": 2266
+  },
+  {
+    "id": 1461,
+    "name": "Brenton Strange",
+    "value": 2249
+  },
+  {
+    "id": 1620,
+    "name": "Theo Johnson",
+    "value": 2241
+  },
+  {
+    "id": 1604,
+    "name": "Jordan Whittington",
+    "value": 2221
+  },
+  {
+    "id": 1446,
+    "name": "Kayshon Boutte",
+    "value": 2220
+  },
+  {
+    "id": 1533,
+    "name": "2026 Early 3rd",
+    "value": 2220
+  },
+  {
+    "id": 265,
+    "name": "Keenan Allen",
+    "value": 2213
+  },
+  {
+    "id": 1320,
+    "name": "Chigoziem Okonkwo",
+    "value": 2205
+  },
+  {
+    "id": 396,
+    "name": "Kirk Cousins",
+    "value": 2168
+  },
+  {
+    "id": 487,
+    "name": "Dalton Schultz",
+    "value": 2159
+  },
+  {
+    "id": 1390,
+    "name": "Roschon Johnson",
+    "value": 2137
+  },
+  {
+    "id": 1369,
+    "name": "2025 Late 3rd",
+    "value": 2103
+  },
+  {
+    "id": 1421,
+    "name": "Michael Wilson",
+    "value": 2103
+  },
+  {
+    "id": 1486,
+    "name": "Jaleel McLaughlin",
+    "value": 2103
+  },
+  {
+    "id": 1430,
+    "name": "Luke Musgrave",
+    "value": 2100
+  },
+  {
+    "id": 1402,
+    "name": "Will Levis",
+    "value": 2084
+  },
+  {
+    "id": 1806,
+    "name": "Mason Taylor",
+    "value": 2078
+  },
+  {
+    "id": 1602,
+    "name": "Ja'Lynn Polk",
+    "value": 2077
+  },
+  {
+    "id": 1745,
+    "name": "Cam Skattebo",
+    "value": 2065
+  },
+  {
+    "id": 1534,
+    "name": "2026 Mid 3rd",
+    "value": 2061
+  },
+  {
+    "id": 1393,
+    "name": "Keaton Mitchell",
+    "value": 2046
+  },
+  {
+    "id": 1600,
+    "name": "Roman Wilson",
+    "value": 2044
+  },
+  {
+    "id": 1623,
+    "name": "Malik Washington",
+    "value": 2044
+  },
+  {
+    "id": 1556,
+    "name": "Joe Milton",
+    "value": 2040
+  },
+  {
+    "id": 1445,
+    "name": "Parker Washington",
+    "value": 2039
+  },
+  {
+    "id": 1606,
+    "name": "Luke McCaffrey",
+    "value": 2025
+  },
+  {
+    "id": 1708,
+    "name": "2027 Early 3rd",
+    "value": 2005
+  },
+  {
+    "id": 87,
+    "name": "Daniel Jones",
+    "value": 1991
+  },
+  {
+    "id": 1069,
+    "name": "Dyami Brown",
+    "value": 1988
+  },
+  {
+    "id": 1012,
+    "name": "Elijah Moore",
+    "value": 1983
+  },
+  {
+    "id": 1803,
+    "name": "Harold Fannin",
+    "value": 1972
+  },
+  {
+    "id": 274,
+    "name": "Nick Chubb",
+    "value": 1960
+  },
+  {
+    "id": 212,
+    "name": "Hunter Henry",
+    "value": 1938
+  },
+  {
+    "id": 1427,
+    "name": "Michael Mayer",
+    "value": 1938
+  },
+  {
+    "id": 1460,
+    "name": "Tre Tucker",
+    "value": 1922
+  },
+  {
+    "id": 1065,
+    "name": "Joshua Palmer",
+    "value": 1917
+  },
+  {
+    "id": 1535,
+    "name": "2026 Late 3rd",
+    "value": 1917
+  },
+  {
+    "id": 1805,
+    "name": "Gunnar Helm",
+    "value": 1910
+  },
+  {
+    "id": 385,
+    "name": "Austin Ekeler",
+    "value": 1909
+  },
+  {
+    "id": 1709,
+    "name": "2027 Mid 3rd",
+    "value": 1905
+  },
+  {
+    "id": 1755,
+    "name": "Jordan James",
+    "value": 1897
+  },
+  {
+    "id": 1636,
+    "name": "Kimani Vidal",
+    "value": 1897
+  },
+  {
+    "id": 1739,
+    "name": "Tyler Shough",
+    "value": 1894
+  },
+  {
+    "id": 1276,
+    "name": "John Metchie",
+    "value": 1882
+  },
+  {
+    "id": 1754,
+    "name": "Damien Martinez",
+    "value": 1856
+  },
+  {
+    "id": 1807,
+    "name": "Terrance Ferguson",
+    "value": 1841
+  },
+  {
+    "id": 1400,
+    "name": "Sean Tucker",
+    "value": 1835
+  },
+  {
+    "id": 1557,
+    "name": "Spencer Rattler",
+    "value": 1830
+  },
+  {
+    "id": 1616,
+    "name": "Erick All",
+    "value": 1810
+  },
+  {
+    "id": 1643,
+    "name": "Devaughn Vele",
+    "value": 1796
+  },
+  {
+    "id": 330,
+    "name": "Mike Gesicki",
+    "value": 1776
+  },
+  {
+    "id": 1572,
+    "name": "Will Shipley",
+    "value": 1772
+  },
+  {
+    "id": 1247,
+    "name": "Jalen Tolbert",
+    "value": 1771
+  },
+  {
+    "id": 305,
+    "name": "Zach Ertz",
+    "value": 1770
+  },
+  {
+    "id": 413,
+    "name": "Jameis Winston",
+    "value": 1759
+  },
+  {
+    "id": 1710,
+    "name": "2027 Late 3rd",
+    "value": 1741
+  },
+  {
+    "id": 280,
+    "name": "DeAndre Hopkins",
+    "value": 1736
+  },
+  {
+    "id": 1245,
+    "name": "Jalen Nailor",
+    "value": 1730
+  },
+  {
+    "id": 1635,
+    "name": "Isaiah Davis",
+    "value": 1723
+  },
+  {
+    "id": 1210,
+    "name": "Malik Willis",
+    "value": 1711
+  },
+  {
+    "id": 368,
+    "name": "Justice Hill",
+    "value": 1701
+  },
+  {
+    "id": 308,
+    "name": "Adam Thielen",
+    "value": 1693
+  },
+  {
+    "id": 1608,
+    "name": "Javon Baker",
+    "value": 1679
+  },
+  {
+    "id": 1811,
+    "name": "Luke Lachey",
+    "value": 1677
+  },
+  {
+    "id": 1786,
+    "name": "Jalen Royals",
+    "value": 1664
+  },
+  {
+    "id": 1370,
+    "name": "2025 Early 4th",
+    "value": 1652
+  },
+  {
+    "id": 1272,
+    "name": "Jahan Dotson",
+    "value": 1649
+  },
+  {
+    "id": 1412,
+    "name": "Aidan O'Connell",
+    "value": 1645
+  },
+  {
+    "id": 1607,
+    "name": "Malachi Corley",
+    "value": 1636
+  },
+  {
+    "id": 533,
+    "name": "Gabriel Davis",
+    "value": 1634
+  },
+  {
+    "id": 1603,
+    "name": "Jermaine Burton",
+    "value": 1631
+  },
+  {
+    "id": 243,
+    "name": "Noah Fant",
+    "value": 1621
+  },
+  {
+    "id": 214,
+    "name": "Kareem Hunt",
+    "value": 1619
+  },
+  {
+    "id": 638,
+    "name": "Zack Moss",
+    "value": 1619
+  },
+  {
+    "id": 1262,
+    "name": "Calvin Austin III",
+    "value": 1612
+  },
+  {
+    "id": 238,
+    "name": "Devin Singletary",
+    "value": 1598
+  },
+  {
+    "id": 950,
+    "name": "Nick Westbrook-Ikhine",
+    "value": 1592
+  },
+  {
+    "id": 1371,
+    "name": "2025 Mid 4th",
+    "value": 1588
+  },
+  {
+    "id": 1202,
+    "name": "Sincere McCormick",
+    "value": 1582
+  },
+  {
+    "id": 1382,
+    "name": "Luke Schoonmaker",
+    "value": 1580
+  },
+  {
+    "id": 1018,
+    "name": "Mac Jones",
+    "value": 1579
+  },
+  {
+    "id": 531,
+    "name": "Cam Akers",
+    "value": 1571
+  },
+  {
+    "id": 1783,
+    "name": "Jayden Higgins",
+    "value": 1566
+  },
+  {
+    "id": 584,
+    "name": "Antonio Gibson",
+    "value": 1558
+  },
+  {
+    "id": 1454,
+    "name": "Xavier Hutchinson",
+    "value": 1551
+  },
+  {
+    "id": 1452,
+    "name": "Trey Palmer",
+    "value": 1543
+  },
+  {
+    "id": 1780,
+    "name": "Jaylin Noel",
+    "value": 1537
+  },
+  {
+    "id": 1207,
+    "name": "Dameon Pierce",
+    "value": 1533
+  },
+  {
+    "id": 575,
+    "name": "Juwan Johnson",
+    "value": 1527
+  },
+  {
+    "id": 1209,
+    "name": "Sam Howell",
+    "value": 1524
+  },
+  {
+    "id": 1613,
+    "name": "Cade Stover",
+    "value": 1524
+  },
+  {
+    "id": 1536,
+    "name": "2026 Early 4th",
+    "value": 1522
+  },
+  {
+    "id": 1032,
+    "name": "Kenneth Gainwell",
+    "value": 1520
+  },
+  {
+    "id": 88,
+    "name": "Dawson Knox",
+    "value": 1498
+  },
+  {
+    "id": 1078,
+    "name": "Tutu Atwell",
+    "value": 1494
+  },
+  {
+    "id": 1629,
+    "name": "AJ Barner",
+    "value": 1491
+  },
+  {
+    "id": 1779,
+    "name": "Tez Johnson",
+    "value": 1488
+  },
+  {
+    "id": 6,
+    "name": "Ty Johnson",
+    "value": 1485
+  },
+  {
+    "id": 1515,
+    "name": "Emanuel Wilson",
+    "value": 1484
+  },
+  {
+    "id": 1372,
+    "name": "2025 Late 4th",
+    "value": 1481
+  },
+  {
+    "id": 1399,
+    "name": "Jalin Hyatt",
+    "value": 1479
+  },
+  {
+    "id": 1537,
+    "name": "2026 Mid 4th",
+    "value": 1461
+  },
+  {
+    "id": 235,
+    "name": "Aaron Rodgers",
+    "value": 1441
+  },
+  {
+    "id": 994,
+    "name": "Khalil Herbert",
+    "value": 1440
+  },
+  {
+    "id": 326,
+    "name": "Alexander Mattison",
+    "value": 1439
+  },
+  {
+    "id": 338,
+    "name": "Diontae Johnson",
+    "value": 1438
+  },
+  {
+    "id": 1006,
+    "name": "Rondale Moore",
+    "value": 1438
+  },
+  {
+    "id": 1735,
+    "name": "Riley Leonard",
+    "value": 1437
+  },
+  {
+    "id": 77,
+    "name": "Darius Slayton",
+    "value": 1433
+  },
+  {
+    "id": 47,
+    "name": "Gardner Minshew",
+    "value": 1430
+  },
+  {
+    "id": 244,
+    "name": "Curtis Samuel",
+    "value": 1417
+  },
+  {
+    "id": 646,
+    "name": "Ray-Ray McCloud",
+    "value": 1417
+  },
+  {
+    "id": 1711,
+    "name": "2027 Early 4th",
+    "value": 1393
+  },
+  {
+    "id": 86,
+    "name": "Will Dissly",
+    "value": 1392
+  },
+  {
+    "id": 1778,
+    "name": "Jack Bech",
+    "value": 1387
+  },
+  {
+    "id": 10,
+    "name": "Greg Dortch",
+    "value": 1384
+  },
+  {
+    "id": 1592,
+    "name": "Devontez Walker",
+    "value": 1369
+  },
+  {
+    "id": 1230,
+    "name": "Zamir White",
+    "value": 1363
+  },
+  {
+    "id": 609,
+    "name": "Olamide Zaccheaus",
+    "value": 1358
+  },
+  {
+    "id": 1431,
+    "name": "Darnell Washington",
+    "value": 1356
+  },
+  {
+    "id": 1611,
+    "name": "Jacob Cowing",
+    "value": 1348
+  },
+  {
+    "id": 150,
+    "name": "Taysom Hill",
+    "value": 1347
+  },
+  {
+    "id": 1798,
+    "name": "Tory Horton",
+    "value": 1342
+  },
+  {
+    "id": 1450,
+    "name": "Jonathan Mingo",
+    "value": 1325
+  },
+  {
+    "id": 1560,
+    "name": "Jordan Travis",
+    "value": 1313
+  },
+  {
+    "id": 1538,
+    "name": "2026 Late 4th",
+    "value": 1309
+  },
+  {
+    "id": 76,
+    "name": "Gus Edwards",
+    "value": 1299
+  },
+  {
+    "id": 1741,
+    "name": "Kurtis Rourke",
+    "value": 1298
+  },
+  {
+    "id": 1761,
+    "name": "LeQuint Allen",
+    "value": 1289
+  },
+  {
+    "id": 565,
+    "name": "Colby Parkinson",
+    "value": 1262
+  },
+  {
+    "id": 1712,
+    "name": "2027 Mid 4th",
+    "value": 1256
+  },
+  {
+    "id": 1016,
+    "name": "Zach Wilson",
+    "value": 1254
+  },
+  {
+    "id": 285,
+    "name": "Tyler Lockett",
+    "value": 1241
+  },
+  {
+    "id": 1013,
+    "name": "Elijah Mitchell",
+    "value": 1237
+  },
+  {
+    "id": 159,
+    "name": "Tyler Higbee",
+    "value": 1221
+  },
+  {
+    "id": 1389,
+    "name": "Chris Rodriguez",
+    "value": 1209
+  },
+  {
+    "id": 1182,
+    "name": "Ty Chandler",
+    "value": 1205
+  },
+  {
+    "id": 1017,
+    "name": "Trey Lance",
+    "value": 1203
+  },
+  {
+    "id": 1322,
+    "name": "Daniel Bellinger",
+    "value": 1200
+  },
+  {
+    "id": 33,
+    "name": "Drew Lock",
+    "value": 1193
+  },
+  {
+    "id": 1634,
+    "name": "Bub Means",
+    "value": 1184
+  },
+  {
+    "id": 1263,
+    "name": "Grant Calcaterra",
+    "value": 1176
+  },
+  {
+    "id": 489,
+    "name": "Tyler Conklin",
+    "value": 1172
+  },
+  {
+    "id": 1404,
+    "name": "Hendon Hooker",
+    "value": 1172
+  },
+  {
+    "id": 1054,
+    "name": "Tommy Tremble",
+    "value": 1170
+  },
+  {
+    "id": 1631,
+    "name": "Rasheen Ali",
+    "value": 1165
+  },
+  {
+    "id": 1269,
+    "name": "Treylon Burks",
+    "value": 1159
+  },
+  {
+    "id": 1644,
+    "name": "Tahj Washington",
+    "value": 1148
+  },
+  {
+    "id": 153,
+    "name": "Kendrick Bourne",
+    "value": 1141
+  },
+  {
+    "id": 1760,
+    "name": "DJ Giddens",
+    "value": 1140
+  },
+  {
+    "id": 1383,
+    "name": "Israel Abanikanda",
+    "value": 1135
+  },
+  {
+    "id": 1208,
+    "name": "Kenny Pickett",
+    "value": 1132
+  },
+  {
+    "id": 1244,
+    "name": "Bo Melton",
+    "value": 1121
+  },
+  {
+    "id": 776,
+    "name": "Noah Brown",
+    "value": 1110
+  },
+  {
+    "id": 1769,
+    "name": "Jaydon Blue",
+    "value": 1104
+  },
+  {
+    "id": 1594,
+    "name": "Brenden Rice",
+    "value": 1103
+  },
+  {
+    "id": 1619,
+    "name": "Jared Wiley",
+    "value": 1092
+  },
+  {
+    "id": 52,
+    "name": "Demarcus Robinson",
+    "value": 1091
+  },
+  {
+    "id": 276,
+    "name": "JuJu Smith-Schuster",
+    "value": 1078
+  },
+  {
+    "id": 1596,
+    "name": "Johnny Wilson",
+    "value": 1076
+  },
+  {
+    "id": 1256,
+    "name": "Greg Dulcich",
+    "value": 1073
+  },
+  {
+    "id": 307,
+    "name": "Brandin Cooks",
+    "value": 1069
+  },
+  {
+    "id": 572,
+    "name": "Tyler Johnson",
+    "value": 1069
+  },
+  {
+    "id": 1052,
+    "name": "Brevin Jordan",
+    "value": 1048
+  },
+  {
+    "id": 1713,
+    "name": "2027 Late 4th",
+    "value": 1045
+  },
+  {
+    "id": 1504,
+    "name": "Xavier Gipson",
+    "value": 1039
+  },
+  {
+    "id": 1434,
+    "name": "Davis Allen",
+    "value": 1037
+  },
+  {
+    "id": 1336,
+    "name": "KaVontae Turpin",
+    "value": 1036
+  },
+  {
+    "id": 1411,
+    "name": "Dorian Thompson-Robinson",
+    "value": 1026
+  },
+  {
+    "id": 1583,
+    "name": "Carson Steele",
+    "value": 1014
+  },
+  {
+    "id": 767,
+    "name": "Mack Hollins",
+    "value": 1001
+  },
+  {
+    "id": 1189,
+    "name": "Tyler Goodson",
+    "value": 1000
+  },
+  {
+    "id": 1627,
+    "name": "Sione Vaki",
+    "value": 996
+  },
+  {
+    "id": 1570,
+    "name": "Frank Gore Jr.",
+    "value": 994
+  },
+  {
+    "id": 1584,
+    "name": "Dylan Laube",
+    "value": 993
+  },
+  {
+    "id": 179,
+    "name": "Foster Moreau",
+    "value": 984
+  },
+  {
+    "id": 1481,
+    "name": "Emari Demercado",
+    "value": 984
+  },
+  {
+    "id": 222,
+    "name": "Miles Sanders",
+    "value": 981
+  },
+  {
+    "id": 1488,
+    "name": "Jake Bobo",
+    "value": 971
+  },
+  {
+    "id": 1385,
+    "name": "Kenny McIntosh",
+    "value": 968
+  },
+  {
+    "id": 1595,
+    "name": "Jamari Thrash",
+    "value": 967
+  },
+  {
+    "id": 1376,
+    "name": "Stone Smartt",
+    "value": 965
+  },
+  {
+    "id": 1799,
+    "name": "Oronde Gadsen II",
+    "value": 964
+  },
+  {
+    "id": 1206,
+    "name": "Tyler Badie",
+    "value": 963
+  },
+  {
+    "id": 261,
+    "name": "Deshaun Watson",
+    "value": 962
+  },
+  {
+    "id": 206,
+    "name": "Tim Patrick",
+    "value": 950
+  },
+  {
+    "id": 230,
+    "name": "Mike Williams",
+    "value": 948
+  },
+  {
+    "id": 788,
+    "name": "Cooper Rush",
+    "value": 943
+  },
+  {
+    "id": 1034,
+    "name": "Trey Sermon",
+    "value": 929
+  },
+  {
+    "id": 1686,
+    "name": "Mason Tipton",
+    "value": 904
+  },
+  {
+    "id": 1035,
+    "name": "Michael Carter",
+    "value": 890
+  },
+  {
+    "id": 110,
+    "name": "Mason Rudolph",
+    "value": 881
+  },
+  {
+    "id": 1576,
+    "name": "Jase McClellan",
+    "value": 881
+  },
+  {
+    "id": 46,
+    "name": "Allen Lazard",
+    "value": 880
+  },
+  {
+    "id": 177,
+    "name": "Lil'Jordan Humphrey",
+    "value": 879
+  },
+  {
+    "id": 1213,
+    "name": "Desmond Ridder",
+    "value": 877
+  },
+  {
+    "id": 1391,
+    "name": "Deuce Vaughn",
+    "value": 877
+  },
+  {
+    "id": 1191,
+    "name": "Hassan Haskins",
+    "value": 871
+  },
+  {
+    "id": 1490,
+    "name": "Chris Brooks",
+    "value": 871
+  },
+  {
+    "id": 1624,
+    "name": "Ainias Smith",
+    "value": 871
+  },
+  {
+    "id": 1305,
+    "name": "Jelani Woods",
+    "value": 867
+  },
+  {
+    "id": 1469,
+    "name": "Elijah Higgins",
+    "value": 859
+  },
+  {
+    "id": 1473,
+    "name": "Derius Davis",
+    "value": 851
+  },
+  {
+    "id": 1008,
+    "name": "Tylan Wallace",
+    "value": 850
+  },
+  {
+    "id": 178,
+    "name": "Justin Watson",
+    "value": 849
+  },
+  {
+    "id": 1436,
+    "name": "Tyler Scott",
+    "value": 848
+  },
+  {
+    "id": 1085,
+    "name": "Terrace Marshall",
+    "value": 845
+  },
+  {
+    "id": 912,
+    "name": "K.J. Osborn",
+    "value": 838
+  },
+  {
+    "id": 631,
+    "name": "AJ Dillon",
+    "value": 836
+  },
+  {
+    "id": 43,
+    "name": "Raheem Mostert",
+    "value": 834
+  },
+  {
+    "id": 369,
+    "name": "Marquez Valdes-Scantling",
+    "value": 833
+  },
+  {
+    "id": 1388,
+    "name": "Eric Gray",
+    "value": 833
+  },
+  {
+    "id": 459,
+    "name": "Jake Browning",
+    "value": 829
+  },
+  {
+    "id": 404,
+    "name": "Mecole Hardman",
+    "value": 827
+  },
+  {
+    "id": 618,
+    "name": "Tyler Huntley",
+    "value": 824
+  },
+  {
+    "id": 578,
+    "name": "Van Jefferson",
+    "value": 813
+  },
+  {
+    "id": 327,
+    "name": "Zay Jones",
+    "value": 808
+  },
+  {
+    "id": 1749,
+    "name": "Brashard Smith",
+    "value": 797
+  },
+  {
+    "id": 1204,
+    "name": "Pierre Strong Jr.",
+    "value": 794
+  },
+  {
+    "id": 23,
+    "name": "Marcus Mariota",
+    "value": 793
+  },
+  {
+    "id": 231,
+    "name": "Tyler Boyd",
+    "value": 791
+  },
+  {
+    "id": 1255,
+    "name": "Jeremy Ruckert",
+    "value": 791
+  },
+  {
+    "id": 1275,
+    "name": "David Bell",
+    "value": 791
+  },
+  {
+    "id": 358,
+    "name": "D'Onta Foreman",
+    "value": 788
+  },
+  {
+    "id": 1283,
+    "name": "Skyy Moore",
+    "value": 782
+  },
+  {
+    "id": 361,
+    "name": "D.J. Chark",
+    "value": 779
+  },
+  {
+    "id": 1753,
+    "name": "Woody Marks",
+    "value": 779
+  },
+  {
+    "id": 1738,
+    "name": "Kyle McCord",
+    "value": 773
+  },
+  {
+    "id": 1162,
+    "name": "Brock Wright",
+    "value": 772
+  },
+  {
+    "id": 1617,
+    "name": "Jaheim Bell",
+    "value": 772
+  },
+  {
+    "id": 61,
+    "name": "Josh Reynolds",
+    "value": 758
+  },
+  {
+    "id": 566,
+    "name": "Adam Trautman",
+    "value": 754
+  },
+  {
+    "id": 785,
+    "name": "Samaje Perine",
+    "value": 754
+  },
+  {
+    "id": 7,
+    "name": "Josh Oliver",
+    "value": 746
+  },
+  {
+    "id": 1577,
+    "name": "Kendall Milton",
+    "value": 746
+  },
+  {
+    "id": 1451,
+    "name": "Rakim Jarrett",
+    "value": 737
+  },
+  {
+    "id": 20,
+    "name": "Jacoby Brissett",
+    "value": 736
+  },
+  {
+    "id": 1449,
+    "name": "A.T. Perry",
+    "value": 730
+  },
+  {
+    "id": 822,
+    "name": "Kalif Raymond",
+    "value": 716
+  },
+  {
+    "id": 1502,
+    "name": "Malik Heath",
+    "value": 711
+  },
+  {
+    "id": 633,
+    "name": "Clyde Edwards-Helaire",
+    "value": 707
+  },
+  {
+    "id": 1471,
+    "name": "Josh Whyle",
+    "value": 700
+  },
+  {
+    "id": 1642,
+    "name": "Ryan Flournoy",
+    "value": 696
+  },
+  {
+    "id": 1325,
+    "name": "Julius Chestnut",
+    "value": 689
+  },
+  {
+    "id": 4,
+    "name": "David Moore",
+    "value": 679
+  },
+  {
+    "id": 541,
+    "name": "KJ Hamler",
+    "value": 677
+  },
+  {
+    "id": 1328,
+    "name": "Lucas Krull",
+    "value": 671
+  },
+  {
+    "id": 1119,
+    "name": "Kylen Granson",
+    "value": 670
+  },
+  {
+    "id": 561,
+    "name": "Isaiah Hodgins",
+    "value": 664
+  },
+  {
+    "id": 8,
+    "name": "Hayden Hurst",
+    "value": 662
+  },
+  {
+    "id": 498,
+    "name": "Cedrick Wilson",
+    "value": 655
+  },
+  {
+    "id": 435,
+    "name": "Drew Sample",
+    "value": 654
+  },
+  {
+    "id": 604,
+    "name": "Craig Reynolds",
+    "value": 644
+  },
+  {
+    "id": 1349,
+    "name": "Peyton Hendershot",
+    "value": 643
+  },
+  {
+    "id": 692,
+    "name": "Ameer Abdullah",
+    "value": 641
+  },
+  {
+    "id": 1520,
+    "name": "Tommy DeVito",
+    "value": 636
+  },
+  {
+    "id": 560,
+    "name": "Devin Duvernay",
+    "value": 632
+  },
+  {
+    "id": 255,
+    "name": "Sterling Shepard",
+    "value": 624
+  },
+  {
+    "id": 722,
+    "name": "Joe Flacco",
+    "value": 624
+  },
+  {
+    "id": 1478,
+    "name": "Tyson Bagent",
+    "value": 617
+  },
+  {
+    "id": 539,
+    "name": "Jalen Reagor",
+    "value": 616
+  },
+  {
+    "id": 821,
+    "name": "Joshua Dobbs",
+    "value": 608
+  },
+  {
+    "id": 384,
+    "name": "Austin Hooper",
+    "value": 605
+  },
+  {
+    "id": 1280,
+    "name": "Justyn Ross",
+    "value": 603
+  },
+  {
+    "id": 1331,
+    "name": "Raheem Blackshear",
+    "value": 601
+  },
+  {
+    "id": 1246,
+    "name": "Tyquan Thornton",
+    "value": 591
+  },
+  {
+    "id": 1409,
+    "name": "Jake Haener",
+    "value": 587
+  },
+  {
+    "id": 1185,
+    "name": "Ronnie Rivers",
+    "value": 584
+  },
+  {
+    "id": 339,
+    "name": "Jamaal Williams",
+    "value": 582
+  },
+  {
+    "id": 1019,
+    "name": "Kyle Trask",
+    "value": 569
+  },
+  {
+    "id": 445,
+    "name": "D'Ernest Johnson",
+    "value": 557
+  },
+  {
+    "id": 621,
+    "name": "DeeJay Dallas",
+    "value": 557
+  },
+  {
+    "id": 1073,
+    "name": "Anthony Schwartz",
+    "value": 540
+  },
+  {
+    "id": 1212,
+    "name": "Bailey Zappe",
+    "value": 540
+  },
+  {
+    "id": 399,
+    "name": "Irv Smith",
+    "value": 538
+  },
+  {
+    "id": 160,
+    "name": "Travis Homer",
+    "value": 516
+  },
+  {
+    "id": 1346,
+    "name": "DJ Turner",
+    "value": 514
+  },
+  {
+    "id": 1225,
+    "name": "Isaiah Spiller",
+    "value": 512
+  },
+  {
+    "id": 1056,
+    "name": "Hunter Long",
+    "value": 510
+  },
+  {
+    "id": 1455,
+    "name": "Charlie Jones",
+    "value": 510
+  },
+  {
+    "id": 1254,
+    "name": "Charlie Kolar",
+    "value": 507
+  },
+  {
+    "id": 1425,
+    "name": "Justin Shorter",
+    "value": 500
+  },
+  {
+    "id": 70,
+    "name": "Trey Quinn",
+    "value": 0
+  }
+]
