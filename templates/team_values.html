@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ league_name }} - Team Values</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .team-container {
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .team-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .player-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .player-name {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .player-position {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        .player-value {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .draft-picks {
+            margin-top: 20px;
+        }
+        .draft-pick {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .draft-pick:last-child {
+            border-bottom: none;
+        }
+        .league-summary {
+            margin-bottom: 30px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ league_name }} - Team Values</h1>
+    
+    <div class="league-summary">
+        <p>Total teams: {{ teams|length }}</p>
+        <p>Report generated: {{ generated_date }}</p>
+    </div>
+    
+    {% for team in teams %}
+    <div class="team-container">
+        <div class="team-header">
+            <h2>{{ loop.index }}. {{ team.team_name }}</h2>
+            <div class="team-value">Total Value: {{ team.total_value }}</div>
+        </div>
+        
+        <h3>Players</h3>
+        <div class="player-grid">
+            {% for player in team.players %}
+            <div class="player-card">
+                <img src="{{ player.image_url }}" alt="{{ player.name }}" class="player-image" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'">
+                <div class="player-name">{{ player.name }}</div>
+                <div class="player-position">{{ player.position }}</div>
+                <div class="player-value">Value: {{ player.ktc_value }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if team.draft_picks %}
+        <div class="draft-picks">
+            <h3>Draft Picks</h3>
+            {% for pick in team.draft_picks %}
+            <div class="draft-pick">
+                <div>{{ pick.name }} ({{ pick.original_owner }})</div>
+                <div class="player-value">Value: {{ pick.ktc_value }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+    <div class="footer">
+        <p>Values sourced from KeepTradeCut.com</p>
+    </div>
+</body>
+</html> 
