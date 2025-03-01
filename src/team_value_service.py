@@ -5,7 +5,7 @@ from datetime import datetime
 import webbrowser
 from jinja2 import Environment, FileSystemLoader
 from ktc_service import KTCService
-from league_service import LeagueService
+from player_service import PlayerService
 
 class TeamValueService:
     def __init__(self, client):
@@ -49,7 +49,8 @@ class TeamValueService:
                 'player_count': 0,
                 'avg_age': 0,
                 'starter_value': 0,
-                'avg_starter_value': 0
+                'avg_starter_value': 0,
+                'starters': []
             }
             
             # Process players
@@ -69,7 +70,9 @@ class TeamValueService:
                     'name': player_name,
                     'position': player_position,
                     'ktc_value': ktc_value,
-                    'age': player_age
+                    'age': player_age,
+                    'is_starter': False,
+                    'starter_position': ''
                 })
                 
                 team_data['total_value'] += ktc_value
@@ -90,14 +93,22 @@ class TeamValueService:
             # Sort players by KTC value (highest first)
             team_data['players'].sort(key=lambda x: x['ktc_value'], reverse=True)
             
-            # Calculate starter value
-            starter_value, avg_starter_value = self._calculate_starter_value(
+            # Calculate starter value and identify starters
+            starter_value, avg_starter_value, starters = self._calculate_starter_value(
                 team_data['players'], 
                 league.roster_positions,
                 use_qb_for_superflex_if_possible
             )
             team_data['starter_value'] = starter_value
             team_data['avg_starter_value'] = avg_starter_value
+            team_data['starters'] = starters
+            
+            # Mark players as starters in the players list
+            for starter in starters:
+                for player in team_data['players']:
+                    if player['name'] == starter['name']:
+                        player['is_starter'] = True
+                        player['starter_position'] = starter['starter_position']
             
             team_values.append(team_data)
         
@@ -128,7 +139,9 @@ class TeamValueService:
                 if qbs and len(qbs) > 0:
                     for i, player in enumerate(qbs):
                         if player['name'] not in used_players:
-                            starters.append(player)
+                            starter_player = player.copy()
+                            starter_player['starter_position'] = 'QB'
+                            starters.append(starter_player)
                             used_players.add(player['name'])
                             qbs.pop(i)
                             break
@@ -136,7 +149,9 @@ class TeamValueService:
                 if rbs and len(rbs) > 0:
                     for i, player in enumerate(rbs):
                         if player['name'] not in used_players:
-                            starters.append(player)
+                            starter_player = player.copy()
+                            starter_player['starter_position'] = 'RB'
+                            starters.append(starter_player)
                             used_players.add(player['name'])
                             rbs.pop(i)
                             break
@@ -144,7 +159,9 @@ class TeamValueService:
                 if wrs and len(wrs) > 0:
                     for i, player in enumerate(wrs):
                         if player['name'] not in used_players:
-                            starters.append(player)
+                            starter_player = player.copy()
+                            starter_player['starter_position'] = 'WR'
+                            starters.append(starter_player)
                             used_players.add(player['name'])
                             wrs.pop(i)
                             break
@@ -152,7 +169,9 @@ class TeamValueService:
                 if tes and len(tes) > 0:
                     for i, player in enumerate(tes):
                         if player['name'] not in used_players:
-                            starters.append(player)
+                            starter_player = player.copy()
+                            starter_player['starter_position'] = 'TE'
+                            starters.append(starter_player)
                             used_players.add(player['name'])
                             tes.pop(i)
                             break
@@ -166,7 +185,9 @@ class TeamValueService:
                 flex_options = [p for p in flex_options if p['name'] not in used_players]
                 if flex_options:
                     best_flex = max(flex_options, key=lambda x: x['ktc_value'])
-                    starters.append(best_flex)
+                    best_flex_copy = best_flex.copy()
+                    best_flex_copy['starter_position'] = 'FLEX'
+                    starters.append(best_flex_copy)
                     used_players.add(best_flex['name'])
                     
                     # Remove the used player from its position list
@@ -183,7 +204,9 @@ class TeamValueService:
                 if use_qb_for_superflex_if_possible and qbs and len(qbs) > 0:
                     for i, player in enumerate(qbs):
                         if player['name'] not in used_players:
-                            starters.append(player)
+                            starter_player = player.copy()
+                            starter_player['starter_position'] = 'SUPER_FLEX'
+                            starters.append(starter_player)
                             used_players.add(player['name'])
                             qbs.pop(i)
                             break
@@ -198,7 +221,9 @@ class TeamValueService:
                     superflex_options = [p for p in superflex_options if p['name'] not in used_players]
                     if superflex_options:
                         best_superflex = max(superflex_options, key=lambda x: x['ktc_value'])
-                        starters.append(best_superflex)
+                        best_superflex_copy = best_superflex.copy()
+                        best_superflex_copy['starter_position'] = 'SUPER_FLEX'
+                        starters.append(best_superflex_copy)
                         used_players.add(best_superflex['name'])
                         
                         # Remove the used player from its position list
@@ -217,7 +242,7 @@ class TeamValueService:
         # Calculate average starter value
         avg_starter_value = round(starter_value / len(starters), 1) if starters else 0
         
-        return starter_value, avg_starter_value
+        return starter_value, avg_starter_value, starters
     
     def _match_player_name(self, ktc_name: str, sleeper_name: str) -> bool:
         """Match player names between KTC and Sleeper formats."""

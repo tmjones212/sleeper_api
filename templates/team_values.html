@@ -13,7 +13,7 @@
             margin: 0 auto;
             padding: 20px;
         }
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             color: #2c3e50;
         }
         table {
@@ -92,7 +92,154 @@
             color: #2980b9;
             font-weight: bold;
         }
+        .starter-row {
+            background-color: #e8f4f8;
+            font-weight: bold;
+        }
+        .starter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #2980b9;
+        }
+        .starter-table {
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        select {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            width: 100%;
+            max-width: 300px;
+        }
+        .player-select {
+            width: 100%;
+        }
+        .recalculate-btn {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .recalculate-btn:hover {
+            background-color: #3498db;
+        }
+        .value-change {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        .value-increase {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .value-decrease {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
     </style>
+    <script>
+        function openTab(evt, tabName) {
+            // Hide all tab content
+            var tabcontent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            // Remove "active" class from all tabs
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            // Show the current tab and add "active" class to the button that opened the tab
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Set the first tab as active when the page loads
+        window.onload = function() {
+            document.getElementsByClassName("tab")[0].click();
+        };
+        
+        function updateStarterValue(teamContainer) {
+            const starterTable = teamContainer.querySelector('.starter-table');
+            const rows = starterTable.querySelectorAll('tbody tr');
+            
+            let totalValue = 0;
+            let playerCount = 0;
+            
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                const valueCell = row.querySelector('.player-value');
+                
+                if (select && valueCell) {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const value = parseInt(selectedOption.getAttribute('data-value') || 0);
+                    
+                    valueCell.textContent = value;
+                    totalValue += value;
+                    playerCount++;
+                }
+            });
+            
+            const avgStarterValue = playerCount > 0 ? Math.round(totalValue / playerCount * 10) / 10 : 0;
+            
+            // Update the displayed values
+            const currentAvgSpan = teamContainer.querySelector('[id^="current-avg-"]');
+            const originalAvgSpan = teamContainer.querySelector('[id^="original-avg-"]');
+            const valueChangeDiv = teamContainer.querySelector('[id^="value-change-"]');
+            
+            const originalValue = parseFloat(originalAvgSpan.textContent);
+            currentAvgSpan.textContent = avgStarterValue;
+            
+            // Show value change notification
+            if (avgStarterValue > originalValue) {
+                valueChangeDiv.textContent = `Value increased by ${(avgStarterValue - originalValue).toFixed(1)}`;
+                valueChangeDiv.className = 'value-change value-increase';
+            } else if (avgStarterValue < originalValue) {
+                valueChangeDiv.textContent = `Value decreased by ${(originalValue - avgStarterValue).toFixed(1)}`;
+                valueChangeDiv.className = 'value-change value-decrease';
+            } else {
+                valueChangeDiv.textContent = 'Value unchanged';
+                valueChangeDiv.className = 'value-change';
+            }
+            valueChangeDiv.style.display = 'block';
+        }
+    </script>
 </head>
 <body>
     <h1>{{ league_name }} - Team Values</h1>
@@ -136,36 +283,108 @@
     <h2>Team Details</h2>
     
     {% for team in teams %}
-    <div class="team-container">
+    <div class="team-container" data-team-index="{{ loop.index }}">
         <div class="team-header">
             <h3>{{ loop.index }}. {{ team.team_name }}</h3>
             <div>
                 <div class="team-value">Total Value: {{ team.total_value }}</div>
-                <div class="team-starter-value">Avg Starter Value: {{ team.avg_starter_value }}</div>
+                <div class="team-starter-value">
+                    Avg Starter Value: <span id="current-avg-{{ loop.index }}">{{ team.avg_starter_value }}</span>
+                    <span id="original-avg-{{ loop.index }}" style="display: none;">{{ team.avg_starter_value }}</span>
+                </div>
                 <div class="team-age">Average Age: {{ team.avg_age }}</div>
+                <div id="value-change-{{ loop.index }}" class="value-change"></div>
             </div>
         </div>
         
-        <table class="player-table">
-            <thead>
-                <tr>
-                    <th>Player</th>
-                    <th>Position</th>
-                    <th class="numeric">Age</th>
-                    <th class="numeric">KTC Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for player in team.players %}
-                <tr>
-                    <td>{{ player.name }}</td>
-                    <td>{{ player.position }}</td>
-                    <td class="numeric">{{ player.age }}</td>
-                    <td class="numeric player-value">{{ player.ktc_value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="tabs">
+            <button class="tab" onclick="openTab(event, 'starters-{{ loop.index }}')">Starting Lineup</button>
+            <button class="tab" onclick="openTab(event, 'roster-{{ loop.index }}')">Full Roster</button>
+        </div>
+        
+        <div id="starters-{{ loop.index }}" class="tab-content">
+            <div class="starter-section">
+                <h4>Starting Lineup</h4>
+                <table class="starter-table">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Player</th>
+                            <th class="numeric">Age</th>
+                            <th class="numeric">KTC Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for starter in team.starters %}
+                        <tr>
+                            <td>{{ starter.starter_position }}</td>
+                            <td class="player-select">
+                                <select onchange="this.closest('.team-container').querySelector('.recalculate-btn').click()">
+                                    {% if starter.starter_position == 'QB' or starter.starter_position == 'SUPER_FLEX' %}
+                                        {% for player in team.players if player.position == 'QB' %}
+                                            <option value="{{ player.name }}" data-value="{{ player.ktc_value }}" {% if player.name == starter.name %}selected{% endif %}>
+                                                {{ player.name }} ({{ player.position }}) - {{ player.ktc_value }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if starter.starter_position == 'RB' or starter.starter_position == 'FLEX' or starter.starter_position == 'SUPER_FLEX' %}
+                                        {% for player in team.players if player.position == 'RB' %}
+                                            <option value="{{ player.name }}" data-value="{{ player.ktc_value }}" {% if player.name == starter.name %}selected{% endif %}>
+                                                {{ player.name }} ({{ player.position }}) - {{ player.ktc_value }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if starter.starter_position == 'WR' or starter.starter_position == 'FLEX' or starter.starter_position == 'SUPER_FLEX' %}
+                                        {% for player in team.players if player.position == 'WR' %}
+                                            <option value="{{ player.name }}" data-value="{{ player.ktc_value }}" {% if player.name == starter.name %}selected{% endif %}>
+                                                {{ player.name }} ({{ player.position }}) - {{ player.ktc_value }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if starter.starter_position == 'TE' or starter.starter_position == 'FLEX' or starter.starter_position == 'SUPER_FLEX' %}
+                                        {% for player in team.players if player.position == 'TE' %}
+                                            <option value="{{ player.name }}" data-value="{{ player.ktc_value }}" {% if player.name == starter.name %}selected{% endif %}>
+                                                {{ player.name }} ({{ player.position }}) - {{ player.ktc_value }}
+                                            </option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </td>
+                            <td class="numeric">{{ starter.age }}</td>
+                            <td class="numeric player-value">{{ starter.ktc_value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button class="recalculate-btn" onclick="updateStarterValue(this.closest('.team-container'))">Recalculate Starter Value</button>
+            </div>
+        </div>
+        
+        <div id="roster-{{ loop.index }}" class="tab-content">
+            <table class="player-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Position</th>
+                        <th class="numeric">Age</th>
+                        <th class="numeric">KTC Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in team.players %}
+                    <tr {% if player.is_starter %}class="starter-row"{% endif %}>
+                        <td>{{ player.name }} {% if player.is_starter %}({{ player.starter_position }}){% endif %}</td>
+                        <td>{{ player.position }}</td>
+                        <td class="numeric">{{ player.age }}</td>
+                        <td class="numeric player-value">{{ player.ktc_value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% endfor %}
     
