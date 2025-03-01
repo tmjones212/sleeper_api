@@ -16,12 +16,28 @@
         h1, h2, h3 {
             color: #2c3e50;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
         .team-container {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 15px;
-            background-color: #f9f9f9;
         }
         .team-header {
             display: flex;
@@ -36,107 +52,115 @@
             font-weight: bold;
             color: #27ae60;
         }
-        .player-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .player-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            background-color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .player-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-        .player-name {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        .player-position {
+        .team-age {
+            font-size: 1.1em;
             color: #7f8c8d;
-            margin-bottom: 5px;
+        }
+        .player-table {
+            width: 100%;
         }
         .player-value {
+            text-align: right;
             font-weight: bold;
+        }
+        .summary-section {
+            margin-bottom: 40px;
+        }
+        .position-value-high {
+            background-color: #d4edda;
+        }
+        .position-value-medium {
+            background-color: #fff3cd;
+        }
+        .position-value-low {
+            background-color: #f8d7da;
+        }
+        .numeric {
+            text-align: right;
+        }
+        .young-team {
             color: #27ae60;
         }
-        .draft-picks {
-            margin-top: 20px;
-        }
-        .draft-pick {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .draft-pick:last-child {
-            border-bottom: none;
-        }
-        .league-summary {
-            margin-bottom: 30px;
-        }
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 0.8em;
-            color: #7f8c8d;
+        .old-team {
+            color: #e74c3c;
         }
     </style>
 </head>
 <body>
     <h1>{{ league_name }} - Team Values</h1>
     
-    <div class="league-summary">
-        <p>Total teams: {{ teams|length }}</p>
-        <p>Report generated: {{ generated_date }}</p>
+    <div class="summary-section">
+        <h2>Team Value Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th class="numeric">QB Value</th>
+                    <th class="numeric">RB Value</th>
+                    <th class="numeric">WR Value</th>
+                    <th class="numeric">TE Value</th>
+                    <th class="numeric">Total Value</th>
+                    <th class="numeric">Avg Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ team.team_name }}</td>
+                    <td class="numeric">{{ team.position_values.QB }}</td>
+                    <td class="numeric">{{ team.position_values.RB }}</td>
+                    <td class="numeric">{{ team.position_values.WR }}</td>
+                    <td class="numeric">{{ team.position_values.TE }}</td>
+                    <td class="numeric player-value">{{ team.total_value }}</td>
+                    <td class="numeric {% if team.avg_age < 25 %}young-team{% elif team.avg_age > 28 %}old-team{% endif %}">
+                        {{ team.avg_age }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+    
+    <h2>Team Details</h2>
     
     {% for team in teams %}
     <div class="team-container">
         <div class="team-header">
-            <h2>{{ loop.index }}. {{ team.team_name }}</h2>
-            <div class="team-value">Total Value: {{ team.total_value }}</div>
+            <h3>{{ loop.index }}. {{ team.team_name }}</h3>
+            <div>
+                <div class="team-value">Total Value: {{ team.total_value }}</div>
+                <div class="team-age">Average Age: {{ team.avg_age }}</div>
+            </div>
         </div>
         
-        <h3>Players</h3>
-        <div class="player-grid">
-            {% for player in team.players %}
-            <div class="player-card">
-                <img src="{{ player.image_url }}" alt="{{ player.name }}" class="player-image" onerror="this.src='https://sleepercdn.com/images/v2/icons/player_default.webp'">
-                <div class="player-name">{{ player.name }}</div>
-                <div class="player-position">{{ player.position }}</div>
-                <div class="player-value">Value: {{ player.ktc_value }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        {% if team.draft_picks %}
-        <div class="draft-picks">
-            <h3>Draft Picks</h3>
-            {% for pick in team.draft_picks %}
-            <div class="draft-pick">
-                <div>{{ pick.name }} ({{ pick.original_owner }})</div>
-                <div class="player-value">Value: {{ pick.ktc_value }}</div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        <table class="player-table">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Position</th>
+                    <th class="numeric">Age</th>
+                    <th class="numeric">KTC Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in team.players %}
+                <tr>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.position }}</td>
+                    <td class="numeric">{{ player.age }}</td>
+                    <td class="numeric player-value">{{ player.ktc_value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {% endfor %}
     
     <div class="footer">
         <p>Values sourced from KeepTradeCut.com</p>
+        <p>Report generated: {{ generated_date }}</p>
     </div>
 </body>
 </html> 

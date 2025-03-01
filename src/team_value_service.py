@@ -5,6 +5,7 @@ from datetime import datetime
 import webbrowser
 from jinja2 import Environment, FileSystemLoader
 from ktc_service import KTCService
+from player_service import PlayerService
 
 class TeamValueService:
     def __init__(self, client):
@@ -37,13 +38,23 @@ class TeamValueService:
                 'team_name': team.display_name,
                 'user_id': team.user_id,
                 'players': [],
-                'total_value': 0
+                'total_value': 0,
+                'position_values': {
+                    'QB': 0,
+                    'RB': 0,
+                    'WR': 0,
+                    'TE': 0
+                },
+                'total_age': 0,
+                'player_count': 0,
+                'avg_age': 0
             }
             
             # Process players
             for player_id in team.roster.players:
                 player_name = self.client.player_service.get_player_name(player_id)
                 player_position = self.client.player_service.get_player_position(player_id)
+                player_age = self.client.player_service.get_player_age(player_id)
                 
                 # Find KTC value for this player
                 ktc_value = 0
@@ -56,10 +67,23 @@ class TeamValueService:
                     'name': player_name,
                     'position': player_position,
                     'ktc_value': ktc_value,
-                    'image_url': self.client.player_service.get_player_image_url(player_id)
+                    'age': player_age
                 })
                 
                 team_data['total_value'] += ktc_value
+                
+                # Add to position totals if it's one of our tracked positions
+                if player_position in team_data['position_values']:
+                    team_data['position_values'][player_position] += ktc_value
+                
+                # Track age for average calculation only if value is 2000+
+                if player_age and ktc_value >= 2000:
+                    team_data['total_age'] += player_age
+                    team_data['player_count'] += 1
+            
+            # Calculate average age
+            if team_data['player_count'] > 0:
+                team_data['avg_age'] = round(team_data['total_age'] / team_data['player_count'], 1)
             
             # Sort players by KTC value (highest first)
             team_data['players'].sort(key=lambda x: x['ktc_value'], reverse=True)

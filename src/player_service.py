@@ -8,8 +8,8 @@ import requests
 
 class PlayerService:
     def __init__(self):
-        self.players = self._load_players_from_file()
         self.base_url = "https://api.sleeper.app/v1"  # Could also pass this in from client
+        self.players = self._load_players_from_file()
 
     def _load_players_from_file(self, filename="data/players.json") -> Dict[str, Player]:
         if os.path.exists(filename):
@@ -133,3 +133,18 @@ class PlayerService:
             str: The complete URL to the player's image on Sleeper CDN
         """
         return f"https://sleepercdn.com/content/nfl/players/{player_id}.jpg" 
+
+    def get_player_age(self, player_id: str) -> int:
+        """
+        Get the age of a player.
+        
+        Args:
+            player_id (str): The player's ID
+            
+        Returns:
+            int: The player's age, or 0 if not found
+        """
+        player = self.players.get(player_id)
+        if player and hasattr(player, 'age') and player.age:
+            return player.age
+        return 0 
