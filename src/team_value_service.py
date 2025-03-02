@@ -4,28 +4,32 @@ import json
 from datetime import datetime
 import webbrowser
 from jinja2 import Environment, FileSystemLoader
-from ktc_service import KTCService
-from player_service import PlayerService
+import sys
+
+# Import KTC service
+try:
+    from ktc_service import KTCService
+except ImportError:
+    try:
+        from src.ktc_service import KTCService
+    except ImportError:
+        print("Warning: Could not import KTCService")
+        KTCService = None
 
 class TeamValueService:
     def __init__(self, client):
         self.client = client
         self.env = Environment(loader=FileSystemLoader('templates'))
-        self.ktc_service = KTCService()
+        # Create KTC service instance
+        self.ktc_service = KTCService() if KTCService else None
         
     def get_team_values(self, league_id: str, use_qb_for_superflex_if_possible: bool = True) -> List[Dict[str, Any]]:
         """Get all teams with their players and KTC values."""
         # Get league data
         league = self.client.league_service.get_league(league_id, fetch_all=True)
         
-        # Get KTC data for all players
-        ktc_data = self.ktc_service.get_player_values()
-        
-        # Create a dictionary for quick KTC value lookup by player name
-        ktc_value_map = {
-            player.get('name', '').upper(): player.get('value', 0)
-            for player in ktc_data
-        }
+        # Get KTC data - try different methods based on environment
+        ktc_value_map = self._get_ktc_values()
         
         team_values = []
         
@@ -56,193 +60,225 @@ class TeamValueService:
             # Process players
             for player_id in team.roster.players:
                 player_name = self.client.player_service.get_player_name(player_id)
+                if not player_name:
+                    continue
+                    
                 player_position = self.client.player_service.get_player_position(player_id)
-                player_age = self.client.player_service.get_player_age(player_id)
+                if not player_position:
+                    continue
                 
-                # Find KTC value for this player
-                ktc_value = 0
-                for ktc_player in ktc_data:
-                    if self._match_player_name(ktc_player.get('name', ''), player_name):
-                        ktc_value = ktc_player.get('value', 0)
-                        break
+                player_age = self.client.player_service.get_player_age(player_id) or 0
                 
-                team_data['players'].append({
-                    'name': player_name,
-                    'position': player_position,
-                    'ktc_value': ktc_value,
-                    'age': player_age,
-                    'is_starter': False,
-                    'starter_position': ''
-                })
+                # Look up KTC value and round to integer
+                ktc_value = round(ktc_value_map.get(player_name.upper(), 0))
                 
-                team_data['total_value'] += ktc_value
-                
-                # Add to position totals if it's one of our tracked positions
-                if player_position in team_data['position_values']:
+                # Add to team total if it's a fantasy-relevant position
+                if player_position in ['QB', 'RB', 'WR', 'TE']:
+                    team_data['total_value'] += ktc_value
                     team_data['position_values'][player_position] += ktc_value
                 
-                # Track age for average calculation only if value is 2000+
-                if player_age and ktc_value >= 2000:
+                # Add to age calculations
+                if player_age > 0:
                     team_data['total_age'] += player_age
                     team_data['player_count'] += 1
+                
+                # Create player data
+                player_data = {
+                    'name': player_name,
+                    'position': player_position,
+                    'age': player_age,
+                    'ktc_value': ktc_value,  # Already rounded
+                    'is_starter': False,
+                    'starter_position': ''
+                }
+                
+                team_data['players'].append(player_data)
             
-            # Calculate average age
+            # Calculate average age and round to integer
             if team_data['player_count'] > 0:
-                team_data['avg_age'] = round(team_data['total_age'] / team_data['player_count'], 1)
+                team_data['avg_age'] = round(team_data['total_age'] / team_data['player_count'])
             
-            # Sort players by KTC value (highest first)
-            team_data['players'].sort(key=lambda x: x['ktc_value'], reverse=True)
-            
-            # Calculate starter value and identify starters
-            starter_value, avg_starter_value, starters = self._calculate_starter_value(
-                team_data['players'], 
-                league.roster_positions,
-                use_qb_for_superflex_if_possible
-            )
-            team_data['starter_value'] = starter_value
-            team_data['avg_starter_value'] = avg_starter_value
+            # Determine starters based on league settings
+            starters = self._determine_starters(team_data['players'], league, use_qb_for_superflex_if_possible)
             team_data['starters'] = starters
             
-            # Mark players as starters in the players list
-            for starter in starters:
-                for player in team_data['players']:
-                    if player['name'] == starter['name']:
-                        player['is_starter'] = True
-                        player['starter_position'] = starter['starter_position']
+            # Calculate starter value
+            starter_value = sum(starter['ktc_value'] for starter in starters)
+            team_data['starter_value'] = starter_value
+            
+            # Calculate average starter value and round to integer
+            if starters:
+                team_data['avg_starter_value'] = round(starter_value / len(starters))
+            
+            # Round all position values to integers
+            for position in team_data['position_values']:
+                team_data['position_values'][position] = round(team_data['position_values'][position])
             
             team_values.append(team_data)
         
-        # Sort teams by total value (highest first)
-        team_values.sort(key=lambda x: x['total_value'], reverse=True)
-        
         return team_values
+        
+    def _get_ktc_values(self):
+        """Get KTC values using the appropriate method for the current environment."""
+        # Check if we're on PythonAnywhere
+        on_pythonanywhere = 'PYTHONANYWHERE_SITE' in os.environ
+        
+        if on_pythonanywhere:
+            # On PythonAnywhere, load from file
+            return self._load_ktc_values_from_file()
+        else:
+            # Locally, use the KTC service
+            return self._get_ktc_values_from_service()
     
-    def _calculate_starter_value(self, players: List[Dict[str, Any]], roster_positions: List[str], 
-                                use_qb_for_superflex_if_possible: bool) -> tuple:
-        """Calculate the value of starting players based on league roster positions."""
-        # Create position-specific player lists sorted by value
-        qbs = sorted([p for p in players if p['position'] == 'QB'], key=lambda x: x['ktc_value'], reverse=True)
-        rbs = sorted([p for p in players if p['position'] == 'RB'], key=lambda x: x['ktc_value'], reverse=True)
-        wrs = sorted([p for p in players if p['position'] == 'WR'], key=lambda x: x['ktc_value'], reverse=True)
-        tes = sorted([p for p in players if p['position'] == 'TE'], key=lambda x: x['ktc_value'], reverse=True)
+    def _get_ktc_values_from_service(self):
+        """Get KTC values using the KTC service."""
+        ktc_value_map = {}
         
-        # Filter out bench and defensive positions
-        starter_positions = [pos for pos in roster_positions if pos not in ['BN', 'IDP_FLEX', 'K', 'LB', 'DB', 'DL', 'DE', 'DT', 'CB', 'S']]
+        if self.ktc_service:
+            try:
+                ktc_data = self.ktc_service.get_player_values()
+                
+                # Create a dictionary for quick KTC value lookup by player name
+                ktc_value_map = {
+                    player.get('name', '').upper(): player.get('value', 0)
+                    for player in ktc_data
+                }
+            except Exception as e:
+                print(f"Error getting KTC data from service: {e}")
         
-        # Track used players to avoid double-counting
-        used_players = set()
+        return ktc_value_map
+    
+    def _load_ktc_values_from_file(self):
+        """Load KTC values from a JSON file."""
+        ktc_value_map = {}
+        
+        # Define possible file paths
+        file_paths = [
+            'data/ktc_values.json',
+            'src/data/ktc_values.json',
+            os.path.join(os.path.dirname(__file__), 'data', 'ktc_values.json'),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'ktc_values.json')
+        ]
+        
+        # Try each path
+        for file_path in file_paths:
+            try:
+                with open(file_path, 'r') as f:
+                    ktc_data = json.load(f)
+                    
+                    # Create a dictionary for quick KTC value lookup by player name
+                    ktc_value_map = {
+                        player.get('name', '').upper(): player.get('value', 0)
+                        for player in ktc_data
+                    }
+                    
+                    print(f"Loaded {len(ktc_value_map)} KTC values from {file_path}")
+                    return ktc_value_map
+            except FileNotFoundError:
+                continue
+            except Exception as e:
+                print(f"Error loading KTC data from {file_path}: {e}")
+                continue
+        
+        print("Warning: Could not load KTC values from any file")
+        return ktc_value_map
+    
+    def _determine_starters(self, players, league, use_qb_for_superflex_if_possible=True):
+        """Determine which players are starters based on league settings."""
+        # Make a copy of players to avoid modifying the original
+        players_copy = players.copy()
+        
+        # Sort players by KTC value (highest first)
+        players_copy.sort(key=lambda x: x['ktc_value'], reverse=True)
+        
+        # Get league settings
+        roster_positions = league.roster_positions
+        
+        # Initialize starters list
         starters = []
         
-        # First, fill required positions
-        for pos in starter_positions:
-            if pos == 'QB':
-                if qbs and len(qbs) > 0:
-                    for i, player in enumerate(qbs):
-                        if player['name'] not in used_players:
-                            starter_player = player.copy()
-                            starter_player['starter_position'] = 'QB'
-                            starters.append(starter_player)
-                            used_players.add(player['name'])
-                            qbs.pop(i)
-                            break
-            elif pos == 'RB':
-                if rbs and len(rbs) > 0:
-                    for i, player in enumerate(rbs):
-                        if player['name'] not in used_players:
-                            starter_player = player.copy()
-                            starter_player['starter_position'] = 'RB'
-                            starters.append(starter_player)
-                            used_players.add(player['name'])
-                            rbs.pop(i)
-                            break
-            elif pos == 'WR':
-                if wrs and len(wrs) > 0:
-                    for i, player in enumerate(wrs):
-                        if player['name'] not in used_players:
-                            starter_player = player.copy()
-                            starter_player['starter_position'] = 'WR'
-                            starters.append(starter_player)
-                            used_players.add(player['name'])
-                            wrs.pop(i)
-                            break
-            elif pos == 'TE':
-                if tes and len(tes) > 0:
-                    for i, player in enumerate(tes):
-                        if player['name'] not in used_players:
-                            starter_player = player.copy()
-                            starter_player['starter_position'] = 'TE'
-                            starters.append(starter_player)
-                            used_players.add(player['name'])
-                            tes.pop(i)
-                            break
-            elif pos == 'FLEX':
-                # For FLEX, find the highest value player among RB, WR, TE
-                flex_options = []
-                if rbs: flex_options.extend(rbs)
-                if wrs: flex_options.extend(wrs)
-                if tes: flex_options.extend(tes)
-                
-                flex_options = [p for p in flex_options if p['name'] not in used_players]
-                if flex_options:
-                    best_flex = max(flex_options, key=lambda x: x['ktc_value'])
-                    best_flex_copy = best_flex.copy()
-                    best_flex_copy['starter_position'] = 'FLEX'
-                    starters.append(best_flex_copy)
-                    used_players.add(best_flex['name'])
-                    
-                    # Remove the used player from its position list
-                    if best_flex['position'] == 'RB' and best_flex in rbs:
-                        rbs.remove(best_flex)
-                    elif best_flex['position'] == 'WR' and best_flex in wrs:
-                        wrs.remove(best_flex)
-                    elif best_flex['position'] == 'TE' and best_flex in tes:
-                        tes.remove(best_flex)
+        # Track which players have been assigned as starters
+        assigned_players = set()
+        
+        # Process each roster position
+        for position in roster_positions:
+            # Skip bench positions
+            if position == 'BN':
+                continue
             
-            elif pos == 'SUPER_FLEX':
-                # For SUPER_FLEX, find the highest value player among QB, RB, WR, TE
-                # If use_qb_for_superflex_if_possible is True and a QB is available, use it
-                if use_qb_for_superflex_if_possible and qbs and len(qbs) > 0:
-                    for i, player in enumerate(qbs):
-                        if player['name'] not in used_players:
-                            starter_player = player.copy()
-                            starter_player['starter_position'] = 'SUPER_FLEX'
-                            starters.append(starter_player)
-                            used_players.add(player['name'])
-                            qbs.pop(i)
-                            break
-                else:
-                    # Otherwise, find the best available player
-                    superflex_options = []
-                    if qbs: superflex_options.extend(qbs)
-                    if rbs: superflex_options.extend(rbs)
-                    if wrs: superflex_options.extend(wrs)
-                    if tes: superflex_options.extend(tes)
+            # Find the best available player for this position
+            best_player = None
+            
+            if position == 'QB':
+                # Find best available QB
+                for player in players_copy:
+                    if player['position'] == 'QB' and player['name'] not in assigned_players:
+                        best_player = player
+                        best_player['starter_position'] = 'QB'
+                        break
                     
-                    superflex_options = [p for p in superflex_options if p['name'] not in used_players]
-                    if superflex_options:
-                        best_superflex = max(superflex_options, key=lambda x: x['ktc_value'])
-                        best_superflex_copy = best_superflex.copy()
-                        best_superflex_copy['starter_position'] = 'SUPER_FLEX'
-                        starters.append(best_superflex_copy)
-                        used_players.add(best_superflex['name'])
-                        
-                        # Remove the used player from its position list
-                        if best_superflex['position'] == 'QB' and best_superflex in qbs:
-                            qbs.remove(best_superflex)
-                        elif best_superflex['position'] == 'RB' and best_superflex in rbs:
-                            rbs.remove(best_superflex)
-                        elif best_superflex['position'] == 'WR' and best_superflex in wrs:
-                            wrs.remove(best_superflex)
-                        elif best_superflex['position'] == 'TE' and best_superflex in tes:
-                            tes.remove(best_superflex)
+            elif position == 'RB':
+                # Find best available RB
+                for player in players_copy:
+                    if player['position'] == 'RB' and player['name'] not in assigned_players:
+                        best_player = player
+                        best_player['starter_position'] = 'RB'
+                        break
+                    
+            elif position == 'WR':
+                # Find best available WR
+                for player in players_copy:
+                    if player['position'] == 'WR' and player['name'] not in assigned_players:
+                        best_player = player
+                        best_player['starter_position'] = 'WR'
+                        break
+                    
+            elif position == 'TE':
+                # Find best available TE
+                for player in players_copy:
+                    if player['position'] == 'TE' and player['name'] not in assigned_players:
+                        best_player = player
+                        best_player['starter_position'] = 'TE'
+                        break
+                    
+            elif position == 'FLEX':
+                # Find best available RB/WR/TE
+                for player in players_copy:
+                    if player['position'] in ['RB', 'WR', 'TE'] and player['name'] not in assigned_players:
+                        best_player = player
+                        best_player['starter_position'] = 'FLEX'
+                        break
+                    
+            elif position == 'SUPER_FLEX' or position == 'SUPERFLEX':
+                # For superflex, prefer QB if specified
+                if use_qb_for_superflex_if_possible:
+                    # Try to find a QB first
+                    for player in players_copy:
+                        if player['position'] == 'QB' and player['name'] not in assigned_players:
+                            best_player = player
+                            best_player['starter_position'] = 'SUPER_FLEX'
+                            break
+                            
+                # If no QB or not preferring QB, find best available QB/RB/WR/TE
+                if not best_player:
+                    for player in players_copy:
+                        if player['position'] in ['QB', 'RB', 'WR', 'TE'] and player['name'] not in assigned_players:
+                            best_player = player
+                            best_player['starter_position'] = 'SUPER_FLEX'
+                            break
+            
+            # If we found a player for this position, add them to starters
+            if best_player:
+                # Mark the player as a starter
+                best_player['is_starter'] = True
+                
+                # Add to starters list
+                starters.append(best_player.copy())
+                
+                # Mark as assigned
+                assigned_players.add(best_player['name'])
         
-        # Calculate total starter value
-        starter_value = sum(player['ktc_value'] for player in starters)
-        
-        # Calculate average starter value
-        avg_starter_value = round(starter_value / len(starters), 1) if starters else 0
-        
-        return starter_value, avg_starter_value, starters
+        return starters
     
     def _match_player_name(self, ktc_name: str, sleeper_name: str) -> bool:
         """Match player names between KTC and Sleeper formats."""
