@@ -311,6 +311,451 @@ class TeamValueService:
         
         return output_path
 
+def generate_team_value_html(team_values_data):
+    """Generate HTML for team values report."""
+    html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dynasty League Team Values</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f5f5f5;
+            }
+            h1, h2, h3 {
+                color: #2c3e50;
+            }
+            .team-card {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+                padding: 20px;
+                border-left: 5px solid #3498db;
+            }
+            .team-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            .team-name {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 0;
+            }
+            .team-value {
+                font-size: 20px;
+                font-weight: bold;
+                color: #3498db;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .stat-box {
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+            }
+            .stat-label {
+                font-size: 14px;
+                color: #7f8c8d;
+                margin-bottom: 5px;
+            }
+            .stat-value {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            .position-values {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .position-box {
+                flex: 1;
+                min-width: 100px;
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 5px;
+                text-align: center;
+            }
+            .position-label {
+                font-size: 14px;
+                color: #7f8c8d;
+            }
+            .position-value {
+                font-size: 18px;
+                font-weight: bold;
+            }
+            .players-section {
+                margin-top: 20px;
+            }
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 10px;
+                color: #2c3e50;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+            }
+            .players-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 10px;
+            }
+            .player-card {
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: space-between;
+            }
+            .player-card.starter {
+                background-color: #d4edda;
+                border-left: 3px solid #28a745;
+            }
+            .player-info {
+                flex: 1;
+            }
+            .player-name {
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            .player-details {
+                font-size: 12px;
+                color: #6c757d;
+            }
+            .player-value {
+                font-weight: bold;
+                color: #3498db;
+                margin-left: 10px;
+            }
+            .summary-section {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .summary-card {
+                flex: 1;
+                min-width: 300px;
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                padding: 15px;
+            }
+            .summary-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+                color: #2c3e50;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 8px 12px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+            th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+                color: #2c3e50;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            .sort-btn {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+            .sort-btn:hover {
+                background-color: #2980b9;
+            }
+            .sort-controls {
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Dynasty League Team Values</h1>
+        
+        <div class="sort-controls">
+            <button class="sort-btn" onclick="sortTeams('total')">Sort by Total Value</button>
+            <button class="sort-btn" onclick="sortTeams('starter')">Sort by Starter Value</button>
+            <button class="sort-btn" onclick="sortTeams('avg-starter')">Sort by Avg Starter Value</button>
+            <button class="sort-btn" onclick="sortTeams('age')">Sort by Age</button>
+        </div>
+        
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3 class="summary-title">Team Rankings</h3>
+                <table id="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Total Value</th>
+                            <th>Starter Value</th>
+                            <th>Avg Starter</th>
+                            <th>Avg Age</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    """
+    
+    # Sort teams by total value for initial display
+    sorted_teams = sorted(team_values_data, key=lambda x: x['total_value'], reverse=True)
+    
+    # Add team rows to the summary table
+    for i, team in enumerate(sorted_teams):
+        html += f"""
+                        <tr>
+                            <td>{i+1}</td>
+                            <td>{team['team_name']}</td>
+                            <td>{team['total_value']}</td>
+                            <td>{team['starter_value']}</td>
+                            <td>{team['avg_starter_value']}</td>
+                            <td>{team['avg_age']}</td>
+                        </tr>
+        """
+    
+    html += """
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="teams-container">
+    """
+    
+    # Generate team cards
+    for team in sorted_teams:
+        html += f"""
+        <div class="team-card" data-total="{team['total_value']}" data-starter="{team['starter_value']}" data-avg-starter="{team['avg_starter_value']}" data-age="{team['avg_age']}">
+            <div class="team-header">
+                <h2 class="team-name">{team['team_name']}</h2>
+                <div class="team-value">Total Value: {team['total_value']}</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Starter Value</div>
+                    <div class="stat-value">{team['starter_value']}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Avg Starter Value</div>
+                    <div class="stat-value">{team['avg_starter_value']}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Average Age</div>
+                    <div class="stat-value">{team['avg_age']}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Player Count</div>
+                    <div class="stat-value">{team['player_count']}</div>
+                </div>
+            </div>
+            
+            <div class="position-values">
+                <div class="position-box">
+                    <div class="position-label">QB</div>
+                    <div class="position-value">{team['position_values']['QB']}</div>
+                </div>
+                <div class="position-box">
+                    <div class="position-label">RB</div>
+                    <div class="position-value">{team['position_values']['RB']}</div>
+                </div>
+                <div class="position-box">
+                    <div class="position-label">WR</div>
+                    <div class="position-value">{team['position_values']['WR']}</div>
+                </div>
+                <div class="position-box">
+                    <div class="position-label">TE</div>
+                    <div class="position-value">{team['position_values']['TE']}</div>
+                </div>
+            </div>
+            
+            <div class="players-section">
+                <h3 class="section-title">Starters</h3>
+                <div class="players-grid">
+        """
+        
+        # Add starters
+        for player in team['starters']:
+            html += f"""
+                    <div class="player-card starter">
+                        <div class="player-info">
+                            <div class="player-name">{player['name']} ({player['starter_position']})</div>
+                            <div class="player-details">{player['position']} | Age: {player['age']}</div>
+                        </div>
+                        <div class="player-value">{player['ktc_value']}</div>
+                    </div>
+            """
+        
+        html += """
+                </div>
+            </div>
+            
+            <div class="players-section">
+                <h3 class="section-title">Bench</h3>
+                <div class="players-grid">
+        """
+        
+        # Add bench players (non-starters)
+        bench_players = [p for p in team['players'] if not p.get('is_starter', False)]
+        # Sort bench by value
+        bench_players = sorted(bench_players, key=lambda x: x.get('ktc_value', 0), reverse=True)
+        
+        for player in bench_players:
+            if player.get('ktc_value', 0) > 0:  # Only show players with value
+                html += f"""
+                    <div class="player-card">
+                        <div class="player-info">
+                            <div class="player-name">{player['name']}</div>
+                            <div class="player-details">{player['position']} | Age: {player['age']}</div>
+                        </div>
+                        <div class="player-value">{player.get('ktc_value', 0)}</div>
+                    </div>
+                """
+        
+        html += """
+                </div>
+            </div>
+        </div>
+        """
+    
+    # Close the container and add JavaScript for sorting
+    html += """
+        </div>
+        
+        <script>
+            function sortTeams(criterion) {
+                const container = document.getElementById('teams-container');
+                const teams = Array.from(container.getElementsByClassName('team-card'));
+                
+                teams.sort((a, b) => {
+                    let valueA, valueB;
+                    
+                    switch(criterion) {
+                        case 'total':
+                            valueA = parseInt(a.dataset.total);
+                            valueB = parseInt(b.dataset.total);
+                            break;
+                        case 'starter':
+                            valueA = parseInt(a.dataset.starter);
+                            valueB = parseInt(b.dataset.starter);
+                            break;
+                        case 'avg-starter':
+                            valueA = parseInt(a.dataset.avgStarter);
+                            valueB = parseInt(b.dataset.avgStarter);
+                            break;
+                        case 'age':
+                            valueA = parseInt(a.dataset.age);
+                            valueB = parseInt(b.dataset.age);
+                            return valueA - valueB; // Ascending for age
+                    }
+                    
+                    return valueB - valueA; // Descending for values
+                });
+                
+                // Remove all teams
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+                
+                // Add sorted teams
+                teams.forEach(team => {
+                    container.appendChild(team);
+                });
+                
+                // Update the rankings table
+                updateRankingsTable(criterion);
+            }
+            
+            function updateRankingsTable(criterion) {
+                const table = document.getElementById('rankings-table');
+                const tbody = table.getElementsByTagName('tbody')[0];
+                const rows = Array.from(tbody.getElementsByTagName('tr'));
+                
+                // Get the column index based on criterion
+                let columnIndex;
+                switch(criterion) {
+                    case 'total':
+                        columnIndex = 2;
+                        break;
+                    case 'starter':
+                        columnIndex = 3;
+                        break;
+                    case 'avg-starter':
+                        columnIndex = 4;
+                        break;
+                    case 'age':
+                        columnIndex = 5;
+                        break;
+                    default:
+                        columnIndex = 2;
+                }
+                
+                // Sort rows
+                rows.sort((a, b) => {
+                    const valueA = parseInt(a.cells[columnIndex].textContent);
+                    const valueB = parseInt(b.cells[columnIndex].textContent);
+                    
+                    if (criterion === 'age') {
+                        return valueA - valueB; // Ascending for age
+                    }
+                    return valueB - valueA; // Descending for values
+                });
+                
+                // Remove all rows
+                while (tbody.firstChild) {
+                    tbody.removeChild(tbody.firstChild);
+                }
+                
+                // Add sorted rows and update ranks
+                rows.forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+                    tbody.appendChild(row);
+                });
+            }
+        </script>
+    </body>
+    </html>
+    """
+    
+    return html
+
+# Save the HTML to a file
+def save_team_value_html(team_values_data, output_path="team_values.html"):
+    html = generate_team_value_html(team_values_data)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html)
+    return output_path
 
 if __name__ == "__main__":
     from client import SleeperAPI
@@ -323,3 +768,4 @@ if __name__ == "__main__":
     
     html_path = value_service.generate_team_value_report(league_id)
     print(f"Team value report generated at: {html_path}")
+    save_team_value_html(value_service.get_team_values(league_id), "team_values_new.html")
