@@ -424,6 +424,63 @@ class PlayerStats:
     pass_td: float = 0
     pass_int: float = 0
     fum_lost: float = 0
+    rush_lng: float = 0
+    rush_td_lng: float = 0
+    bonus_rush_yd_100: float = 0
+    pos_rank_std: float = 0
+    gp: float = 0
+    tm_def_snp: float = 0
+    gms_active: float = 0
+    rec_ypt: float = 0
+    pos_rank_half_ppr: float = 0
+    pass_rush_yd: float = 0
+    pts_std: float = 0
+    rec_lng: float = 0
+    tm_st_snp: float = 0
+    bonus_rush_rec_yd_100: float = 0
+    rush_fd: float = 0
+    rec_yar: float = 0
+    rec_5_9: float = 0
+    rush_ypa: float = 0
+    gs: float = 0
+    tm_off_snp: float = 0
+    pos_rank_ppr: float = 0
+    rec_rz_tgt: float = 0
+    off_snp: float = 0
+    rush_tkl_loss_yd: float = 0
+    rush_yac: float = 0
+    pts_half_ppr: float = 0
+    rec_air_yd: float = 0
+    rec_ypr: float = 0
+    rec_10_19: float = 0
+    rec_td_lng: float = 0
+    rush_rz_att: float = 0
+    rush_rec_yd: float = 0
+    anytime_tds: float = 0
+    bonus_rush_att_20: float = 0
+    bonus_rec_rb: float = 0
+    rec_tgt: float = 0
+    pts_ppr: float = 0
+    bonus_fd_rb: float = 0
+    rush_tkl_loss: float = 0
+    rec_0_4: float = 0
+    rush_btkl: float = 0
+    rec_fd: float = 0
+
+    def __init__(self, player_id: str, fantasy_points: float, **kwargs):
+        self.player_id = player_id
+        self.fantasy_points = fantasy_points
+        
+        # Set all known fields from kwargs with default of 0
+        for field_name in self.__annotations__:
+            if field_name not in ['player_id', 'fantasy_points']:
+                setattr(self, field_name, kwargs.get(field_name, 0))
+        
+        # Store any unexpected fields
+        self.extra_stats = {
+            k: v for k, v in kwargs.items() 
+            if k not in self.__annotations__
+        }
 
 @dataclass
 class Transaction:

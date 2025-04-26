@@ -24,7 +24,8 @@ from draft_service import DraftService
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
 
-	def __init__(self):
+	def __init__(self, requested_league_id: str = None):
+		self.requested_league_id = requested_league_id
 		self.cache_service = CacheService()
 		self.league_service = LeagueService(self.BASE_URL, self.cache_service)
 		self.scoring_settings = self.league_service.scoring_settings
@@ -44,6 +45,9 @@ class SleeperAPI:
 			print("Loading historical transaction data...")
 			current_league_id = "1048308938824937472"  # 2024 league
 			self.transaction_service.get_all_historical_transactions(current_league_id)
+
+		if self.requested_league_id:
+			self.league_service.get_league(self.requested_league_id)
 
 	def get_player_fields(self):
 		url = f"{self.BASE_URL}/players/nfl"
