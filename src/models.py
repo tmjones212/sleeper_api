@@ -271,6 +271,7 @@ class Matchup:
     starters_points: List[float]
     players_points: Dict[str, float]
     custom_points: Optional[float] = None
+    player_names: Optional[List[str]] = None
 
     def __post_init__(self):
         # Convert points to float if it's not None

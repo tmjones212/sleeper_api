@@ -3,8 +3,10 @@ from client import SleeperAPI
 from draft_kings_api import DraftKingsAPI
 import json
 from player_extensions import format_name
+from report_service import ReportService
 from sleeper_api_calls import get_player_stats_from_api
 import csv
+from typing import List, Optional
 
 # subcategories = DraftKingsAPI.get_all_subcategories()
 # for sub in subcategories:
@@ -37,6 +39,12 @@ client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
 players = client.player_service.get_players()
 
+# 8183
+purdy = [x for x in players if x.name == "BROCK PURDY"][0]
+
+report_service = ReportService(client)
+
+report_service.write_bench_players_stats_csv(league_id, "bench_players_statsv2.csv")
 
 ktc = client.draft_service.get_ktc_player_value()
 
@@ -45,10 +53,12 @@ ktc = client.draft_service.get_ktc_player_value()
 # week_1_matchups = client.matchup_service.get_matchups(league_id,1)
 
 positions = ["RB","WR", "TE", "QB"]
+# max_week = 19
+max_week =  19
 
 # combine stats for all positions by week
 all_weekly_stats = {}
-for week in range(1,19):
+for week in range(1,max_week):
     all_weekly_stats[week] = {}  # Initialize dictionary for each week
     for position in positions:
         position_stats = client.stats_service.get_stats(2024, week, position, league_id)
@@ -65,14 +75,16 @@ for roster in rosters:
 
 # Get all players and starters from matchups, along with their teams for each week
 bench_players_by_week = {}
-for week in range(1, 19):
-    matchups = client.matchup_service.get_matchups(league_id, week)
+for week in range(1, max_week):
+    matchups = client.matchup_service.get_matchups(league_id, week, players=players)
     bench_players_by_week[week] = {}
     
     for matchup in matchups:
         print(matchup)
         team_name = roster_to_team.get(matchup.roster_id, f"Team {matchup.roster_id}")
         for player_id in matchup.players:
+            if player_id == "8183":
+                print(matchup)
             if player_id not in matchup.starters:
                 bench_players_by_week[week][player_id] = {
                     'stats': all_weekly_stats[week].get(player_id, None),  # Get stats for specific week
@@ -80,14 +92,14 @@ for week in range(1, 19):
                 }
 
 # Create CSV file and write bench players data
-csv_filename = "bench_players_stats.csv"
+csv_filename = "bench_players_stats_20250426.csv"
 with open(csv_filename, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     # Write header
     writer.writerow(['Year', 'Week', 'Team', 'PlayerName', 'PlayerID', 'Position', 'Points', 'Status', 'SnapsPlayed', 'KTC'])
     
     # Write data for each week
-    for week in range(1, 19):
+    for week in range(1, max_week):
         for player_id, data in bench_players_by_week[week].items():
             player_name = client.player_service.get_player_name(player_id)
             player_position = client.player_service.get_player_position(player_id)
@@ -430,3 +442,74 @@ for projection in sorted_projections:
 #     print(player.name)
 
 # Get and display trades
+
+def get_matchups(
+    self,
+    league_id: str,
+    week: int,
+    current_week: Optional[int] = None,
+    players: Optional[list] = None  # Accept a list
+) -> List[dict]:
+    cache_key = f"{league_id}_{week}"
+    current_week = current_week or week
+
+    # Convert players list to dict for internal use
+    players_dict = None
+    if players and isinstance(players, list):
+        players_dict = {p['player_id']: p for p in players if 'player_id' in p}
+    else:
+        players_dict = players  # If already a dict or None
+
+    if cache_key in self.cache_service.matchups_cache:
+        cached_matchups = self.cache_service.matchups_cache[cache_key]
+        if not (week < current_week and any(matchup.points == 0 for matchup in cached_matchups)):
+            if players_dict:
+                for matchup in cached_matchups:
+                    if isinstance(matchup, dict):
+                        player_ids = matchup.get('players', [])
+                    else:
+                        player_ids = getattr(matchup, 'players', [])
+                    player_names = [
+                        players_dict.get(pid, {}).get('name', '') for pid in player_ids
+                    ]
+                    if isinstance(matchup, dict):
+                        matchup['player_names'] = player_names
+                    else:
+                        setattr(matchup, 'player_names', player_names)
+            return cached_matchups
+
+    url = f"{self.base_url}/league/{league_id}/matchups/{week}"
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+
+    matchups = []
+    for matchup_data in data:
+        players_points = {}
+        starters_points = []
+        for player_id, points in matchup_data.get('players_points', {}).items():
+            players_points[player_id] = points
+            if player_id in matchup_data.get('starters', []):
+                starters_points.append(points)
+
+        player_names = []
+        if players_dict:
+            player_names = [
+                players_dict.get(pid, {}).get('name', '') for pid in matchup_data.get('players', [])
+            ]
+
+        matchup = {
+            'matchup_id': matchup_data.get('matchup_id'),
+            'roster_id': matchup_data.get('roster_id'),
+            'points': matchup_data.get('points'),
+            'players': matchup_data.get('players', []),
+            'starters': matchup_data.get('starters', []),
+            'players_points': players_points,
+            'starters_points': starters_points,
+            'player_names': player_names,
+        }
+        matchups.append(matchup)
+
+    self.cache_service.matchups_cache[cache_key] = matchups
+    self.cache_service.save_matchups_cache()
+    return matchups

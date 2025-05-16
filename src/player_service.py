@@ -148,3 +148,14 @@ class PlayerService:
         if player and hasattr(player, 'age') and player.age:
             return player.age
         return 0 
+
+    @staticmethod
+    def players_list_to_dict(players: list) -> dict:
+        """Convert a list of player dicts or Player objects to a dict keyed by player_id."""
+        result = {}
+        for p in players:
+            if isinstance(p, dict) and 'player_id' in p:
+                result[p['player_id']] = p
+            elif hasattr(p, 'player_id'):
+                result[p.player_id] = p
+        return result
