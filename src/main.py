@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import requests
 from client import SleeperAPI
 from draft_kings_api import DraftKingsAPI
 import json
@@ -6,7 +8,7 @@ from player_extensions import format_name
 from report_service import ReportService
 from sleeper_api_calls import get_player_stats_from_api
 import csv
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 # subcategories = DraftKingsAPI.get_all_subcategories()
 # for sub in subcategories:

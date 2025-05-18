@@ -309,6 +309,44 @@ class Roster:
         self.fpts = self.settings.get('fpts', 0)
         self.waiver_position = self.settings.get('waiver_position', 0)
         self.waiver_budget_used = self.settings.get('waiver_budget_used', 0)
+        
+        # New attributes for player information
+        self.player_info: Dict[str, Dict] = {}
+        self.starter_info: Dict[str, Dict] = {}
+        self.reserve_info: Dict[str, Dict] = {}
+        self.taxi_info: Dict[str, Dict] = {}
+
+    def enhance_with_player_info(self, player_service):
+        """Enhance roster with player information from player_service."""
+        # Process all players
+        for player_id in self.players:
+            player = player_service.players.get(player_id)
+            if player:
+                self.player_info[player_id] = {
+                    'name': player.name,
+                    'position': player.position,
+                    'team': player.team,
+                    'age': player.age,
+                    'status': player.status,
+                    'injury_status': player.injury_status
+                }
+        
+        # Process starters
+        for player_id in self.starters:
+            if player_id in self.player_info:
+                self.starter_info[player_id] = self.player_info[player_id]
+        
+        # Process reserve players
+        if self.reserve:
+            for player_id in self.reserve:
+                if player_id in self.player_info:
+                    self.reserve_info[player_id] = self.player_info[player_id]
+        
+        # Process taxi squad
+        if self.taxi:
+            for player_id in self.taxi:
+                if player_id in self.player_info:
+                    self.taxi_info[player_id] = self.player_info[player_id]
 
     def __str__(self):
         return f"Roster ID: {self.roster_id}, Owner ID: {self.owner_id}"

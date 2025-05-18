@@ -27,9 +27,13 @@ class SleeperAPI:
 	def __init__(self, requested_league_id: str = None):
 		self.requested_league_id = requested_league_id
 		self.cache_service = CacheService()
-		self.league_service = LeagueService(self.BASE_URL, self.cache_service)
-		self.scoring_settings = self.league_service.scoring_settings
 		self.player_service = PlayerService()
+		self.league_service = LeagueService(
+			self.BASE_URL, 
+			self.cache_service, 
+			player_service=self.player_service
+		)
+		self.scoring_settings = self.league_service.scoring_settings
 		self.season_service = SeasonService()
 		self.stats_service = StatsService(self, self.cache_service, self.scoring_settings)
 		self.matchup_service = MatchupService(self, self.cache_service)

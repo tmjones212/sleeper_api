@@ -5,10 +5,11 @@ from exceptions import SleeperAPIException
 import player_service
 
 class LeagueService:
-    def __init__(self, base_url: str, cache_service):
+    def __init__(self, base_url: str, cache_service, player_service=None):
         self.base_url = base_url
         self.cache_service = cache_service
         self.scoring_settings = {}
+        self.player_service = player_service
 
     def get_league(self, league_id: str, fetch_all: bool = False) -> League:
         cache_key = f"league_{league_id}"
@@ -40,7 +41,13 @@ class LeagueService:
     def get_league_rosters(self, league_id: str) -> List[Roster]:
         endpoint = f"{self.base_url}/league/{league_id}/rosters"
         response = self._make_request(endpoint)
-        return [Roster(**roster) for roster in response]
+        rosters = [Roster(**roster) for roster in response]
+        
+        # Enhance rosters with player information
+        for roster in rosters:
+            roster.enhance_with_player_info(self.player_service)
+        
+        return rosters
 
     def get_league_transactions(self, league_id: str, week: int) -> List[Dict[str, Any]]:
         url = f"{self.base_url}/league/{league_id}/transactions/{week}"
