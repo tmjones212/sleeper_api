@@ -96,7 +96,8 @@ if __name__ == "__main__":
 	viz_service = DraftVisualizationService(client)
 	
 	# 2024 league ID
-	league_id = "1048308938824937472"
+	# league_id = "1048308938824937472"
+	league_id = "916445745966915584"
 	
 	# Get the most recent draft for this league
 	drafts = client.draft_service.get_league_drafts(league_id)

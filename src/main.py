@@ -31,12 +31,18 @@ from typing import List, Optional
 
 # 2024-10-16 01:39 PM - BRAYDEN NARVESON dropped by Halteclere
 
-# league_id = "1181025001438806016" # 2025
-league_id = "1048308938824937472" # 2024
+league_id = "1181025001438806016" # 2025
+# league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
 
 client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
+
+teams = client.league_service.get_league_rosters(league_id)
+
+for team in teams:
+    print(team)
+
 players = client.player_service.get_players()
 
 # 8183
