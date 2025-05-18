@@ -40,6 +40,10 @@ league_id = "1181025001438806016" # 2025
 client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
 
+transactions =  client.league_service.get_league_transactions(league_id,1)
+completed_transactions = [x for x in transactions if x['status'] == "complete"]
+
+
 teams = client.league_service.get_league_rosters(league_id)
 
 for team in teams:
