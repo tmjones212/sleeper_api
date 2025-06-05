@@ -239,4 +239,89 @@ class TransactionService:
             all_transactions.extend(self.get_all_league_transactions(previous_league_id))
             current_league = self.client.league_service.get_league(previous_league_id)
         
-        return all_transactions 
+        return all_transactions
+
+    def get_player_trade_counts(self, league_id: str) -> Dict[str, int]:
+        """
+        Get a count of how many times each player has been traded in the league's history.
+        Returns a dictionary mapping player names to their trade count.
+        Each trade is counted only once per player, regardless of whether they were received or given.
+        """
+        all_trades = self.get_trades(league_id)
+        player_trade_counts = {}
+        
+        for trade in all_trades:
+            # Get unique players involved in this trade
+            players_in_trade = set()
+            
+            # Add players from both received and given
+            for move in trade['received']['players']:
+                players_in_trade.add(move['player'])
+            for move in trade['given']['players']:
+                players_in_trade.add(move['player'])
+            
+            # Count each player only once per trade
+            for player_name in players_in_trade:
+                player_trade_counts[player_name] = player_trade_counts.get(player_name, 0) + 1
+        
+        # Sort by trade count in descending order
+        sorted_counts = dict(sorted(player_trade_counts.items(), key=lambda x: x[1], reverse=True))
+        return sorted_counts
+
+    def get_player_trade_history(self, league_id: str, player_name: str) -> List[Dict[str, Any]]:
+        """
+        Get detailed trade history for a specific player.
+        Returns a list of trades with full details including:
+        - Date of trade
+        - Teams involved and what they received
+        Trades are sorted by date in descending order (most recent first).
+        """
+        all_trades = self.get_trades(league_id)
+        player_trades = []
+        
+        for trade in all_trades:
+            # Check if player is involved in this trade
+            players_in_trade = set()
+            for move in trade['received']['players']:
+                players_in_trade.add(move['player'])
+            for move in trade['given']['players']:
+                players_in_trade.add(move['player'])
+            
+            if player_name in players_in_trade:
+                player_trades.append(trade)
+        
+        # Sort trades by date in descending order
+        player_trades.sort(key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d %I:%M %p'), reverse=True)
+        
+        return player_trades
+
+    def get_manager_trade_history(self, league_id: str, manager_name: str) -> List[Dict[str, Any]]:
+        """
+        Get all trades made by a specific manager.
+        Returns a list of trades with full details including:
+        - Date of trade
+        - Teams involved and what they received
+        Trades are sorted by date in descending order (most recent first).
+        """
+        all_trades = self.get_trades(league_id)
+        manager_trades = []
+        
+        for trade in all_trades:
+            # Check if manager is involved in this trade
+            teams_in_trade = set()
+            
+            # Check received players
+            for move in trade['received']['players']:
+                teams_in_trade.add(move['team'])
+            
+            # Check given players
+            for move in trade['given']['players']:
+                teams_in_trade.add(move['team'])
+            
+            if manager_name in teams_in_trade:
+                manager_trades.append(trade)
+        
+        # Sort trades by date in descending order
+        manager_trades.sort(key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d %I:%M %p'), reverse=True)
+        
+        return manager_trades 

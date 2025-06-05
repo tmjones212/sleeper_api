@@ -9,6 +9,7 @@ from report_service import ReportService
 from sleeper_api_calls import get_player_stats_from_api
 import csv
 from typing import List, Optional, Dict
+from trade_utils import print_manager_trade_history, print_player_trade_counts, print_player_trade_history
 
 # subcategories = DraftKingsAPI.get_all_subcategories()
 # for sub in subcategories:
@@ -39,6 +40,23 @@ league_id = "1181025001438806016" # 2025
 
 client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
+
+# Get ShadyCommish88's trade history
+all_trades = client.transaction_service.get_trades(league_id)
+if all_trades:
+    print("First trade format:")
+    print(json.dumps(all_trades[0], indent=2))
+
+manager_trades = client.transaction_service.get_manager_trade_history(league_id, "ShadyCommish88")
+print_manager_trade_history(manager_trades, "ShadyCommish88")
+
+# Get Will Levis's trade history
+levis_trades = client.transaction_service.get_player_trade_history(league_id, "WILL LEVIS")
+print_player_trade_history(levis_trades)
+
+# Get and print all player trade counts
+trade_counts = client.transaction_service.get_player_trade_counts(league_id)
+print_player_trade_counts(trade_counts)
 
 transactions =  client.league_service.get_league_transactions(league_id,1)
 completed_transactions = [x for x in transactions if x['status'] == "complete"]
