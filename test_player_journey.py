@@ -18,7 +18,7 @@ def test_player_journey():
     
     try:
         # Initialize API
-        league_id = "1048308938824937472"
+        league_id = "1181025001438806016"  # Latest league
         api = SleeperAPI(league_id)
         
         # Test with Jerry Jeudy - we know he was traded
@@ -58,7 +58,7 @@ def test_multiple_players():
     print("=" * 60)
     
     try:
-        league_id = "1048308938824937472"
+        league_id = "1181025001438806016"  # Latest league
         api = SleeperAPI(league_id)
         
         # Get most traded players for testing

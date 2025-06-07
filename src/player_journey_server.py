@@ -22,7 +22,7 @@ api = None
 def get_api():
     global api
     if api is None:
-        api = SleeperAPI("1048308938824937472")
+        api = SleeperAPI("1181025001438806016")  # Latest league
     return api
 
 @app.route('/player_journey/<league_id>/<player_name>')
