@@ -67,6 +67,7 @@ def get_matchups_api(league_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/league/<league_id>')
 def league_visualization(league_id):
     """Render the complete league visualization page."""

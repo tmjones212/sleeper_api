@@ -1,5 +1,7 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import requests
+import json
+import os
 from models import Matchup
 from player_service import PlayerService
 
@@ -7,6 +9,7 @@ class MatchupService:
     def __init__(self, base_url: str, cache_service):
         self.base_url = base_url
         self.cache_service = cache_service
+        self._matchup_breakdowns = None
 
     def get_matchups(
         self,
@@ -175,4 +178,54 @@ class MatchupService:
                 }
                 formatted_matchups.append(formatted_matchup)
         
-        return formatted_matchups 
+        return formatted_matchups
+    
+    def load_matchup_breakdowns(self) -> Dict[str, Any]:
+        """Load preprocessed matchup breakdown data with player names and positions"""
+        if self._matchup_breakdowns is not None:
+            return self._matchup_breakdowns
+        
+        breakdowns_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'matchup_breakdowns.json')
+        try:
+            with open(breakdowns_file, 'r') as f:
+                data = json.load(f)
+                self._matchup_breakdowns = data.get('matchups', {})
+                return self._matchup_breakdowns
+        except FileNotFoundError:
+            print(f"Matchup breakdowns file not found: {breakdowns_file}")
+            return {}
+        except json.JSONDecodeError as e:
+            print(f"Error parsing matchup breakdowns JSON: {e}")
+            return {}
+    
+    def get_matchup_player_breakdown(self, league_id: str, week: int, roster_id: int) -> Optional[Dict[str, Any]]:
+        """Get detailed player breakdown for a specific matchup"""
+        breakdowns = self.load_matchup_breakdowns()
+        cache_key = f"{league_id}_{week}"
+        
+        if cache_key not in breakdowns:
+            return None
+        
+        week_matchups = breakdowns[cache_key]
+        for matchup in week_matchups:
+            if matchup.get('roster_id') == roster_id:
+                return matchup
+        
+        return None
+    
+    def get_all_player_breakdowns_for_matchup(self, league_id: str, week: int, matchup_id: int) -> List[Dict[str, Any]]:
+        """Get player breakdowns for all teams in a specific matchup"""
+        breakdowns = self.load_matchup_breakdowns()
+        cache_key = f"{league_id}_{week}"
+        
+        if cache_key not in breakdowns:
+            return []
+        
+        week_matchups = breakdowns[cache_key]
+        matchup_teams = []
+        
+        for matchup in week_matchups:
+            if matchup.get('matchup_id') == matchup_id:
+                matchup_teams.append(matchup)
+        
+        return matchup_teams 

@@ -200,6 +200,121 @@
             background-color: #f8f9fa;
             border-radius: 8px;
         }
+        .matchup-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .matchup-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 50px auto;
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+        .breakdown-teams {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .team-breakdown {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .team-breakdown h3 {
+            text-align: center;
+            margin-top: 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .player-section {
+            margin-bottom: 20px;
+        }
+        .player-section h4 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        .player-list {
+            display: grid;
+            gap: 5px;
+        }
+        .player-row {
+            display: grid;
+            grid-template-columns: 60px 200px 50px 1fr 60px;
+            align-items: center;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .player-row:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+        .position-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .player-name {
+            font-weight: 500;
+        }
+        .player-position {
+            font-size: 12px;
+            color: #666;
+        }
+        .player-points {
+            font-weight: bold;
+            text-align: right;
+            color: #27ae60;
+        }
+        .points-summary {
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
     </style>
     <script>
         function openTab(evt, tabName) {
@@ -216,6 +331,147 @@
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
         }
+
+        // Load breakdown data directly from JSON file
+        let matchupBreakdowns = null;
+        
+        async function loadBreakdownData() {
+            if (matchupBreakdowns) return;
+            
+            try {
+                const response = await fetch('/data/matchup_breakdowns.json');
+                const data = await response.json();
+                matchupBreakdowns = data.matchups;
+            } catch (error) {
+                console.error('Error loading breakdown data:', error);
+                matchupBreakdowns = {};
+            }
+        }
+
+        async function showMatchupBreakdown(leagueId, week, matchupId) {
+            const modal = document.getElementById('matchupModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Show modal with loading
+            modalContent.innerHTML = '<div class="loading">Loading player breakdown...</div>';
+            modal.style.display = 'block';
+            
+            // Load breakdown data if not already loaded
+            await loadBreakdownData();
+            
+            // Find the breakdown data
+            const cacheKey = `${leagueId}_${week}`;
+            const weekData = matchupBreakdowns[cacheKey];
+            
+            if (!weekData) {
+                modalContent.innerHTML = '<div class="error">No breakdown data available for this matchup</div>';
+                return;
+            }
+            
+            const matchupTeams = weekData.filter(team => team.matchup_id === matchupId);
+            
+            if (matchupTeams.length === 0) {
+                modalContent.innerHTML = '<div class="error">No teams found for this matchup</div>';
+                return;
+            }
+            
+            const data = {
+                league_id: leagueId,
+                week: week,
+                matchup_id: matchupId,
+                teams: matchupTeams
+            };
+            
+            modalContent.innerHTML = generateBreakdownHTML(data);
+        }
+
+        function generateBreakdownHTML(data) {
+            const teams = data.teams;
+            if (!teams || teams.length !== 2) {
+                return '<div class="error">Invalid matchup data</div>';
+            }
+            
+            let html = `
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Week ${data.week} - Matchup ${data.matchup_id} Player Breakdown</h2>
+                <div class="breakdown-teams">
+            `;
+            
+            teams.forEach(team => {
+                html += `
+                    <div class="team-breakdown">
+                        <h3>Roster ${team.roster_id}</h3>
+                        <div class="points-summary">
+                            <strong>Total: ${team.total_points.toFixed(1)} pts</strong><br>
+                            Starters: ${team.starter_points.toFixed(1)} | Bench: ${team.bench_points.toFixed(1)}
+                        </div>
+                        
+                        <div class="player-section">
+                            <h4>Starters (${team.starters_count})</h4>
+                            <div class="player-list">
+                `;
+                
+                team.starters.forEach(player => {
+                    html += `
+                        <div class="player-row">
+                            <div class="position-badge">${player.roster_slot}</div>
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-position">${player.position}</div>
+                            <div></div>
+                            <div class="player-points">${player.points.toFixed(1)}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                            </div>
+                        </div>
+                        
+                        <div class="player-section">
+                            <h4>Bench (${team.bench_count})</h4>
+                            <div class="player-list">
+                `;
+                
+                team.bench.forEach(player => {
+                    html += `
+                        <div class="player-row">
+                            <div class="position-badge">BN</div>
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-position">${player.position}</div>
+                            <div></div>
+                            <div class="player-points">${player.points.toFixed(1)}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function closeModal() {
+            document.getElementById('matchupModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('matchupModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize the first tab as active
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.tab').click();
+        });
+    </script>
         
         function filterByYear() {
             const selectedYear = document.getElementById('year-select').value;
@@ -300,7 +556,7 @@
                     <h3>Week {{ week_num }}</h3>
                     <div class="matchup-grid">
                         {% for matchup in week_matchups %}
-                        <div class="matchup-card">
+                        <div class="matchup-card" onclick="showMatchupBreakdown('{{ league_id }}', {{ week_num }}, {{ matchup.matchup_id }})">
                             <div class="matchup-header">Matchup {{ matchup.matchup_id }}</div>
                             {% for team in matchup.teams %}
                             <div class="team-matchup {{ team.result_class }}">
@@ -326,7 +582,7 @@
             {% if current_week_matchups %}
             <div class="matchup-grid">
                 {% for matchup in current_week_matchups %}
-                <div class="matchup-card">
+                <div class="matchup-card" onclick="showMatchupBreakdown('{{ league_id }}', {{ selected_week }}, {{ matchup.matchup_id }})">
                     <div class="matchup-header">Matchup {{ matchup.matchup_id }}</div>
                     {% for team in matchup.teams %}
                     <div class="team-matchup {{ team.result_class }}">
@@ -385,6 +641,13 @@
     
     <div class="footer" style="margin-top: 40px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
         <p>Report generated: {{ generated_date }}</p>
+    </div>
+
+    <!-- Player Breakdown Modal -->
+    <div id="matchupModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <!-- Content will be loaded dynamically -->
+        </div>
     </div>
 </body>
 </html>

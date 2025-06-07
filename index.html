@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="matchup_breakdowns.js"></script>
     <style>
         * {
             margin: 0;
@@ -9134,6 +9135,28 @@
             <div class="panel-header">
                 <h2>⚔️ League Matchups</h2>
                 <p>View matchup history across all years (2025, 2024, 2023, 2022)</p>
+                
+                <!-- Player Breakdown Toggle -->
+                <div style="margin: 20px 0; text-align: center;">
+                    <button onclick="togglePlayerBreakdowns()" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 15px 30px;
+                        border-radius: 25px;
+                        font-weight: bold;
+                        font-size: 1.1rem;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
+                        🎯 <span id="breakdownToggleText">Enable</span> Player Breakdowns
+                    </button>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #b0b0b0;">
+                        <span id="breakdownStatusText">Click to enable clicking matchups for detailed player breakdowns</span>
+                    </p>
+                </div>
             </div>
             <div class="panel-content">
                 <div class="search-container">
@@ -16568,6 +16591,283 @@
                     closeTradeModal();
                 }
             });
+        });
+
+        // Player Breakdown Functionality
+        let playerBreakdownsEnabled = false;
+
+        function loadMatchupBreakdowns() {
+            // Data is already loaded from matchup_breakdowns.js
+            if (typeof MATCHUP_BREAKDOWNS !== 'undefined') {
+                console.log('Loaded matchup breakdowns:', Object.keys(MATCHUP_BREAKDOWNS).length, 'weeks');
+                console.log('Available weeks:', Object.keys(MATCHUP_BREAKDOWNS));
+                return true;
+            } else {
+                console.error('MATCHUP_BREAKDOWNS not found - make sure matchup_breakdowns.js is loaded');
+                return false;
+            }
+        }
+
+        function togglePlayerBreakdowns() {
+            const toggleText = document.getElementById('breakdownToggleText');
+            const statusText = document.getElementById('breakdownStatusText');
+            
+            if (!playerBreakdownsEnabled) {
+                // Enable breakdowns
+                statusText.textContent = 'Loading breakdown data...';
+                
+                const loaded = loadMatchupBreakdowns();
+                if (loaded) {
+                    playerBreakdownsEnabled = true;
+                    toggleText.textContent = 'Disable';
+                    statusText.textContent = 'Click any matchup below to see detailed player breakdowns!';
+                    
+                    // Add click handlers to existing matchups
+                    addMatchupClickHandlers();
+                } else {
+                    statusText.textContent = 'Error loading breakdown data. Please try again.';
+                }
+            } else {
+                // Disable breakdowns
+                playerBreakdownsEnabled = false;
+                toggleText.textContent = 'Enable';
+                statusText.textContent = 'Click to enable clicking matchups for detailed player breakdowns';
+                
+                // Remove click handlers
+                removeMatchupClickHandlers();
+            }
+        }
+
+        function addMatchupClickHandlers() {
+            // Add click handlers to matchup cards
+            const cards = document.querySelectorAll('.matchup-card');
+            console.log('Found', cards.length, 'matchup cards to add handlers to');
+            cards.forEach(card => {
+                if (!card.dataset.hasBreakdownHandler) {
+                    card.style.cursor = 'pointer';
+                    card.style.transition = 'all 0.2s';
+                    card.addEventListener('click', handleMatchupClick);
+                    card.addEventListener('mouseover', () => {
+                        if (playerBreakdownsEnabled) {
+                            card.style.backgroundColor = 'rgba(102, 126, 234, 0.3)';
+                            card.style.transform = 'scale(1.02)';
+                        }
+                    });
+                    card.addEventListener('mouseout', () => {
+                        card.style.backgroundColor = '#404040';
+                        card.style.transform = 'scale(1)';
+                    });
+                    card.dataset.hasBreakdownHandler = 'true';
+                    
+                    // Add visual indicator that it's clickable
+                    if (playerBreakdownsEnabled) {
+                        card.style.border = '2px solid rgba(102, 126, 234, 0.4)';
+                    }
+                }
+            });
+        }
+
+        function removeMatchupClickHandlers() {
+            document.querySelectorAll('.matchup-card').forEach(card => {
+                card.style.cursor = '';
+                card.style.backgroundColor = '#404040';
+                card.style.transform = '';
+                card.style.border = '';
+                card.removeEventListener('click', handleMatchupClick);
+                delete card.dataset.hasBreakdownHandler;
+            });
+        }
+
+        function handleMatchupClick(event) {
+            if (!playerBreakdownsEnabled) return;
+            
+            const card = event.currentTarget;
+            
+            // Extract team names from the matchup card structure
+            const teamDivs = card.querySelectorAll('.team');
+            if (teamDivs.length !== 2) {
+                console.log('Could not find 2 teams in matchup card');
+                return;
+            }
+            
+            const team1Name = teamDivs[0].querySelector('div').textContent.trim();
+            const team2Name = teamDivs[1].querySelector('div').textContent.trim();
+            
+            // Extract week from the parent week-card
+            const weekCard = card.closest('.week-card');
+            if (!weekCard) {
+                console.log('Could not find parent week card');
+                return;
+            }
+            
+            const weekHeader = weekCard.querySelector('h4');
+            if (!weekHeader) {
+                console.log('Could not find week header');
+                return;
+            }
+            
+            const weekText = weekHeader.textContent;
+            const weekMatch = weekText.match(/Week (\d+)/);
+            
+            if (!weekMatch) {
+                console.log('Could not extract week number from:', weekText);
+                return;
+            }
+            
+            const week = parseInt(weekMatch[1]);
+            console.log(`Clicked matchup: ${team1Name} vs ${team2Name}, Week ${week}`);
+            
+            showMatchupBreakdownModal('1048308938824937472', week, [team1Name, team2Name]);
+        }
+
+        function showMatchupBreakdownModal(leagueId, week, teams) {
+            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams);
+            
+            // Create and show modal
+            let modal = document.getElementById('playerBreakdownModal');
+            if (!modal) {
+                console.log('Creating new modal');
+                modal = createBreakdownModal();
+            }
+            
+            const modalContent = modal.querySelector('.breakdown-modal-content');
+            modalContent.innerHTML = '<div class="breakdown-loading">Loading player breakdown...</div>';
+            modal.style.display = 'block';
+            console.log('Modal should be visible now');
+            console.log('Modal display style:', modal.style.display);
+            console.log('Modal in DOM:', document.contains(modal));
+            
+            // Find breakdown data
+            const cacheKey = `${leagueId}_${week}`;
+            console.log('Looking for cache key:', cacheKey);
+            const weekData = MATCHUP_BREAKDOWNS[cacheKey];
+            console.log('Found week data:', weekData ? weekData.length + ' teams' : 'null');
+            
+            if (!weekData) {
+                modalContent.innerHTML = '<div class="breakdown-error">No breakdown data available for this week<br>Cache key: ' + cacheKey + '</div>';
+                return;
+            }
+            
+            // Find the specific matchup by team names
+            // This is a simplified approach - you might need to improve team name matching
+            console.log('Generating HTML for breakdown');
+            modalContent.innerHTML = generateBreakdownHTML(weekData.slice(0, 2), week); // Show first 2 teams as example
+        }
+
+        function createBreakdownModal() {
+            const modal = document.createElement('div');
+            modal.id = 'playerBreakdownModal';
+            modal.style.cssText = `
+                position: fixed;
+                z-index: 10000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.8);
+                overflow-y: auto;
+                display: none;
+            `;
+            modal.innerHTML = `
+                    <div class="breakdown-modal-content" style="
+                        background-color: #2d2d2d;
+                        margin: 50px auto;
+                        padding: 20px;
+                        border-radius: 15px;
+                        width: 90%;
+                        max-width: 1200px;
+                        color: #e0e0e0;
+                        position: relative;
+                    ">
+                        <span onclick="closeBreakdownModal()" style="
+                            color: #aaa;
+                            float: right;
+                            font-size: 28px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            padding: 10px;
+                        ">&times;</span>
+                        <!-- Content will be loaded here -->
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            return modal;
+        }
+
+        function generateBreakdownHTML(teams, week) {
+            if (!teams || teams.length === 0) {
+                return '<div class="breakdown-error">No team data available</div>';
+            }
+            
+            let html = `
+                <h2 style="color: #e0e0e0; margin-bottom: 20px;">Week ${week} Player Breakdown</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            `;
+            
+            teams.forEach(team => {
+                html += `
+                    <div style="border: 1px solid #555; border-radius: 10px; padding: 15px;">
+                        <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">
+                            Roster ${team.roster_id} - ${team.total_points.toFixed(1)} pts
+                        </h3>
+                        
+                        <div style="background: #404040; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                            <strong>Starters: ${team.starter_points.toFixed(1)} | Bench: ${team.bench_points.toFixed(1)}</strong>
+                        </div>
+                        
+                        <h4 style="color: #667eea; margin-bottom: 10px;">Starters</h4>
+                        <div style="margin-bottom: 20px;">
+                `;
+                
+                team.starters.forEach(player => {
+                    html += `
+                        <div style="display: grid; grid-template-columns: 50px 1fr 40px 50px; gap: 10px; padding: 5px; background: #404040; margin-bottom: 2px; border-radius: 3px; align-items: center;">
+                            <span style="background: #667eea; color: white; padding: 2px 4px; border-radius: 3px; font-size: 12px; text-align: center;">${player.roster_slot}</span>
+                            <span>${player.name}</span>
+                            <span style="font-size: 12px; color: #aaa;">${player.position}</span>
+                            <span style="font-weight: bold; text-align: right; color: #4CAF50;">${player.points.toFixed(1)}</span>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <h4 style="color: #667eea; margin-bottom: 10px;">Bench</h4>
+                        <div>
+                `;
+                
+                team.bench.slice(0, 8).forEach(player => { // Show top 8 bench players
+                    html += `
+                        <div style="display: grid; grid-template-columns: 50px 1fr 40px 50px; gap: 10px; padding: 5px; background: #353535; margin-bottom: 2px; border-radius: 3px; align-items: center;">
+                            <span style="background: #666; color: white; padding: 2px 4px; border-radius: 3px; font-size: 12px; text-align: center;">BN</span>
+                            <span>${player.name}</span>
+                            <span style="font-size: 12px; color: #aaa;">${player.position}</span>
+                            <span style="font-weight: bold; text-align: right; color: #4CAF50;">${player.points.toFixed(1)}</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function closeBreakdownModal() {
+            const modal = document.getElementById('playerBreakdownModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('playerBreakdownModal');
+            if (event.target === modal) {
+                closeBreakdownModal();
+            }
         });
     </script>
 </body>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Matchup Breakdown</title>
+</head>
+<body>
+    <h1>Test Matchup Breakdown</h1>
+    <button onclick="testBreakdown()">Test Load Breakdown Data</button>
+    <div id="result"></div>
+
+    <script>
+        async function testBreakdown() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('data/matchup_breakdowns.json');
+                const data = await response.json();
+                
+                console.log('Loaded data:', data);
+                
+                // Test finding a specific matchup
+                const testLeagueId = '1048308938824937472';
+                const testWeek = 1;
+                const testMatchupId = 5;
+                const cacheKey = `${testLeagueId}_${testWeek}`;
+                
+                const weekData = data.matchups[cacheKey];
+                if (weekData) {
+                    const matchupTeams = weekData.filter(team => team.matchup_id === testMatchupId);
+                    
+                    resultDiv.innerHTML = `
+                        <h3>Success! Found ${matchupTeams.length} teams</h3>
+                        <pre>${JSON.stringify(matchupTeams[0], null, 2).substring(0, 500)}...</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = 'No data found for test matchup';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
