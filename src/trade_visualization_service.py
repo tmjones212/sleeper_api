@@ -423,7 +423,21 @@ class LeagueVisualizationService:
         return timeline
 
     def get_draft_data(self, league_id: str) -> Dict[str, Any]:
-        """Get all draft data for the league including all years from historical leagues"""
+        """Get all draft data for the league from cache file"""
+        # Try to load from cache first
+        cache_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'draft_cache.json')
+        
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    draft_data = json.load(f)
+                    print(f"Loaded draft data from cache: {cache_file}")
+                    return draft_data
+            except Exception as e:
+                print(f"Error loading draft cache: {e}")
+        
+        # Fallback to generating draft data if cache doesn't exist
+        print("Draft cache not found, generating draft data...")
         draft_data = {
             'drafts_by_year': {},
             'available_years': [],

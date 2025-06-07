@@ -80,7 +80,9 @@ class DraftService:
 						   if user_id_to_team.get(user_id)}
 		
 		enhanced_picks = []
-		teams_count = len(draft_order)
+		# Use the actual number of teams in the league, not just draft_order length
+		# (draft_order might be missing teams with no owners)
+		teams_count = len(league.teams)
 		
 		# Get KTC data once for all picks (temporarily disabled)
 		ktc_data = []  # self.get_ktc_player_value()
@@ -95,7 +97,7 @@ class DraftService:
 			
 			# Rest of the pick processing...
 			roster_id = pick.get('roster_id')
-			picking_team = roster_to_team.get(roster_id, f"Team {pick.get('picked_by')}")
+			picking_team = roster_to_team.get(roster_id, f"Orphaned Team {roster_id}")
 			
 			pick_number = pick['pick_no']
 			draft_position = ((pick_number - 1) % teams_count) + 1
