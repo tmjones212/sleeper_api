@@ -197,6 +197,33 @@ class TransactionService:
                         # Also add to the main structure for backward compatibility
                         trade_info['received']['draft_picks'].append(pick_info)
                 
+                # Process FAAB (waiver budget) trades
+                if transaction.get('waiver_budget'):
+                    for faab_transfer in transaction['waiver_budget']:
+                        amount = faab_transfer.get('amount', 0)
+                        receiver_roster_id = faab_transfer.get('receiver')
+                        sender_roster_id = faab_transfer.get('sender')
+                        
+                        if amount > 0 and receiver_roster_id and sender_roster_id:
+                            receiving_team = roster_to_team.get(receiver_roster_id, f"Team {receiver_roster_id}")
+                            giving_team = roster_to_team.get(sender_roster_id, f"Team {sender_roster_id}")
+                            
+                            # Add to receiving team's assets
+                            if receiving_team in team_assets:
+                                team_assets[receiving_team]['receives'].append({
+                                    'type': 'faab',
+                                    'amount': amount,
+                                    'from_team': giving_team
+                                })
+                            
+                            # Add to giving team's assets
+                            if giving_team in team_assets:
+                                team_assets[giving_team]['gives'].append({
+                                    'type': 'faab',
+                                    'amount': amount,
+                                    'to_team': receiving_team
+                                })
+                
                 trades.append(trade_info)
         
         return trades

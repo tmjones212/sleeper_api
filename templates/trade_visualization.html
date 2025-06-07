@@ -981,8 +981,8 @@
                 );
                 
                 teamsInTrade.forEach(teamData => {
-                    const hasReceives = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0;
-                    const hasGives = teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0);
+                    const hasReceives = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0 || (teamData.receives.faab && teamData.receives.faab.length > 0);
+                    const hasGives = teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0 || (teamData.gives.faab && teamData.gives.faab.length > 0));
                     
                     if (hasReceives || hasGives) {
                         tradesHTML += `
@@ -997,15 +997,33 @@
                                         <ul style="list-style: none; padding: 0; margin: 0;">
                         `;
                         
-                        if (teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0) {
+                        let hasReceivedAssets = false;
+                        
+                        // Show players
+                        if (teamData.receives.players && teamData.receives.players.length > 0) {
                             teamData.receives.players.forEach(player => {
                                 tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #28a745;">🏈</span> ${player.player}</li>`;
+                                hasReceivedAssets = true;
                             });
-                            
+                        }
+                        
+                        // Show draft picks
+                        if (teamData.receives.draft_picks && teamData.receives.draft_picks.length > 0) {
                             teamData.receives.draft_picks.forEach(pick => {
                                 tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                hasReceivedAssets = true;
                             });
-                        } else {
+                        }
+                        
+                        // Show FAAB received
+                        if (teamData.receives.faab && teamData.receives.faab.length > 0) {
+                            teamData.receives.faab.forEach(faab => {
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #28a745;">💰</span> $${faab.amount} FAAB</li>`;
+                                hasReceivedAssets = true;
+                            });
+                        }
+                        
+                        if (!hasReceivedAssets) {
                             tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
                         }
                         
@@ -1020,15 +1038,33 @@
                                         <ul style="list-style: none; padding: 0; margin: 0;">
                         `;
                         
-                        if (teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0)) {
+                        let hasGivenAssets = false;
+                        
+                        // Show players given
+                        if (teamData.gives && teamData.gives.players && teamData.gives.players.length > 0) {
                             teamData.gives.players.forEach(player => {
                                 tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #dc3545;">🏈</span> ${player.player}</li>`;
+                                hasGivenAssets = true;
                             });
-                            
+                        }
+                        
+                        // Show draft picks given
+                        if (teamData.gives && teamData.gives.draft_picks && teamData.gives.draft_picks.length > 0) {
                             teamData.gives.draft_picks.forEach(pick => {
                                 tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                hasGivenAssets = true;
                             });
-                        } else {
+                        }
+                        
+                        // Show FAAB given
+                        if (teamData.gives.faab && teamData.gives.faab.length > 0) {
+                            teamData.gives.faab.forEach(faab => {
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #dc3545;">💰</span> $${faab.amount} FAAB</li>`;
+                                hasGivenAssets = true;
+                            });
+                        }
+                        
+                        if (!hasGivenAssets) {
                             tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
                         }
                         

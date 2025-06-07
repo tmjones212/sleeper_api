@@ -469,20 +469,24 @@ class TradeVisualizationService:
             team_assets = trade['team_assets']
             
             for team_name, assets in team_assets.items():
-                receives_players = [asset for asset in assets.get('receives', []) if asset.get('type') != 'draft_pick']
-                gives_players = [asset for asset in assets.get('gives', []) if asset.get('type') != 'draft_pick']
+                receives_players = [asset for asset in assets.get('receives', []) if asset.get('type') not in ['draft_pick', 'faab'] and asset.get('player')]
+                gives_players = [asset for asset in assets.get('gives', []) if asset.get('type') not in ['draft_pick', 'faab'] and asset.get('player')]
                 receives_picks = [asset for asset in assets.get('receives', []) if asset.get('type') == 'draft_pick']
                 gives_picks = [asset for asset in assets.get('gives', []) if asset.get('type') == 'draft_pick']
+                receives_faab = [asset for asset in assets.get('receives', []) if asset.get('type') == 'faab']
+                gives_faab = [asset for asset in assets.get('gives', []) if asset.get('type') == 'faab']
                 
                 team_info = {
                     'team': team_name,
                     'receives': {
                         'players': receives_players,
-                        'draft_picks': receives_picks
+                        'draft_picks': receives_picks,
+                        'faab': receives_faab
                     },
                     'gives': {
                         'players': gives_players,
-                        'draft_picks': gives_picks
+                        'draft_picks': gives_picks,
+                        'faab': gives_faab
                     }
                 }
                 
