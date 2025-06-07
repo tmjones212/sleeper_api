@@ -20,6 +20,7 @@ from best_ball_service import BestBallService
 from standings_service import StandingsService
 from team_service import TeamService
 from draft_service import DraftService
+from trade_visualization_service import TradeVisualizationService
 
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
@@ -43,6 +44,7 @@ class SleeperAPI:
 		self.standings_service = StandingsService(self)
 		self.team_service = TeamService()
 		self.draft_service = DraftService(self)
+		self.trade_visualization_service = TradeVisualizationService(self)
 		
 		# Pre-load historical transactions into cache
 		if len(self.cache_service.api_cache) == 0:  # Only load if cache is empty
@@ -82,3 +84,32 @@ class SleeperAPI:
 			return data
 		else:
 			raise SleeperAPIException(f"API request failed: {response.status_code} - {response.text}")
+	
+	def generate_trade_visualization(self, league_id: str = None, output_file: str = None) -> str:
+		"""Generate comprehensive trade visualization for a league"""
+		target_league_id = league_id or self.requested_league_id
+		if not target_league_id:
+			raise ValueError("League ID must be provided either in constructor or as parameter")
+		
+		print(f"Generating trade visualization for league {target_league_id}...")
+		output_path = self.trade_visualization_service.save_trade_visualization(
+			target_league_id, output_file
+		)
+		print(f"Trade visualization saved to: {output_path}")
+		return output_path
+	
+	def get_player_trade_journey(self, player_name: str, league_id: str = None) -> Dict[str, Any]:
+		"""Get detailed trade journey for a specific player"""
+		target_league_id = league_id or self.requested_league_id
+		if not target_league_id:
+			raise ValueError("League ID must be provided either in constructor or as parameter")
+		
+		return self.trade_visualization_service.get_player_trade_journey(target_league_id, player_name)
+	
+	def get_trade_network_analysis(self, league_id: str = None) -> Dict[str, Any]:
+		"""Get trade network analysis for the league"""
+		target_league_id = league_id or self.requested_league_id
+		if not target_league_id:
+			raise ValueError("League ID must be provided either in constructor or as parameter")
+		
+		return self.trade_visualization_service.get_trade_network_data(target_league_id)

@@ -102,31 +102,99 @@ class TransactionService:
                     }
                 }
                 
-                # Process players
-                if transaction.get('adds'):
-                    for player_id, roster_id in transaction['adds'].items():
-                        trade_info['received']['players'].append({
-                            'player': self.client.player_service.get_player_name(player_id),
-                            'team': roster_to_team.get(roster_id, f"Team {roster_id}")
-                        })
+                # Process players correctly - each player appears in BOTH adds and drops with different roster_ids
+                # adds[player_id] = destination_roster_id (where player is going)
+                # drops[player_id] = source_roster_id (where player came from)
                 
-                if transaction.get('drops'):
-                    for player_id, roster_id in transaction['drops'].items():
+                # Group assets by team to build proper trade sides
+                team_assets = {}
+                all_roster_ids = set(transaction.get('roster_ids', []))
+                
+                # Initialize team assets structure
+                for roster_id in all_roster_ids:
+                    team_name = roster_to_team.get(roster_id, f"Team {roster_id}")
+                    team_assets[team_name] = {'receives': [], 'gives': []}
+                
+                # Process players - each player moves from one team to another
+                if transaction.get('adds') and transaction.get('drops'):
+                    for player_id in transaction['adds']:
+                        if player_id in transaction['drops']:
+                            player_name = self.client.player_service.get_player_name(player_id)
+                            
+                            # Where player is going (destination)
+                            receiving_roster_id = transaction['adds'][player_id]
+                            receiving_team = roster_to_team.get(receiving_roster_id, f"Team {receiving_roster_id}")
+                            
+                            # Where player came from (source)  
+                            giving_roster_id = transaction['drops'][player_id]
+                            giving_team = roster_to_team.get(giving_roster_id, f"Team {giving_roster_id}")
+                            
+                            # Add to receiving team's assets
+                            if receiving_team in team_assets:
+                                team_assets[receiving_team]['receives'].append({
+                                    'player': player_name,
+                                    'from_team': giving_team
+                                })
+                            
+                            # Add to giving team's assets  
+                            if giving_team in team_assets:
+                                team_assets[giving_team]['gives'].append({
+                                    'player': player_name,
+                                    'to_team': receiving_team
+                                })
+                
+                # Use the correct team_assets structure instead of the broken received/given format
+                trade_info['team_assets'] = team_assets
+                
+                # Keep the old format for backward compatibility but fix it
+                for team_name, assets in team_assets.items():
+                    # Only add what this team RECEIVES to the received list
+                    for asset in assets['receives']:
+                        trade_info['received']['players'].append({
+                            'player': asset['player'],
+                            'team': team_name,
+                            'from_team': asset.get('from_team')
+                        })
+                    
+                    # Only add what this team GIVES to the given list  
+                    for asset in assets['gives']:
                         trade_info['given']['players'].append({
-                            'player': self.client.player_service.get_player_name(player_id),
-                            'team': roster_to_team.get(roster_id, f"Team {roster_id}")
+                            'player': asset['player'], 
+                            'team': team_name,
+                            'to_team': asset.get('to_team')
                         })
                 
                 # Process draft picks
                 if transaction.get('draft_picks'):
                     for pick in transaction['draft_picks']:
-                        # For each pick, determine if it's being received or given based on owner_id
                         pick_info = {
                             'round': pick['round'],
                             'season': pick['season'],
                             'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
                             'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
                         }
+                        
+                        # Add to receiving team (current owner)
+                        receiving_team = roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
+                        if receiving_team in team_assets:
+                            team_assets[receiving_team]['receives'].append({
+                                'type': 'draft_pick',
+                                'round': pick['round'],
+                                'season': pick['season'],
+                                'from_team': pick_info['from_team']
+                            })
+                        
+                        # Add to giving team (previous owner)
+                        giving_team = roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}")
+                        if giving_team in team_assets:
+                            team_assets[giving_team]['gives'].append({
+                                'type': 'draft_pick',
+                                'round': pick['round'],
+                                'season': pick['season'],
+                                'to_team': pick_info['to_team']
+                            })
+                        
+                        # Also add to the main structure for backward compatibility
                         trade_info['received']['draft_picks'].append(pick_info)
                 
                 trades.append(trade_info)
@@ -183,15 +251,28 @@ class TransactionService:
                 }
             }
 
-            # Process players
-            if trade.get('adds'):
-                for player_id, roster_id in trade['adds'].items():
-                    is_receiving = roster_id in manager_roster_ids
-                    category = 'received' if is_receiving else 'given'
-                    trade_info[category]['players'].append({
-                        'player': self.client.player_service.get_player_name(player_id),
-                        'team': roster_to_team.get(roster_id, f"Team {roster_id}")
-                    })
+            # Process players - each player appears in both adds and drops with different roster_ids
+            # adds[player_id] = destination_roster_id (where player is going)
+            # drops[player_id] = source_roster_id (where player came from)
+            if trade.get('adds') and trade.get('drops'):
+                for player_id in trade['adds']:
+                    if player_id in trade['drops']:
+                        destination_roster = trade['adds'][player_id]
+                        source_roster = trade['drops'][player_id]
+                        
+                        # If manager is receiving this player
+                        if destination_roster in manager_roster_ids:
+                            trade_info['received']['players'].append({
+                                'player': self.client.player_service.get_player_name(player_id),
+                                'from_team': roster_to_team.get(source_roster, f"Team {source_roster}")
+                            })
+                        
+                        # If manager is giving this player
+                        elif source_roster in manager_roster_ids:
+                            trade_info['given']['players'].append({
+                                'player': self.client.player_service.get_player_name(player_id),
+                                'to_team': roster_to_team.get(destination_roster, f"Team {destination_roster}")
+                            })
 
             # Process draft picks
             if trade.get('draft_picks'):
