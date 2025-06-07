@@ -16733,9 +16733,12 @@
             const modalContent = modal.querySelector('.breakdown-modal-content');
             modalContent.innerHTML = '<div class="breakdown-loading">Loading player breakdown...</div>';
             modal.style.display = 'block';
+            // Force display with important flag
+            modal.style.setProperty('display', 'block', 'important');
             console.log('Modal should be visible now');
             console.log('Modal display style:', modal.style.display);
             console.log('Modal in DOM:', document.contains(modal));
+            console.log('Modal element:', modal);
             
             // Find breakdown data
             const cacheKey = `${leagueId}_${week}`;
