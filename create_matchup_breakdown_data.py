@@ -32,6 +32,23 @@ def load_matchups_cache(file_path: str) -> Dict[str, Any]:
         print(f"Error parsing matchups cache JSON: {e}")
         return {}
 
+def load_api_cache(file_path: str) -> Dict[str, Any]:
+    """Load and return API cache data to get league settings"""
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"API cache file not found: {file_path}")
+        return {}
+    except json.JSONDecodeError as e:
+        print(f"Error parsing API cache JSON: {e}")
+        return {}
+
+def get_league_roster_positions(api_cache: Dict[str, Any], league_id: str) -> List[str]:
+    """Get roster positions for the league from API cache"""
+    league_data = api_cache.get(f"league_{league_id}", {})
+    return league_data.get("roster_positions", [])
+
 def get_player_name(player_id: str, players_data: Dict[str, Any]) -> str:
     """Get player name from player ID"""
     player = players_data.get(player_id, {})
@@ -42,35 +59,42 @@ def get_player_position(player_id: str, players_data: Dict[str, Any]) -> str:
     player = players_data.get(player_id, {})
     return player.get('position', 'UNK')
 
-def infer_roster_position(player_id: str, starters: List[str], players_data: Dict[str, Any], league_roster_positions: List[str]) -> str:
-    """Infer the roster position (QB1, RB1, etc.) based on starter order and position"""
-    if player_id not in starters:
-        return "BN"  # Bench
-    
-    starter_index = starters.index(player_id)
-    player_position = get_player_position(player_id, players_data)
-    
-    # Map to standard fantasy positions if we have roster position info
-    if starter_index < len(league_roster_positions):
-        return league_roster_positions[starter_index]
-    
-    # Fallback: create position based on player position and index
+def convert_to_numbered_roster_positions(roster_positions: List[str]) -> List[str]:
+    """Convert roster positions like ['QB', 'RB', 'RB', 'WR', 'WR'] to ['QB', 'RB1', 'RB2', 'WR1', 'WR2']"""
     position_counts = {}
-    for i, pid in enumerate(starters[:starter_index + 1]):
-        pos = get_player_position(pid, players_data)
-        position_counts[pos] = position_counts.get(pos, 0) + 1
+    numbered_positions = []
     
-    current_count = position_counts.get(player_position, 1)
+    for position in roster_positions:
+        if position == "BN":
+            numbered_positions.append("BN")
+            continue
+            
+        # Shorten position names
+        if position == "SUPER_FLEX":
+            position = "SF"
+        elif position == "IDP_FLEX":
+            position = "IDPF"
+            
+        # Count how many of this position we've seen
+        position_counts[position] = position_counts.get(position, 0) + 1
+        
+        # Add number for positions that can have multiples
+        if position in ['RB', 'WR', 'TE', 'FLEX', 'IDPF', 'LB', 'DB']:
+            numbered_positions.append(f"{position}{position_counts[position]}")
+        else:
+            # QB, K, SF typically don't get numbered
+            numbered_positions.append(position)
     
-    # Return numbered position
-    if player_position in ['QB', 'K', 'DEF']:
-        return player_position
-    elif player_position in ['RB', 'WR', 'TE']:
-        return f"{player_position}{current_count}"
-    else:
-        return f"FLEX{current_count}"
+    return numbered_positions
 
-def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict[str, Any]) -> Dict[str, Any]:
+def get_roster_slot_for_starter(starter_index: int, roster_positions: List[str]) -> str:
+    """Get the roster slot for a starter based on their index in the starters array"""
+    if starter_index < len(roster_positions):
+        return roster_positions[starter_index]
+    else:
+        return f"FLEX{starter_index - len(roster_positions) + 1}"
+
+def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict[str, Any], api_cache: Dict[str, Any]) -> Dict[str, Any]:
     """Process matchup data to create detailed breakdowns with player names and positions"""
     
     processed_data = {}
@@ -79,6 +103,17 @@ def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict
         if not isinstance(week_matchups, list):
             continue
             
+        # Extract league ID from cache key (format: "league_id_week")
+        league_id = cache_key.split('_')[0] if '_' in cache_key else None
+        
+        # Get league roster positions from API cache
+        league_roster_positions = []
+        if league_id:
+            league_roster_positions = get_league_roster_positions(api_cache, league_id)
+        
+        # Convert to numbered positions (RB1, RB2, etc.)
+        numbered_roster_positions = convert_to_numbered_roster_positions(league_roster_positions)
+        
         processed_week = []
         
         for matchup in week_matchups:
@@ -97,18 +132,16 @@ def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict
             starter_points = sum(players_points.get(pid, 0) for pid in starters)
             bench_points = total_points - starter_points
             
-            # Process starters with positions
+            # Process starters with correct roster positions
             starter_breakdown = []
-            # Assume standard positions - you might want to get this from league data
-            roster_positions = ['QB', 'RB1', 'RB2', 'WR1', 'WR2', 'WR3', 'TE', 'FLEX', 'K', 'DEF']
             
             for i, player_id in enumerate(starters):
-                position = roster_positions[i] if i < len(roster_positions) else f"FLEX{i-7}"
+                roster_slot = get_roster_slot_for_starter(i, numbered_roster_positions)
                 starter_breakdown.append({
                     'player_id': player_id,
                     'name': get_player_name(player_id, players_data),
                     'position': get_player_position(player_id, players_data),
-                    'roster_slot': position,
+                    'roster_slot': roster_slot,
                     'points': players_points.get(player_id, 0)
                 })
             
@@ -139,7 +172,8 @@ def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict
                 'bench': bench_breakdown,
                 'all_players_count': len(all_players),
                 'starters_count': len(starters),
-                'bench_count': len(bench_players)
+                'bench_count': len(bench_players),
+                'team_name': None  # Will be populated from league data if available
             }
             
             processed_week.append(processed_matchup)
@@ -155,6 +189,7 @@ def main():
     base_dir = "/home/alaba/coolProjects"
     players_file = os.path.join(base_dir, "data", "players.json")
     matchups_cache_file = os.path.join(base_dir, "data", "matchups_cache.json")
+    api_cache_file = os.path.join(base_dir, "data", "api_cache.json")
     output_file = os.path.join(base_dir, "data", "matchup_breakdowns.json")
     
     print("Loading player data...")
@@ -165,14 +200,18 @@ def main():
     matchups_cache = load_matchups_cache(matchups_cache_file)
     print(f"Loaded {len(matchups_cache)} cached weeks")
     
+    print("Loading API cache...")
+    api_cache = load_api_cache(api_cache_file)
+    print(f"Loaded API cache with {len(api_cache)} entries")
+    
     print("Processing matchup breakdowns...")
-    processed_data = process_matchup_breakdown(matchups_cache, players_data)
+    processed_data = process_matchup_breakdown(matchups_cache, players_data, api_cache)
     
     # Add metadata
     output_data = {
         'metadata': {
             'description': 'Preprocessed matchup breakdowns with player names and positions',
-            'source_files': [players_file, matchups_cache_file],
+            'source_files': [players_file, matchups_cache_file, api_cache_file],
             'total_weeks_processed': len(processed_data),
             'created_by': 'create_matchup_breakdown_data.py'
         },

@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="matchup_breakdowns.js"></script>
+    <script src="matchup_breakdowns.js?v=3"></script>
     <style>
         * {
             margin: 0;
@@ -9136,25 +9136,13 @@
                 <h2>⚔️ League Matchups</h2>
                 <p>View matchup history across all years (2025, 2024, 2023, 2022)</p>
                 
-                <!-- Player Breakdown Toggle -->
+                <!-- Player Breakdown Info -->
                 <div style="margin: 20px 0; text-align: center;">
-                    <button onclick="togglePlayerBreakdowns()" style="
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        border: none;
-                        padding: 15px 30px;
-                        border-radius: 25px;
-                        font-weight: bold;
-                        font-size: 1.1rem;
-                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-                        transition: all 0.3s ease;
-                        cursor: pointer;
-                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)'"
-                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
-                        🎯 <span id="breakdownToggleText">Enable</span> Player Breakdowns
-                    </button>
-                    <p style="margin-top: 10px; font-size: 0.9rem; color: #b0b0b0;">
-                        <span id="breakdownStatusText">Click to enable clicking matchups for detailed player breakdowns</span>
+                    <p style="font-size: 1.1rem; color: #667eea; font-weight: bold;">
+                        🎯 Click any matchup below to see detailed player breakdowns!
+                    </p>
+                    <p style="margin-top: 5px; font-size: 0.9rem; color: #b0b0b0;">
+                        View individual player points, roster positions, and bench performance
                     </p>
                 </div>
             </div>
@@ -16594,7 +16582,7 @@
         });
 
         // Player Breakdown Functionality
-        let playerBreakdownsEnabled = false;
+        let playerBreakdownsEnabled = true; // Always enabled
 
         function loadMatchupBreakdowns() {
             // Data is already loaded from matchup_breakdowns.js
@@ -16715,13 +16703,21 @@
             }
             
             const week = parseInt(weekMatch[1]);
-            console.log(`Clicked matchup: ${team1Name} vs ${team2Name}, Week ${week}`);
             
-            showMatchupBreakdownModal('1048308938824937472', week, [team1Name, team2Name]);
+            // Extract scores to help identify the exact matchup
+            const scores = [];
+            const scoreDivs = card.querySelectorAll('.team > div:nth-child(2)');
+            scoreDivs.forEach(div => {
+                scores.push(parseFloat(div.textContent));
+            });
+            
+            console.log(`Clicked matchup: ${team1Name} vs ${team2Name}, Week ${week}, Scores:`, scores);
+            
+            showMatchupBreakdownModal('1048308938824937472', week, [team1Name, team2Name], scores);
         }
 
-        function showMatchupBreakdownModal(leagueId, week, teams) {
-            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams);
+        function showMatchupBreakdownModal(leagueId, week, teams, scores) {
+            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams, scores);
             
             // Create and show modal
             let modal = document.getElementById('playerBreakdownModal');
@@ -16752,9 +16748,46 @@
             }
             
             // Find the specific matchup by team names
-            // This is a simplified approach - you might need to improve team name matching
-            console.log('Generating HTML for breakdown');
-            modalContent.innerHTML = generateBreakdownHTML(weekData.slice(0, 2), week); // Show first 2 teams as example
+            console.log('Looking for teams:', teams);
+            
+            // Find the matchup by matching scores if provided
+            let matchupTeams = [];
+            const matchupGroups = {};
+            
+            // Group by matchup_id
+            weekData.forEach(team => {
+                const matchupId = team.matchup_id;
+                if (!matchupGroups[matchupId]) {
+                    matchupGroups[matchupId] = [];
+                }
+                matchupGroups[matchupId].push(team);
+            });
+            
+            // Find the matchup with matching scores
+            if (scores && scores.length === 2) {
+                for (const matchupId in matchupGroups) {
+                    const matchup = matchupGroups[matchupId];
+                    if (matchup.length === 2) {
+                        const matchupScores = matchup.map(t => t.total_points);
+                        // Check if scores match (in either order)
+                        if ((Math.abs(matchupScores[0] - scores[0]) < 0.1 && Math.abs(matchupScores[1] - scores[1]) < 0.1) ||
+                            (Math.abs(matchupScores[0] - scores[1]) < 0.1 && Math.abs(matchupScores[1] - scores[0]) < 0.1)) {
+                            matchupTeams = matchup;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (matchupTeams.length === 0) {
+                console.log('Could not find matchup by scores, using first matchup');
+                matchupTeams = Object.values(matchupGroups)[0] || [];
+            }
+            
+            console.log('Found matchup teams:', matchupTeams);
+            
+            // Pass the actual team names from the clicked matchup
+            modalContent.innerHTML = generateBreakdownHTML(matchupTeams, week, teams);
         }
 
         function createBreakdownModal() {
@@ -16798,7 +16831,7 @@
             return modal;
         }
 
-        function generateBreakdownHTML(teams, week) {
+        function generateBreakdownHTML(teams, week, teamNames) {
             if (!teams || teams.length === 0) {
                 return '<div class="breakdown-error">No team data available</div>';
             }
@@ -16808,15 +16841,20 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
             `;
             
-            teams.forEach(team => {
+            teams.forEach((team, index) => {
+                // Calculate actual bench points
+                const actualBenchPoints = team.bench.reduce((sum, player) => sum + player.points, 0);
+                // Use the team names from the clicked matchup
+                const teamName = (teamNames && teamNames[index]) ? teamNames[index] : `Roster ${team.roster_id}`;
+                
                 html += `
                     <div style="border: 1px solid #555; border-radius: 10px; padding: 15px;">
                         <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">
-                            Roster ${team.roster_id} - ${team.total_points.toFixed(1)} pts
+                            ${teamName} - ${team.total_points.toFixed(1)} pts
                         </h3>
                         
                         <div style="background: #404040; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
-                            <strong>Starters: ${team.starter_points.toFixed(1)} | Bench: ${team.bench_points.toFixed(1)}</strong>
+                            <strong>Starters: ${team.starter_points.toFixed(1)} | Bench: ${actualBenchPoints.toFixed(1)}</strong>
                         </div>
                         
                         <h4 style="color: #667eea; margin-bottom: 10px;">Starters</h4>
@@ -16872,6 +16910,14 @@
                 closeBreakdownModal();
             }
         });
+        
+        // Initialize matchup handlers after page loads
+        setTimeout(() => {
+            if (loadMatchupBreakdowns()) {
+                console.log('Initializing matchup click handlers...');
+                addMatchupClickHandlers();
+            }
+        }, 2000);
     </script>
 </body>
 </html>
