@@ -972,32 +972,72 @@
                 tradesHTML += `
                     <div class="trade-detail-item">
                         <div class="trade-detail-date">Trade #${index + 1} - ${trade.date}</div>
-                        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 `;
                 
-                trade.trade_details.teams.forEach(teamData => {
-                    if (teamData.team === team1 || teamData.team === team2) {
-                        const hasAssets = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0;
-                        if (hasAssets) {
-                            tradesHTML += `
-                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; min-width: 200px;">
-                                    <strong style="color: #667eea; font-size: 1.1rem;">${teamData.team} received:</strong>
-                                    <ul style="margin: 10px 0; padding-left: 20px; list-style-type: none;">
-                            `;
-                            
+                // Find the two teams involved in this trade
+                const teamsInTrade = trade.trade_details.teams.filter(teamData => 
+                    teamData.team === team1 || teamData.team === team2
+                );
+                
+                teamsInTrade.forEach(teamData => {
+                    const hasReceives = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0;
+                    const hasGives = teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0);
+                    
+                    if (hasReceives || hasGives) {
+                        tradesHTML += `
+                            <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 2px solid #667eea;">
+                                <h4 style="color: #667eea; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">${teamData.team}</h4>
+                                
+                                <div style="display: flex; gap: 15px;">
+                                    <div style="flex: 1;">
+                                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                                            <strong style="color: #28a745;">📥 Received:</strong>
+                                        </div>
+                                        <ul style="list-style: none; padding: 0; margin: 0;">
+                        `;
+                        
+                        if (teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0) {
                             teamData.receives.players.forEach(player => {
-                                tradesHTML += `<li style="margin: 5px 0;"><span style="color: #28a745;">🏈</span> ${player.player}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #28a745;">🏈</span> ${player.player}</li>`;
                             });
                             
                             teamData.receives.draft_picks.forEach(pick => {
-                                tradesHTML += `<li style="margin: 5px 0;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                            });
+                        } else {
+                            tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
+                        }
+                        
+                        tradesHTML += `
+                                        </ul>
+                                    </div>
+                                    
+                                    <div style="flex: 1;">
+                                        <div style="background: #ffe8e8; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                                            <strong style="color: #dc3545;">📤 Gave:</strong>
+                                        </div>
+                                        <ul style="list-style: none; padding: 0; margin: 0;">
+                        `;
+                        
+                        if (teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0)) {
+                            teamData.gives.players.forEach(player => {
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #dc3545;">🏈</span> ${player.player}</li>`;
                             });
                             
-                            tradesHTML += `
-                                    </ul>
-                                </div>
-                            `;
+                            teamData.gives.draft_picks.forEach(pick => {
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                            });
+                        } else {
+                            tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
                         }
+                        
+                        tradesHTML += `
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     }
                 });
                 
