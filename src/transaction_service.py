@@ -420,9 +420,11 @@ class TransactionService:
                 draft_id = drafts[0]['draft_id']
                 picks = draft_service.get_draft_picks(draft_id)
                 
-                # Get better team name for original owner
+                # Get better team name for original owner (use roster_id, not previous_owner_id)
+                # roster_id represents the original draft slot, previous_owner_id is just who traded it
+                original_roster_id = pick_data.get('roster_id', pick_data['previous_owner_id'])
                 original_owner_name = self._get_historical_team_name(
-                    pick_data['previous_owner_id'], season, league_id, roster_to_team
+                    original_roster_id, season, league_id, roster_to_team
                 )
                 
                 # Try multiple matching strategies
