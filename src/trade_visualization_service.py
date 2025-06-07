@@ -18,7 +18,7 @@ class TradeVisualizationService:
         template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
 
-    def get_player_trade_journey(self, league_id: str, player_name: str) -> Dict[str, Any]:
+    def get_comprehensive_player_journey(self, league_id: str, player_name: str) -> Dict[str, Any]:
         """Track a specific player's complete history including draft, FA, and trades"""
         
         # Get all transactions (not just trades) to track complete history

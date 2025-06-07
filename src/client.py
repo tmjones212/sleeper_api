@@ -49,7 +49,7 @@ class SleeperAPI:
 		# Pre-load historical transactions into cache
 		if len(self.cache_service.api_cache) == 0:  # Only load if cache is empty
 			print("Loading historical transaction data...")
-			current_league_id = "1048308938824937472"  # 2024 league
+			current_league_id = "1181025001438806016"  # Latest league (2024-2025)
 			self.transaction_service.get_all_historical_transactions(current_league_id)
 
 		if self.requested_league_id:
@@ -104,7 +104,7 @@ class SleeperAPI:
 		if not target_league_id:
 			raise ValueError("League ID must be provided either in constructor or as parameter")
 		
-		return self.trade_visualization_service.get_player_trade_journey(target_league_id, player_name)
+		return self.trade_visualization_service.get_comprehensive_player_journey(target_league_id, player_name)
 	
 	def get_trade_network_analysis(self, league_id: str = None) -> Dict[str, Any]:
 		"""Get trade network analysis for the league"""
