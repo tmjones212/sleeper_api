@@ -815,18 +815,18 @@
                     label: teamName,
                     size: size,
                     color: {
-                        background: `hsl(${(nodeData.trade_count / maxTrades) * 120}, 70%, 60%)`,
-                        border: '#333',
+                        background: `hsl(${(nodeData.trade_count / maxTrades) * 60 + 200}, 40%, 35%)`,
+                        border: '#606060',
                         highlight: {
-                            background: '#ff6b6b',
-                            border: '#333'
+                            background: '#0066cc',
+                            border: '#66ccff'
                         }
                     },
                     font: { 
                         size: Math.max(12, size / 4),
-                        color: 'white',
+                        color: '#e0e0e0',
                         strokeWidth: 2,
-                        strokeColor: '#333'
+                        strokeColor: '#1a1a1a'
                     },
                     title: `${teamName}<br/>Trades: ${nodeData.trade_count}<br/>Players acquired: ${nodeData.players_acquired}<br/>Players given: ${nodeData.players_given}`
                 };
@@ -846,9 +846,9 @@
                     to: team2,
                     width: Math.max(5, width), // Make edges thicker for easier clicking
                     color: {
-                        color: '#764ba2',
-                        opacity: 0.8,
-                        highlight: '#ff6b6b'
+                        color: '#66ccff',
+                        opacity: 0.7,
+                        highlight: '#0066cc'
                     },
                     title: `${team1} ↔ ${team2}<br/>${edgeData.weight} trades<br/>${edgeData.total_players} players<br/>${edgeData.total_picks} picks<br/><strong>Click to see trade details!</strong>`,
                     smooth: {
