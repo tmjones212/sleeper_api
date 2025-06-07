@@ -16,8 +16,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            background: #1a1a1a;
+            color: #e0e0e0;
             min-height: 100vh;
         }
 
@@ -45,15 +45,16 @@
         }
 
         .controls {
-            background: white;
+            background: #2d2d2d;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 30px;
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
+            border: 1px solid #404040;
         }
 
         .control-group {
@@ -65,13 +66,13 @@
         .control-group label {
             font-weight: 600;
             margin-bottom: 5px;
-            color: #555;
+            color: #b0b0b0;
         }
 
         .tab-button {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
+            background: #404040;
+            color: #e0e0e0;
+            border: 1px solid #606060;
             padding: 12px 24px;
             border-radius: 25px;
             cursor: pointer;
@@ -82,21 +83,25 @@
 
         .tab-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: #505050;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
         .tab-button.active {
-            background: linear-gradient(45deg, #764ba2, #667eea);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+            box-shadow: 0 5px 15px rgba(0,102,204,0.3);
         }
 
         .visualization-panel {
-            background: white;
+            background: #2d2d2d;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 30px;
             overflow: hidden;
             display: none;
+            border: 1px solid #404040;
         }
 
         .visualization-panel.active {
@@ -104,10 +109,11 @@
         }
 
         .panel-header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: #1a1a1a;
+            color: #e0e0e0;
             padding: 20px;
             text-align: center;
+            border-bottom: 2px solid #0066cc;
         }
 
         .panel-header h2 {
@@ -126,12 +132,13 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
+            background: #404040;
+            color: #e0e0e0;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid #606060;
         }
 
         .stat-card h3 {
@@ -145,9 +152,10 @@
 
         .network-container {
             height: 600px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #606060;
             border-radius: 10px;
             margin: 20px 0;
+            background: #1a1a1a;
         }
 
         .network-panel-layout {
@@ -159,36 +167,38 @@
         .network-graph {
             flex: 2;
             height: 600px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #606060;
             border-radius: 10px;
+            background: #1a1a1a;
         }
 
         .trade-details-sidebar {
             flex: 1;
             max-height: 600px;
             overflow-y: auto;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #606060;
             border-radius: 10px;
             padding: 20px;
-            background: #f8f9fa;
+            background: #2d2d2d;
         }
 
         .trade-details-sidebar h3 {
             margin-top: 0;
-            color: #667eea;
+            color: #66ccff;
         }
 
         .trade-detail-item {
-            background: white;
+            background: #404040;
             border-radius: 8px;
             padding: 15px;
             margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 1px solid #606060;
         }
 
         .trade-detail-date {
             font-weight: bold;
-            color: #667eea;
+            color: #66ccff;
             margin-bottom: 10px;
         }
 
@@ -200,12 +210,13 @@
         }
 
         .trade-detail-team {
-            background: #f0f0f0;
+            background: #606060;
             padding: 10px;
             border-radius: 5px;
             margin: 2px;
             flex: 1;
             min-width: 200px;
+            color: #e0e0e0;
         }
 
         .clickable-cell {
@@ -214,34 +225,37 @@
         }
 
         .clickable-cell:hover {
-            background-color: rgba(102, 126, 234, 0.3) !important;
+            background-color: rgba(0, 102, 204, 0.5) !important;
         }
 
         .timeline-container {
             max-height: 600px;
             overflow-y: auto;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #606060;
             border-radius: 10px;
             padding: 20px;
+            background: #2d2d2d;
         }
 
         .trade-item {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
+            background: #404040;
+            border-left: 4px solid #66ccff;
             margin: 15px 0;
             padding: 20px;
             border-radius: 8px;
             transition: all 0.3s ease;
+            border: 1px solid #606060;
         }
 
         .trade-item:hover {
             transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: #505050;
         }
 
         .trade-date {
             font-weight: 600;
-            color: #667eea;
+            color: #66ccff;
             margin-bottom: 10px;
         }
 
@@ -253,19 +267,21 @@
         }
 
         .team-side {
-            background: white;
+            background: #606060;
             padding: 15px;
             border-radius: 8px;
             margin: 5px;
             flex: 1;
             min-width: 250px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            color: #e0e0e0;
+            border: 1px solid #808080;
         }
 
         .team-side h4 {
-            color: #333;
+            color: #e0e0e0;
             margin-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #66ccff;
             padding-bottom: 5px;
         }
 
@@ -276,7 +292,7 @@
 
         .asset-list li {
             padding: 5px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #808080;
         }
 
         .asset-list li:last-child {
@@ -284,12 +300,12 @@
         }
 
         .player-item {
-            color: #333;
+            color: #e0e0e0;
             font-weight: 500;
         }
 
         .pick-item {
-            color: #764ba2;
+            color: #66ccff;
             font-style: italic;
         }
 
@@ -302,9 +318,10 @@
             position: relative;
             margin: 20px 0;
             padding: 20px;
-            background: #f8f9fa;
+            background: #404040;
             border-radius: 10px;
             margin-left: 30px;
+            border: 1px solid #606060;
         }
 
         .journey-step::before {
@@ -314,7 +331,7 @@
             top: 20px;
             width: 30px;
             height: 30px;
-            background: #667eea;
+            background: #0066cc;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -333,7 +350,7 @@
         }
 
         .team-badge {
-            background: #667eea;
+            background: #0066cc;
             color: white;
             padding: 10px 20px;
             border-radius: 25px;
@@ -342,7 +359,7 @@
 
         .transfer-arrow {
             font-size: 1.5rem;
-            color: #764ba2;
+            color: #66ccff;
         }
 
         .most-traded-list {
@@ -352,12 +369,13 @@
         }
 
         .player-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #404040;
+            color: #e0e0e0;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid #606060;
         }
 
         .player-card h3 {
@@ -377,19 +395,22 @@
 
         .search-input {
             padding: 12px 20px;
-            border: 2px solid #667eea;
+            border: 2px solid #606060;
             border-radius: 25px;
             width: 300px;
             font-size: 1rem;
             outline: none;
+            background: #404040;
+            color: #e0e0e0;
         }
 
         .search-input:focus {
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.3);
+            border-color: #0066cc;
         }
 
         .search-button {
-            background: #667eea;
+            background: #0066cc;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -417,7 +438,7 @@
         }
 
         .trade-modal-content {
-            background-color: white;
+            background-color: #2d2d2d;
             margin: 5% auto;
             padding: 20px;
             border-radius: 15px;
@@ -426,6 +447,8 @@
             max-height: 80%;
             overflow-y: auto;
             position: relative;
+            border: 1px solid #606060;
+            color: #e0e0e0;
         }
 
         .trade-modal-close {
@@ -435,11 +458,11 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            color: #666;
+            color: #b0b0b0;
         }
 
         .trade-modal-close:hover {
-            color: #333;
+            color: #e0e0e0;
         }
 
         @media (max-width: 768px) {
@@ -526,7 +549,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-bottom: 20px; color: #333;">📈 Most Active Traders</h3>
+                <h3 style="margin-bottom: 20px; color: #e0e0e0;">📈 Most Active Traders</h3>
                 <div class="stats-grid">
                     {% for team_name, team_data in network_data.most_active_traders %}
                     <div class="team-side">
@@ -538,7 +561,7 @@
                     {% endfor %}
                 </div>
 
-                <h3 style="margin: 30px 0 20px; color: #333;">🔄 Most Traded Players</h3>
+                <h3 style="margin: 30px 0 20px; color: #e0e0e0;">🔄 Most Traded Players</h3>
                 <div class="most-traded-list">
                     {% for player_name, trade_count in most_traded_players %}
                     <div class="player-card">
@@ -549,7 +572,7 @@
                     {% endfor %}
                 </div>
 
-                <h3 style="margin: 30px 0 20px; color: #333;">📊 Trading Activity by Month</h3>
+                <h3 style="margin: 30px 0 20px; color: #e0e0e0;">📊 Trading Activity by Month</h3>
                 <div class="chart-container">
                     <canvas id="monthlyChart"></canvas>
                 </div>
@@ -603,20 +626,20 @@
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                         <thead>
-                            <tr style="background: #667eea; color: white;">
-                                <th style="padding: 10px; border: 1px solid #ddd;">Team</th>
+                            <tr style="background: #0066cc; color: white;">
+                                <th style="padding: 10px; border: 1px solid #606060;">Team</th>
                                 {% for team in trade_matrix.teams %}
-                                <th style="padding: 10px; border: 1px solid #ddd; writing-mode: vertical-lr; text-orientation: mixed;">{{ team }}</th>
+                                <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">{{ team }}</th>
                                 {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for team1 in trade_matrix.teams %}
                             <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd; background: #f0f0f0; font-weight: bold;">{{ team1 }}</td>
+                                <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">{{ team1 }}</td>
                                 {% for team2 in trade_matrix.teams %}
                                 <td class="{% if team1 != team2 and trade_matrix.matrix[team1][team2] > 0 %}clickable-cell{% endif %}" 
-                                    style="padding: 10px; border: 1px solid #ddd; text-align: center; {% if trade_matrix.matrix[team1][team2] > 0 %}background: rgba(102, 126, 234, {{ [trade_matrix.matrix[team1][team2] / 10, 1]|min }});{% endif %}"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; {% if trade_matrix.matrix[team1][team2] > 0 %}background: rgba(0, 102, 204, {{ [trade_matrix.matrix[team1][team2] / 10, 1]|min }});{% else %}background: #2d2d2d;{% endif %}"
                                     onclick="{% if team1 != team2 and trade_matrix.matrix[team1][team2] > 0 %}showTeamTrades('{{ team1 }}', '{{ team2 }}'){% endif %}">
                                     {% if team1 != team2 and trade_matrix.matrix[team1][team2] > 0 %}
                                         {{ trade_matrix.matrix[team1][team2] }}
@@ -962,9 +985,9 @@
             }
             
             let tradesHTML = `
-                <h3 style="margin-bottom: 20px; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
+                <h3 style="margin-bottom: 20px; color: #e0e0e0; border-bottom: 2px solid #66ccff; padding-bottom: 10px;">
                     📊 ${team1} ↔ ${team2}
-                    <span style="font-size: 0.9rem; color: #666;">(${teamTrades.length} trade${teamTrades.length !== 1 ? 's' : ''})</span>
+                    <span style="font-size: 0.9rem; color: #b0b0b0;">(${teamTrades.length} trade${teamTrades.length !== 1 ? 's' : ''})</span>
                 </h3>
             `;
             
@@ -986,13 +1009,13 @@
                     
                     if (hasReceives || hasGives) {
                         tradesHTML += `
-                            <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 10px; border: 2px solid #667eea;">
-                                <h4 style="color: #667eea; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">${teamData.team}</h4>
+                            <div style="flex: 1; min-width: 300px; background: #404040; padding: 20px; border-radius: 10px; border: 2px solid #66ccff; color: #e0e0e0;">
+                                <h4 style="color: #66ccff; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">${teamData.team}</h4>
                                 
                                 <div style="display: flex; gap: 15px;">
                                     <div style="flex: 1;">
-                                        <div style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                                            <strong style="color: #28a745;">📥 Received:</strong>
+                                        <div style="background: #2d5a2d; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                                            <strong style="color: #66ff66;">📥 Received:</strong>
                                         </div>
                                         <ul style="list-style: none; padding: 0; margin: 0;">
                         `;
@@ -1002,7 +1025,7 @@
                         // Show players
                         if (teamData.receives.players && teamData.receives.players.length > 0) {
                             teamData.receives.players.forEach(player => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #28a745;">🏈</span> ${player.player}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ff66;">🏈</span> ${player.player}</li>`;
                                 hasReceivedAssets = true;
                             });
                         }
@@ -1010,7 +1033,7 @@
                         // Show draft picks
                         if (teamData.receives.draft_picks && teamData.receives.draft_picks.length > 0) {
                             teamData.receives.draft_picks.forEach(pick => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pick.round} round ${pick.season}</li>`;
                                 hasReceivedAssets = true;
                             });
                         }
@@ -1018,13 +1041,13 @@
                         // Show FAAB received
                         if (teamData.receives.faab && teamData.receives.faab.length > 0) {
                             teamData.receives.faab.forEach(faab => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #28a745;">💰</span> $${faab.amount} FAAB</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ff66;">💰</span> $${faab.amount} FAAB</li>`;
                                 hasReceivedAssets = true;
                             });
                         }
                         
                         if (!hasReceivedAssets) {
-                            tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
+                            tradesHTML += `<li style="color: #b0b0b0; font-style: italic;">Nothing</li>`;
                         }
                         
                         tradesHTML += `
@@ -1032,8 +1055,8 @@
                                     </div>
                                     
                                     <div style="flex: 1;">
-                                        <div style="background: #ffe8e8; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                                            <strong style="color: #dc3545;">📤 Gave:</strong>
+                                        <div style="background: #5a2d2d; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                                            <strong style="color: #ff6666;">📤 Gave:</strong>
                                         </div>
                                         <ul style="list-style: none; padding: 0; margin: 0;">
                         `;
@@ -1043,7 +1066,7 @@
                         // Show players given
                         if (teamData.gives && teamData.gives.players && teamData.gives.players.length > 0) {
                             teamData.gives.players.forEach(player => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #dc3545;">🏈</span> ${player.player}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #ff6666;">🏈</span> ${player.player}</li>`;
                                 hasGivenAssets = true;
                             });
                         }
@@ -1051,7 +1074,7 @@
                         // Show draft picks given
                         if (teamData.gives && teamData.gives.draft_picks && teamData.gives.draft_picks.length > 0) {
                             teamData.gives.draft_picks.forEach(pick => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #6f42c1;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pick.round} round ${pick.season}</li>`;
                                 hasGivenAssets = true;
                             });
                         }
@@ -1059,13 +1082,13 @@
                         // Show FAAB given
                         if (teamData.gives.faab && teamData.gives.faab.length > 0) {
                             teamData.gives.faab.forEach(faab => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: white; border-radius: 3px;"><span style="color: #dc3545;">💰</span> $${faab.amount} FAAB</li>`;
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #ff6666;">💰</span> $${faab.amount} FAAB</li>`;
                                 hasGivenAssets = true;
                             });
                         }
                         
                         if (!hasGivenAssets) {
-                            tradesHTML += `<li style="color: #999; font-style: italic;">Nothing</li>`;
+                            tradesHTML += `<li style="color: #b0b0b0; font-style: italic;">Nothing</li>`;
                         }
                         
                         tradesHTML += `
@@ -1114,28 +1137,28 @@
             if (!detailsContent) return;
             
             const statsHTML = `
-                <h4 style="margin-bottom: 15px; color: #333;">${teamName} Statistics</h4>
+                <h4 style="margin-bottom: 15px; color: #e0e0e0;">${teamName} Statistics</h4>
                 <div class="trade-detail-item">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
                         <div>
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${teamData.trade_count}</div>
-                            <div style="color: #666;">Total Trades</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #66ccff;">${teamData.trade_count}</div>
+                            <div style="color: #b0b0b0;">Total Trades</div>
                         </div>
                         <div>
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #51cf66;">${teamData.players_acquired}</div>
-                            <div style="color: #666;">Players Acquired</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #66ff66;">${teamData.players_acquired}</div>
+                            <div style="color: #b0b0b0;">Players Acquired</div>
                         </div>
                         <div>
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #ff6b6b;">${teamData.players_given}</div>
-                            <div style="color: #666;">Players Given</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #ff6666;">${teamData.players_given}</div>
+                            <div style="color: #b0b0b0;">Players Given</div>
                         </div>
                         <div>
-                            <div style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">${teamData.draft_picks_acquired + teamData.draft_picks_given}</div>
-                            <div style="color: #666;">Draft Picks Traded</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #66ccff;">${teamData.draft_picks_acquired + teamData.draft_picks_given}</div>
+                            <div style="color: #b0b0b0;">Draft Picks Traded</div>
                         </div>
                     </div>
                 </div>
-                <div style="margin-top: 15px; text-align: center; color: #666;">
+                <div style="margin-top: 15px; text-align: center; color: #b0b0b0;">
                     <em>Click on connections to see detailed trades between teams</em>
                 </div>
             `;
