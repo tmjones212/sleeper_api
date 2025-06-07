@@ -603,10 +603,20 @@
 
                 <h3 style="margin: 30px 0 20px; color: #e0e0e0;">🔄 Most Traded Players</h3>
                 <div class="most-traded-list">
-                    {% for player_name, trade_count in most_traded_players %}
+                    {% for player in most_traded_players %}
                     <div class="player-card">
-                        <h3>{{ player_name }}</h3>
-                        <div class="trade-count">{{ trade_count }}</div>
+                        <div style="margin-bottom: 15px;">
+                            {% if player.image_url %}
+                            <img src="{{ player.image_url }}" 
+                                 style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
+                                 onerror="this.style.display='none'"
+                                 alt="{{ player.name }}">
+                            {% else %}
+                            <div style="width: 60px; height: 60px; background: #606060; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto;">🏈</div>
+                            {% endif %}
+                        </div>
+                        <h3>{{ player.name }}</h3>
+                        <div class="trade-count">{{ player.trade_count }}</div>
                         <p>trades</p>
                     </div>
                     {% endfor %}
@@ -1592,8 +1602,8 @@
             const resultContainer = document.getElementById('playerJourneyResult');
             
             // Find player in most traded list
-            const playerData = mostTradedPlayers.find(([name, count]) => 
-                name.toLowerCase().includes(playerName.toLowerCase())
+            const playerData = mostTradedPlayers.find(player => 
+                player.name.toLowerCase().includes(playerName.toLowerCase())
             );
             
             if (!playerData) {
@@ -1605,12 +1615,12 @@
                         <br/>
                         <p><strong>Available players with trade history:</strong></p>
                         <div style="max-height: 200px; overflow-y: auto; text-align: left; margin: 20px;">
-                            ${mostTradedPlayers.slice(0, 20).map(([name, count]) => 
+                            ${mostTradedPlayers.slice(0, 20).map(player => 
                                 `<div style="padding: 5px; border-bottom: 1px solid #606060;">
-                                    <span style="cursor: pointer; color: #66ccff;" onclick="document.getElementById('playerSearch').value='${name}'; searchPlayerJourney();">
-                                        ${name}
+                                    <span style="cursor: pointer; color: #66ccff;" onclick="document.getElementById('playerSearch').value='${player.name}'; searchPlayerJourney();">
+                                        ${player.name}
                                     </span> 
-                                    <span style="color: #b0b0b0;">(${count} trades)</span>
+                                    <span style="color: #b0b0b0;">(${player.trade_count} trades)</span>
                                 </div>`
                             ).join('')}
                         </div>
@@ -1619,12 +1629,10 @@
                 return;
             }
             
-            const [foundPlayerName, tradeCount] = playerData;
-            
             resultContainer.innerHTML = `
                 <div style="text-align: center; color: #e0e0e0; padding: 40px;">
-                    <h3>🏈 ${foundPlayerName}</h3>
-                    <p>Found in trade data with ${tradeCount} trades.</p>
+                    <h3>🏈 ${playerData.name}</h3>
+                    <p>Found in trade data with ${playerData.trade_count} trades.</p>
                     <p>📡 Start the player journey server to get detailed timeline:</p>
                     <code style="background: #404040; color: #e0e0e0; padding: 10px; border-radius: 5px; display: block; margin: 10px 0; border: 1px solid #606060;">
                         cd src && python player_journey_server.py

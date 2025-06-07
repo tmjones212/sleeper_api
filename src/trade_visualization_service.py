@@ -366,8 +366,8 @@ class TradeVisualizationService:
             'busiest_periods': []
         }
         
-        # Sort trades by date
-        sorted_trades = sorted(trades, key=lambda x: x.get('timestamp', 0))
+        # Sort trades by date (newest first)
+        sorted_trades = sorted(trades, key=lambda x: x.get('timestamp', 0), reverse=True)
         
         for trade in sorted_trades:
             # Extract month for frequency analysis
@@ -429,12 +429,16 @@ class TradeVisualizationService:
             'biggest_trades': network_data['biggest_trades']
         }
         
-        # Get most traded players
-        most_traded_players = sorted(
-            player_counts.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )[:10]
+        # Get most traded players with player IDs for images
+        most_traded_players = []
+        for player_name, trade_count in sorted(player_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
+            player_id = self.player_service.get_player_id_by_name(player_name)
+            most_traded_players.append({
+                'name': player_name,
+                'trade_count': trade_count,
+                'player_id': player_id,
+                'image_url': self.player_service.get_player_image_url(player_id) if player_id else None
+            })
         
         template_data = {
             'league_id': league_id,
