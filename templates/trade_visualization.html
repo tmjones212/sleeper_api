@@ -314,6 +314,46 @@
             overflow-y: auto;
         }
 
+        .journey-network-container {
+            height: 500px;
+            border: 2px solid #606060;
+            border-radius: 10px;
+            margin: 20px 0;
+            background: #1a1a1a;
+        }
+
+        .journey-info-panel {
+            background: #2d2d2d;
+            border: 1px solid #606060;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .journey-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #404040;
+            padding: 8px 12px;
+            border-radius: 15px;
+            border: 1px solid #606060;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
         .journey-step {
             position: relative;
             margin: 20px 0;
@@ -1172,36 +1212,43 @@
             const resultContainer = document.getElementById('playerJourneyResult');
             
             if (!playerName) {
-                resultContainer.innerHTML = '<p style="text-align: center; color: #666;">Please enter a player name to track their journey.</p>';
+                resultContainer.innerHTML = '<p style="text-align: center; color: #b0b0b0;">Please enter a player name to track their journey.</p>';
                 return;
             }
             
-            resultContainer.innerHTML = '<p style="text-align: center;">🔍 Searching for player journey...</p>';
+            resultContainer.innerHTML = '<p style="text-align: center; color: #e0e0e0;">🔍 Searching for player journey...</p>';
             
             try {
-                // Try to fetch real journey data from server
+                // Try to fetch real journey data from server with a shorter timeout
                 let journeyData = null;
                 
                 try {
-                    const response = await fetch(`http://localhost:5000/player_journey/{{ league_id }}/${encodeURIComponent(playerName)}`);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+                    
+                    const response = await fetch(`http://localhost:5000/player_journey/{{ league_id }}/${encodeURIComponent(playerName)}`, {
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    
                     if (response.ok) {
                         journeyData = await response.json();
                     }
                 } catch (fetchError) {
-                    console.log('Server not available, falling back to local data:', fetchError);
+                    console.log('Server not available or timeout, falling back to local data:', fetchError);
                 }
                 
                 if (journeyData && !journeyData.error) {
                     // Use the comprehensive journey data from the server
                     displayPlayerJourney(journeyData);
                 } else {
-                    // Fallback to local data search
+                    // Quick fallback to local data search (just trade count)
                     displayLocalPlayerSearch(playerName);
                 }
                 
             } catch (error) {
                 resultContainer.innerHTML = `
-                    <div style="text-align: center; color: #ff6b6b; padding: 40px;">
+                    <div style="text-align: center; color: #ff6666; padding: 40px;">
                         <h3>❌ Error</h3>
                         <p>Failed to load player journey data.</p>
                         <p>Error: ${error.message}</p>
@@ -1214,9 +1261,9 @@
             const resultContainer = document.getElementById('playerJourneyResult');
             
             let journeyHTML = `
-                <div style="text-align: center; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
                     <h3>🏈 ${journeyData.player_name}</h3>
-                    <p style="color: #667eea; font-size: 1.2rem;">
+                    <p style="color: #66ccff; font-size: 1.2rem;">
                         Total Trades: ${journeyData.total_trades} | 
                         Current Team: ${journeyData.current_team || 'Unknown'} |
                         Teams Involved: ${journeyData.teams_involved.length}
@@ -1225,70 +1272,264 @@
             `;
             
             if (journeyData.timeline.length > 0) {
-                journeyHTML += '<div class="journey-timeline">';
-                
-                journeyData.timeline.forEach((step, index) => {
-                    let stepContent = '';
-                    
-                    if (step.type === 'trade') {
-                        stepContent = `
-                            <div class="team-transfer">
-                                <span class="team-badge" style="background: #ff6b6b;">${step.from_team}</span>
-                                <span class="transfer-arrow">→</span>
-                                <span class="team-badge" style="background: #51cf66;">${step.to_team}</span>
-                            </div>
-                            <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                                <strong>Trade #${step.trade_number}</strong><br/>
-                                ${step.trade_details.given_for.length > 0 ? 
-                                    `Traded for: ${step.trade_details.given_for.map(asset => asset.name).join(', ')}` : 
-                                    'Part of larger trade package'
-                                }
-                            </div>
-                        `;
-                    } else if (step.type === 'free_agent') {
-                        stepContent = `
-                            <div class="team-transfer">
-                                <span class="team-badge" style="background: #999;">Free Agency</span>
-                                <span class="transfer-arrow">→</span>
-                                <span class="team-badge" style="background: #51cf66;">${step.to_team}</span>
-                            </div>
-                            <div style="margin-top: 15px; padding: 10px; background: #e8f5e8; border-radius: 5px;">
-                                <strong>Free Agent Pickup</strong>
-                            </div>
-                        `;
-                    } else if (step.type === 'waiver') {
-                        stepContent = `
-                            <div class="team-transfer">
-                                <span class="team-badge" style="background: #999;">Waivers</span>
-                                <span class="transfer-arrow">→</span>
-                                <span class="team-badge" style="background: #51cf66;">${step.to_team}</span>
-                            </div>
-                            <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
-                                <strong>Waiver Claim</strong>
-                            </div>
-                        `;
-                    }
-                    
-                    journeyHTML += `
-                        <div class="journey-step" data-step="${index + 1}">
-                            <div style="font-weight: bold; color: #667eea; margin-bottom: 10px;">
-                                ${step.date}
-                            </div>
-                            ${stepContent}
+                journeyHTML += `
+                    <div class="journey-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #66ccff;"></div>
+                            <span>Teams</span>
                         </div>
-                    `;
-                });
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #ff6666;"></div>
+                            <span>Trade</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #66ff66;"></div>
+                            <span>Free Agent</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #ffcc66;"></div>
+                            <span>Waiver</span>
+                        </div>
+                    </div>
+                    <div id="playerJourneyNetwork" class="journey-network-container"></div>
+                    <div id="journeyInfoPanel" class="journey-info-panel">
+                        <h4 style="color: #66ccff; margin-bottom: 10px;">Journey Details</h4>
+                        <p style="color: #b0b0b0;">Click on connections to see transaction details</p>
+                    </div>
+                `;
                 
-                journeyHTML += '</div>';
+                resultContainer.innerHTML = journeyHTML;
+                
+                // Create the network visualization
+                setTimeout(() => createPlayerJourneyNetwork(journeyData), 100);
             } else {
                 journeyHTML += `
-                    <div style="text-align: center; color: #666; padding: 40px;">
+                    <div style="text-align: center; color: #b0b0b0; padding: 40px;">
                         <p>📊 No detailed journey data found for this player.</p>
+                    </div>
+                `;
+                resultContainer.innerHTML = journeyHTML;
+            }
+        }
+        
+        function createPlayerJourneyNetwork(journeyData) {
+            const container = document.getElementById('playerJourneyNetwork');
+            if (!container) return;
+            
+            const nodes = [];
+            const edges = [];
+            const teams = new Set();
+            
+            // Add special nodes for non-team entities
+            nodes.push({
+                id: 'free_agency',
+                label: 'Free\nAgency',
+                color: {
+                    background: '#666666',
+                    border: '#888888'
+                },
+                font: { color: '#e0e0e0' },
+                size: 30,
+                shape: 'box'
+            });
+            
+            nodes.push({
+                id: 'waivers',
+                label: 'Waivers',
+                color: {
+                    background: '#666666',
+                    border: '#888888'
+                },
+                font: { color: '#e0e0e0' },
+                size: 30,
+                shape: 'box'
+            });
+            
+            // Collect all teams from the journey
+            journeyData.timeline.forEach(step => {
+                if (step.to_team && step.to_team !== 'Free Agency' && step.to_team !== 'Waivers') {
+                    teams.add(step.to_team);
+                }
+                if (step.from_team && step.from_team !== 'Free Agency' && step.from_team !== 'Waivers') {
+                    teams.add(step.from_team);
+                }
+            });
+            
+            // Create team nodes
+            teams.forEach(team => {
+                const isCurrentTeam = team === journeyData.current_team;
+                nodes.push({
+                    id: team,
+                    label: team,
+                    color: {
+                        background: isCurrentTeam ? '#0066cc' : '#66ccff',
+                        border: isCurrentTeam ? '#66ccff' : '#0066cc'
+                    },
+                    font: { 
+                        color: '#e0e0e0',
+                        size: isCurrentTeam ? 16 : 14,
+                        bold: isCurrentTeam
+                    },
+                    size: isCurrentTeam ? 50 : 40,
+                    title: isCurrentTeam ? `${team} (Current Team)` : team
+                });
+            });
+            
+            // Create edges for each transaction
+            journeyData.timeline.forEach((step, index) => {
+                let fromNode, toNode, edgeColor, edgeLabel;
+                
+                if (step.type === 'trade') {
+                    fromNode = step.from_team;
+                    toNode = step.to_team;
+                    edgeColor = '#ff6666';
+                    edgeLabel = `Trade #${step.trade_number}`;
+                } else if (step.type === 'free_agent') {
+                    fromNode = 'free_agency';
+                    toNode = step.to_team;
+                    edgeColor = '#66ff66';
+                    edgeLabel = 'Free Agent';
+                } else if (step.type === 'waiver') {
+                    fromNode = 'waivers';
+                    toNode = step.to_team;
+                    edgeColor = '#ffcc66';
+                    edgeLabel = 'Waiver Claim';
+                }
+                
+                if (fromNode && toNode) {
+                    edges.push({
+                        id: `edge_${index}`,
+                        from: fromNode,
+                        to: toNode,
+                        color: {
+                            color: edgeColor,
+                            highlight: edgeColor
+                        },
+                        width: 3,
+                        arrows: 'to',
+                        font: {
+                            color: '#e0e0e0',
+                            size: 12,
+                            strokeWidth: 2,
+                            strokeColor: '#1a1a1a'
+                        },
+                        label: edgeLabel,
+                        title: `${step.date}<br/>${edgeLabel}<br/>Click for details`,
+                        stepData: step
+                    });
+                }
+            });
+            
+            const data = { nodes: nodes, edges: edges };
+            const options = {
+                nodes: {
+                    borderWidth: 2,
+                    shadow: true
+                },
+                edges: {
+                    shadow: true,
+                    smooth: {
+                        type: 'continuous',
+                        roundness: 0.2
+                    },
+                    arrowStrikethrough: false
+                },
+                physics: {
+                    enabled: true,
+                    solver: 'forceAtlas2Based',
+                    forceAtlas2Based: {
+                        gravitationalConstant: -100,
+                        centralGravity: 0.05,
+                        springLength: 150,
+                        springConstant: 0.12,
+                        damping: 0.4,
+                        avoidOverlap: 1
+                    },
+                    stabilization: {
+                        enabled: true,
+                        iterations: 100
+                    }
+                },
+                interaction: {
+                    dragNodes: true,
+                    dragView: true,
+                    zoomView: true,
+                    hover: true
+                },
+                layout: {
+                    improvedLayout: true
+                }
+            };
+            
+            const network = new vis.Network(container, data, options);
+            
+            // Handle edge clicks to show transaction details
+            network.on('click', function(params) {
+                if (params.edges.length > 0) {
+                    const edgeId = params.edges[0];
+                    const edge = edges.find(e => e.id === edgeId);
+                    
+                    if (edge && edge.stepData) {
+                        showJourneyStepDetails(edge.stepData);
+                    }
+                }
+            });
+        }
+        
+        function showJourneyStepDetails(stepData) {
+            const infoPanel = document.getElementById('journeyInfoPanel');
+            if (!infoPanel) return;
+            
+            let detailsHTML = `
+                <h4 style="color: #66ccff; margin-bottom: 10px;">Transaction Details</h4>
+                <div style="background: #404040; padding: 15px; border-radius: 8px; border: 1px solid #606060;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">Date:</strong> <span style="color: #66ccff;">${stepData.date}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">Type:</strong> <span style="color: #66ccff;">${stepData.type === 'trade' ? 'Trade' : stepData.type === 'free_agent' ? 'Free Agent Pickup' : 'Waiver Claim'}</span>
+                    </div>
+            `;
+            
+            if (stepData.type === 'trade') {
+                detailsHTML += `
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">Trade #:</strong> <span style="color: #66ccff;">${stepData.trade_number}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">From:</strong> <span style="color: #ff6666;">${stepData.from_team}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">To:</strong> <span style="color: #66ff66;">${stepData.to_team}</span>
+                    </div>
+                `;
+                
+                if (stepData.trade_details.given_for && stepData.trade_details.given_for.length > 0) {
+                    detailsHTML += `
+                        <div>
+                            <strong style="color: #e0e0e0;">Traded for:</strong><br/>
+                            <ul style="margin: 5px 0 0 20px; color: #b0b0b0;">
+                    `;
+                    stepData.trade_details.given_for.forEach(asset => {
+                        detailsHTML += `<li>${asset.name}</li>`;
+                    });
+                    detailsHTML += `</ul></div>`;
+                } else {
+                    detailsHTML += `<div><em style="color: #b0b0b0;">Part of larger trade package</em></div>`;
+                }
+            } else {
+                detailsHTML += `
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #e0e0e0;">Acquired from:</strong> <span style="color: #66ccff;">${stepData.from_team}</span>
+                    </div>
+                    <div>
+                        <strong style="color: #e0e0e0;">New team:</strong> <span style="color: #66ff66;">${stepData.to_team}</span>
                     </div>
                 `;
             }
             
-            resultContainer.innerHTML = journeyHTML;
+            detailsHTML += `</div>`;
+            infoPanel.innerHTML = detailsHTML;
         }
         
         function displayLocalPlayerSearch(playerName) {
@@ -1309,11 +1550,11 @@
                         <p><strong>Available players with trade history:</strong></p>
                         <div style="max-height: 200px; overflow-y: auto; text-align: left; margin: 20px;">
                             ${mostTradedPlayers.slice(0, 20).map(([name, count]) => 
-                                `<div style="padding: 5px; border-bottom: 1px solid #eee;">
-                                    <span style="cursor: pointer; color: #667eea;" onclick="document.getElementById('playerSearch').value='${name}'; searchPlayerJourney();">
+                                `<div style="padding: 5px; border-bottom: 1px solid #606060;">
+                                    <span style="cursor: pointer; color: #66ccff;" onclick="document.getElementById('playerSearch').value='${name}'; searchPlayerJourney();">
                                         ${name}
                                     </span> 
-                                    <span style="color: #666;">(${count} trades)</span>
+                                    <span style="color: #b0b0b0;">(${count} trades)</span>
                                 </div>`
                             ).join('')}
                         </div>
@@ -1325,11 +1566,11 @@
             const [foundPlayerName, tradeCount] = playerData;
             
             resultContainer.innerHTML = `
-                <div style="text-align: center; color: #666; padding: 40px;">
+                <div style="text-align: center; color: #e0e0e0; padding: 40px;">
                     <h3>🏈 ${foundPlayerName}</h3>
                     <p>Found in trade data with ${tradeCount} trades.</p>
                     <p>📡 Start the player journey server to get detailed timeline:</p>
-                    <code style="background: #f0f0f0; padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
+                    <code style="background: #404040; color: #e0e0e0; padding: 10px; border-radius: 5px; display: block; margin: 10px 0; border: 1px solid #606060;">
                         cd src && python player_journey_server.py
                     </code>
                     <p>Then refresh and search again for full journey details.</p>
