@@ -20,7 +20,7 @@ from best_ball_service import BestBallService
 from standings_service import StandingsService
 from team_service import TeamService
 from draft_service import DraftService
-from trade_visualization_service import TradeVisualizationService
+from trade_visualization_service import LeagueVisualizationService
 
 class SleeperAPI:
 	BASE_URL = "https://api.sleeper.app/v1"
@@ -37,14 +37,14 @@ class SleeperAPI:
 		self.scoring_settings = self.league_service.scoring_settings
 		self.season_service = SeasonService()
 		self.stats_service = StatsService(self, self.cache_service, self.scoring_settings)
-		self.matchup_service = MatchupService(self, self.cache_service)
+		self.matchup_service = MatchupService(self.BASE_URL, self.cache_service)
 		self.projections_service = ProjectionsService(self.cache_service)
 		self.transaction_service = TransactionService(self)
 		self.best_ball_service = BestBallService(self)
 		self.standings_service = StandingsService(self)
 		self.team_service = TeamService()
 		self.draft_service = DraftService(self)
-		self.trade_visualization_service = TradeVisualizationService(self)
+		self.league_visualization_service = LeagueVisualizationService(self)
 		
 		# Pre-load historical transactions into cache
 		if len(self.cache_service.api_cache) == 0:  # Only load if cache is empty

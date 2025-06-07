@@ -80,4 +80,99 @@ class MatchupService:
         return {
             week: self.get_matchups(league_id, week, current_week)
             for week in range(1, current_week + 1)
-        } 
+        }
+    
+    def get_matchups_by_year(self, league_id: str, year: int, max_week: int = 18) -> Dict[int, List[Matchup]]:
+        """Get all matchups for a specific year"""
+        return {
+            week: self.get_matchups(league_id, week, max_week)
+            for week in range(1, max_week + 1)
+        }
+    
+    def calculate_head_to_head_records(self, all_matchups_data: Dict[str, Dict[int, List[Matchup]]], team_names: List[str]) -> Dict[str, Dict[str, Dict[str, int]]]:
+        """Calculate head-to-head records between all teams across all seasons"""
+        records = {}
+        
+        # Initialize records structure
+        for team in team_names:
+            records[team] = {}
+            for opponent in team_names:
+                if team != opponent:
+                    records[team][opponent] = {'wins': 0, 'losses': 0, 'ties': 0}
+        
+        # Process all matchups across all years
+        for year, year_matchups in all_matchups_data.items():
+            for week, matchups in year_matchups.items():
+                # Group matchups by matchup_id to find head-to-head games
+                matchup_groups = {}
+                for matchup in matchups:
+                    if matchup.matchup_id not in matchup_groups:
+                        matchup_groups[matchup.matchup_id] = []
+                    matchup_groups[matchup.matchup_id].append(matchup)
+                
+                # Process each matchup group (should be 2 teams)
+                for matchup_id, teams in matchup_groups.items():
+                    if len(teams) == 2:
+                        team1, team2 = teams
+                        team1_name = self._get_team_name_by_roster_id(team1.roster_id, team_names)
+                        team2_name = self._get_team_name_by_roster_id(team2.roster_id, team_names)
+                        
+                        if team1_name and team2_name and team1_name in records and team2_name in records:
+                            if team1.points > team2.points:
+                                records[team1_name][team2_name]['wins'] += 1
+                                records[team2_name][team1_name]['losses'] += 1
+                            elif team2.points > team1.points:
+                                records[team2_name][team1_name]['wins'] += 1
+                                records[team1_name][team2_name]['losses'] += 1
+                            else:
+                                records[team1_name][team2_name]['ties'] += 1
+                                records[team2_name][team1_name]['ties'] += 1
+        
+        return records
+    
+    def _get_team_name_by_roster_id(self, roster_id: int, team_names: List[str]) -> str:
+        """Helper method to get team name by roster ID - you may need to implement this based on your data structure"""
+        # This is a placeholder - you'll need to implement the actual mapping
+        # based on how you're storing the roster_id to team_name mapping
+        return None
+    
+    def format_matchups_for_display(self, matchups: List[Matchup], roster_to_team_mapping: Dict[int, str]) -> List[Dict]:
+        """Format matchups for display in the template"""
+        # Group matchups by matchup_id
+        matchup_groups = {}
+        for matchup in matchups:
+            if matchup.matchup_id not in matchup_groups:
+                matchup_groups[matchup.matchup_id] = []
+            matchup_groups[matchup.matchup_id].append(matchup)
+        
+        formatted_matchups = []
+        for matchup_id, teams in matchup_groups.items():
+            if len(teams) == 2:
+                team1, team2 = teams
+                
+                # Determine winner/loser/tie
+                if team1.points > team2.points:
+                    team1_class, team2_class = 'winner', 'loser'
+                elif team2.points > team1.points:
+                    team1_class, team2_class = 'loser', 'winner'
+                else:
+                    team1_class, team2_class = 'tie', 'tie'
+                
+                formatted_matchup = {
+                    'matchup_id': matchup_id,
+                    'teams': [
+                        {
+                            'name': roster_to_team_mapping.get(team1.roster_id, f"Team {team1.roster_id}"),
+                            'score': team1.points,
+                            'result_class': team1_class
+                        },
+                        {
+                            'name': roster_to_team_mapping.get(team2.roster_id, f"Team {team2.roster_id}"),
+                            'score': team2.points,
+                            'result_class': team2_class
+                        }
+                    ]
+                }
+                formatted_matchups.append(formatted_matchup)
+        
+        return formatted_matchups 

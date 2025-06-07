@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Pickens - Matchups</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .controls {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .control-group label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        select, input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            min-width: 150px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab {
+            padding: 12px 24px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            cursor: pointer;
+            margin-right: 2px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #fff;
+            color: #2c3e50;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .matchup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .matchup-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .matchup-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .team-matchup {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .team-name {
+            font-weight: bold;
+            flex: 1;
+        }
+        .team-score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 60px;
+            text-align: right;
+        }
+        .winner {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .loser {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .tie {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .records-table th,
+        .records-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .records-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        .records-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .records-table tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+        .team-header {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+        .record-cell {
+            font-size: 0.9em;
+        }
+        .record-wins {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .record-losses {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .record-ties {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .week-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .week-btn {
+            padding: 8px 16px;
+            border: 2px solid #3498db;
+            background-color: #fff;
+            color: #3498db;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .week-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .week-btn:hover {
+            background-color: #2980b9;
+            color: white;
+        }
+        .year-filter {
+            margin-bottom: 20px;
+        }
+        .no-matchups {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 40px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        function openTab(evt, tabName) {
+            var tabcontent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        function filterByYear() {
+            const selectedYear = document.getElementById('year-select').value;
+            const currentWeek = document.getElementById('week-select').value;
+            
+            // Redirect to the same page with year and week parameters
+            const url = new URL(window.location);
+            url.searchParams.set('year', selectedYear);
+            url.searchParams.set('week', currentWeek);
+            window.location.href = url.toString();
+        }
+        
+        function filterByWeek() {
+            const selectedWeek = document.getElementById('week-select').value;
+            const currentYear = document.getElementById('year-select').value;
+            
+            // Redirect to the same page with week and year parameters
+            const url = new URL(window.location);
+            url.searchParams.set('week', selectedWeek);
+            url.searchParams.set('year', currentYear);
+            window.location.href = url.toString();
+        }
+        
+        window.onload = function() {
+            // Set the first tab as active when the page loads
+            const firstTab = document.getElementsByClassName("tab")[0];
+            if (firstTab) {
+                firstTab.click();
+            }
+            
+            // Set current values from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const year = urlParams.get('year');
+            const week = urlParams.get('week');
+            
+            if (year) {
+                document.getElementById('year-select').value = year;
+            }
+            if (week) {
+                document.getElementById('week-select').value = week;
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Easy Pickens - Matchups</h1>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label for="year-select">Season:</label>
+            <select id="year-select" onchange="filterByYear()">
+                
+                <option value="2025" selected>2025</option>
+                
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label for="week-select">Week:</label>
+            <select id="week-select" onchange="filterByWeek()">
+                <option value="all" selected>All Weeks</option>
+                
+                <option value="1" >Week 1</option>
+                
+                <option value="2" >Week 2</option>
+                
+                <option value="3" >Week 3</option>
+                
+                <option value="4" >Week 4</option>
+                
+                <option value="5" >Week 5</option>
+                
+                <option value="6" >Week 6</option>
+                
+                <option value="7" >Week 7</option>
+                
+                <option value="8" >Week 8</option>
+                
+                <option value="9" >Week 9</option>
+                
+                <option value="10" >Week 10</option>
+                
+                <option value="11" >Week 11</option>
+                
+                <option value="12" >Week 12</option>
+                
+                <option value="13" >Week 13</option>
+                
+                <option value="14" >Week 14</option>
+                
+                <option value="15" >Week 15</option>
+                
+                <option value="16" >Week 16</option>
+                
+                <option value="17" >Week 17</option>
+                
+                <option value="18" >Week 18</option>
+                
+            </select>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab" onclick="openTab(event, 'weekly-matchups')">Weekly Matchups</button>
+        <button class="tab" onclick="openTab(event, 'head-to-head-records')">Head-to-Head Records</button>
+    </div>
+    
+    <div id="weekly-matchups" class="tab-content">
+        
+            <h2>All Weeks - 2025 Season</h2>
+            
+                
+                
+                <h3>Week 1</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 2</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 3</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 4</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 5</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 6</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 7</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 8</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 9</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 10</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 11</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 12</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 13</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 14</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 15</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 16</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 17</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+                
+                
+                <h3>Week 18</h3>
+                <div class="matchup-grid">
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 5</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">tmjones212</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">ShadyCommish88</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 2</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">BaoDown</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">Halteclere</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 1</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">EBao</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">connerstafford11</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 3</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">androooooo</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">emanueljd3</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="matchup-card">
+                        <div class="matchup-header">Matchup 4</div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">lamjohnson56</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                        <div class="team-matchup tie">
+                            <span class="team-name">caviar89</span>
+                            <span class="team-score">0.00</span>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            
+        
+    </div>
+    
+    <div id="head-to-head-records" class="tab-content">
+        <h2>Head-to-Head Records (All Time)</h2>
+        <p>Each cell shows: Wins-Losses-Ties vs the opponent</p>
+        
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    
+                    <th>BaoDown</th>
+                    
+                    <th>EBao</th>
+                    
+                    <th>Halteclere</th>
+                    
+                    <th>ShadyCommish88</th>
+                    
+                    <th>androooooo</th>
+                    
+                    <th>caviar89</th>
+                    
+                    <th>connerstafford11</th>
+                    
+                    <th>emanueljd3</th>
+                    
+                    <th>lamjohnson56</th>
+                    
+                    <th>tmjones212</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td class="team-header">BaoDown</td>
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">EBao</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">Halteclere</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">ShadyCommish88</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">androooooo</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">caviar89</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">connerstafford11</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">emanueljd3</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">lamjohnson56</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                </tr>
+                
+                <tr>
+                    <td class="team-header">tmjones212</td>
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td class="record-cell">
+                            
+                            <span class="record-wins">0</span>-<span class="record-losses">0</span>-<span class="record-ties">2</span>
+                        </td>
+                        
+                    
+                        
+                        <td style="background-color: #95a5a6;">-</td>
+                        
+                    
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="footer" style="margin-top: 40px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
+        <p>Report generated: 2025-06-07 12:35:14</p>
+    </div>
+</body>
+</html>

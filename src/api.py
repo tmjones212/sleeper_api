@@ -1,9 +1,10 @@
-from flask import Flask, jsonify, Response
+from flask import Flask, jsonify, Response, render_template, request
 from flask_cors import CORS
 from client import SleeperAPI
 from team_value_service import TeamValueService
+from matchup_page_service import MatchupPageService
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 CORS(app)  # This allows your static site to call this API
 
 @app.route('/api/team-values/<league_id>')
@@ -12,6 +13,58 @@ def get_team_values(league_id):
     service = TeamValueService(client)
     team_values = service.get_team_values(league_id)
     return jsonify(team_values)
+
+@app.route('/matchups/<league_id>')
+def matchups_page(league_id):
+    """Render the matchups page for a specific league."""
+    client = SleeperAPI()
+    service = MatchupPageService(client)
+    
+    # Get query parameters
+    year = request.args.get('year', type=int)
+    week = request.args.get('week')
+    
+    # Convert week to int if it's not 'all'
+    if week and week != 'all':
+        try:
+            week = int(week)
+        except ValueError:
+            week = None
+    elif week == 'all':
+        week = 'all'
+    else:
+        week = None
+    
+    try:
+        matchup_data = service.get_matchup_data(league_id, year, week)
+        return render_template('matchups.html', **matchup_data)
+    except Exception as e:
+        return f"Error loading matchups: {str(e)}", 500
+
+@app.route('/api/matchups/<league_id>')
+def get_matchups_api(league_id):
+    """API endpoint for matchup data."""
+    client = SleeperAPI()
+    service = MatchupPageService(client)
+    
+    year = request.args.get('year', type=int)
+    week = request.args.get('week')
+    
+    if week and week != 'all':
+        try:
+            week = int(week)
+        except ValueError:
+            week = None
+    elif week == 'all':
+        week = 'all'
+    else:
+        week = None
+    
+    try:
+        matchup_data = service.get_matchup_data(league_id, year, week)
+        return jsonify(matchup_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True) 

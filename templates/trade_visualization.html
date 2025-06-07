@@ -675,6 +675,30 @@
                 margin: 10% auto;
             }
         }
+
+        /* Matchup result styles */
+        .team.winner {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 3px solid #4CAF50;
+        }
+
+        .team.loser {
+            background: rgba(244, 67, 54, 0.2);
+            border-left: 3px solid #f44336;
+        }
+
+        .team.tie {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 3px solid #FFC107;
+        }
+
+        .year-matchups {
+            display: block;
+        }
+
+        .year-matchups[style*="display: none"] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -693,6 +717,7 @@
                     <button class="tab-button" onclick="showPanel('matrix')">📋 Trade Matrix</button>
                     <button class="tab-button" onclick="showPanel('timeline')">📅 Timeline</button>
                     <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
+                    <button class="tab-button" onclick="showPanel('matchups')">⚔️ Matchups</button>
                     <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
                 </div>
             </div>
@@ -902,6 +927,110 @@
                     <button class="search-button" onclick="searchPlayerJourney()">Track Journey</button>
                 </div>
                 <div id="playerJourneyResult" class="player-journey-container"></div>
+            </div>
+        </div>
+
+        <!-- Matchups Panel -->
+        <div class="visualization-panel" id="matchups-panel">
+            <div class="panel-header">
+                <h2>⚔️ League Matchups</h2>
+                <p>View matchup history across all years ({{ matchup_data.available_years|join(', ') }})</p>
+            </div>
+            <div class="panel-content">
+                <div class="search-container">
+                    <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
+                    <select id="matchupYearSelect" class="search-input" style="width: 200px;" onchange="showMatchupYear()">
+                        <option value="all" {% if matchup_data.selected_year == 'all' %}selected{% endif %}>All Years</option>
+                        {% for year in matchup_data.available_years %}
+                        <option value="{{ year }}" {% if year == matchup_data.selected_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="headToHeadFilter" style="display: none; margin-left: 20px; padding: 8px 15px; background: #0066cc; border-radius: 20px; color: white; font-size: 0.9rem;">
+                        <span id="filterText"></span>
+                        <button onclick="clearHeadToHeadFilter()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer; font-size: 1rem;">×</button>
+                    </div>
+                </div>
+
+                <!-- Head-to-Head Records Section -->
+                <div style="margin: 20px 0;">
+                    <h3 style="color: #e0e0e0; margin-bottom: 15px;">🥊 Head-to-Head Records (All-Time)</h3>
+                    <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 0.9rem;">Click on any record to filter matchups below</p>
+                    <div style="background: #2d2d2d; padding: 20px; border-radius: 10px; overflow-x: auto;">
+                        <table style="width: 100%; color: #e0e0e0; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #404040;">
+                                    <th style="padding: 10px; border: 1px solid #606060;">Team</th>
+                                    {% for team in matchup_data.team_names %}
+                                    <th style="padding: 10px; border: 1px solid #606060; font-size: 0.8rem;">{{ team|truncate(8) }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team1 in matchup_data.team_names %}
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #606060; font-weight: bold;">{{ team1 }}</td>
+                                    {% for team2 in matchup_data.team_names %}
+                                    <td style="padding: 10px; border: 1px solid #606060; text-align: center; {% if team1 != team2 and team1 in matchup_data.head_to_head_records and team2 in matchup_data.head_to_head_records[team1] %}cursor: pointer; transition: background-color 0.2s;{% endif %}" 
+                                        {% if team1 != team2 and team1 in matchup_data.head_to_head_records and team2 in matchup_data.head_to_head_records[team1] %}
+                                        onclick="filterHeadToHead('{{ team1 }}', '{{ team2 }}')" 
+                                        onmouseover="this.style.backgroundColor='#505050'" 
+                                        onmouseout="this.style.backgroundColor=''"
+                                        {% endif %}>
+                                        {% if team1 != team2 and team1 in matchup_data.head_to_head_records and team2 in matchup_data.head_to_head_records[team1] %}
+                                            {% set record = matchup_data.head_to_head_records[team1][team2] %}
+                                            <div style="font-size: 0.8rem;">
+                                                <span style="color: #4CAF50;">{{ record.wins }}</span>-<span style="color: #f44336;">{{ record.losses }}</span>{% if record.ties > 0 %}-<span style="color: #FFC107;">{{ record.ties }}</span>{% endif %}
+                                            </div>
+                                        {% elif team1 == team2 %}
+                                            <span style="color: #666;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Matchups by Year/Week -->
+                <div id="matchupsContainer">
+                    {% if matchup_data.all_years_data %}
+                        {% for year, year_data in matchup_data.all_years_data.items() %}
+                        <div class="year-matchups" data-year="{{ year }}" style="margin: 20px 0;">
+                            <h3 style="color: #e0e0e0; margin-bottom: 15px;">📅 {{ year }} Season</h3>
+                            <div class="weeks-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                                {% for week, matchups in year_data.items() if matchups %}
+                                {% set completed_matchups = [] %}
+                                {% for matchup in matchups %}
+                                    {% if matchup.teams|length == 2 and not (matchup.teams[0].score == 0 and matchup.teams[1].score == 0) %}
+                                        {% set _ = completed_matchups.append(matchup) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if completed_matchups %}
+                                <div class="week-card" style="background: #2d2d2d; padding: 15px; border-radius: 10px;">
+                                    <h4 style="color: #0066cc; margin-bottom: 10px;">Week {{ week }}</h4>
+                                    {% for matchup in completed_matchups %}
+                                    <div class="matchup-card" style="background: #404040; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div class="team {{ matchup.teams[0].result_class }}" style="flex: 1; text-align: center;">
+                                            <div style="font-weight: bold;">{{ matchup.teams[0].name }}</div>
+                                            <div style="font-size: 1.2rem; margin: 5px 0;">{{ matchup.teams[0].score }}</div>
+                                        </div>
+                                        <div style="padding: 0 10px; color: #666;">vs</div>
+                                        <div class="team {{ matchup.teams[1].result_class }}" style="flex: 1; text-align: center;">
+                                            <div style="font-weight: bold;">{{ matchup.teams[1].name }}</div>
+                                            <div style="font-size: 1.2rem; margin: 5px 0;">{{ matchup.teams[1].score }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
         </div>
 
@@ -1820,6 +1949,93 @@
         }
 
         // Draft year selection function
+        function showMatchupYear() {
+            const selectedYear = document.getElementById('matchupYearSelect').value;
+            const yearMatchups = document.querySelectorAll('.year-matchups');
+            
+            yearMatchups.forEach(yearDiv => {
+                if (selectedYear === 'all') {
+                    yearDiv.style.display = 'block';
+                } else {
+                    const yearValue = yearDiv.getAttribute('data-year');
+                    yearDiv.style.display = yearValue === selectedYear ? 'block' : 'none';
+                }
+            });
+            
+            // Reapply head-to-head filter if active
+            if (window.currentHeadToHeadFilter) {
+                filterHeadToHead(window.currentHeadToHeadFilter.team1, window.currentHeadToHeadFilter.team2, false);
+            }
+        }
+
+        function filterHeadToHead(team1, team2, showNotification = true) {
+            // Store current filter
+            window.currentHeadToHeadFilter = { team1, team2 };
+            
+            // Show filter indicator
+            const filterDiv = document.getElementById('headToHeadFilter');
+            const filterText = document.getElementById('filterText');
+            filterText.textContent = `Showing: ${team1} vs ${team2}`;
+            filterDiv.style.display = 'inline-block';
+            
+            // Find all matchup divs using the class selector
+            const allMatchupDivs = document.querySelectorAll('.matchup-card');
+            let visibleMatchups = 0;
+            
+            allMatchupDivs.forEach(matchupDiv => {
+                const teamNameDivs = matchupDiv.querySelectorAll('.team > div:first-child');
+                if (teamNameDivs.length >= 2) {
+                    const matchupTeam1 = teamNameDivs[0].textContent.trim();
+                    const matchupTeam2 = teamNameDivs[1].textContent.trim();
+                    
+                    // Check if this matchup involves both selected teams
+                    const isMatch = (matchupTeam1 === team1 && matchupTeam2 === team2) || 
+                                  (matchupTeam1 === team2 && matchupTeam2 === team1);
+                    
+                    if (isMatch) {
+                        matchupDiv.style.display = 'flex';
+                        visibleMatchups++;
+                    } else {
+                        matchupDiv.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Hide week cards that have no visible matchups
+            const weekCards = document.querySelectorAll('.week-card');
+            weekCards.forEach(weekCard => {
+                const visibleMatchupsInWeek = Array.from(weekCard.querySelectorAll('.matchup-card'))
+                    .filter(div => div.style.display !== 'none').length;
+                weekCard.style.display = visibleMatchupsInWeek > 0 ? 'block' : 'none';
+            });
+            
+            if (showNotification && visibleMatchups === 0) {
+                alert(`No matchups found between ${team1} and ${team2}`);
+                clearHeadToHeadFilter();
+            }
+        }
+
+        function clearHeadToHeadFilter() {
+            // Clear filter storage
+            window.currentHeadToHeadFilter = null;
+            
+            // Hide filter indicator
+            document.getElementById('headToHeadFilter').style.display = 'none';
+            
+            // Show all matchups using the class selector
+            const allMatchupDivs = document.querySelectorAll('.matchup-card');
+            allMatchupDivs.forEach(matchupDiv => {
+                matchupDiv.style.display = 'flex';
+            });
+            
+            // Show all week cards that have any matchups
+            const weekCards = document.querySelectorAll('.week-card');
+            weekCards.forEach(weekCard => {
+                const hasAnyMatchups = weekCard.querySelectorAll('.matchup-card').length > 0;
+                weekCard.style.display = hasAnyMatchups ? 'block' : 'none';
+            });
+        }
+
         function showDraftYear() {
             const selectedYear = document.getElementById('draftYearSelect').value;
             const draftResults = document.getElementById('draftResults');

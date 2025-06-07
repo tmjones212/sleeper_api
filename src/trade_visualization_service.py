@@ -2,6 +2,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import json
 import os
+import webbrowser
 from jinja2 import Environment, FileSystemLoader
 from transaction_service import TransactionService
 from player_service import PlayerService
@@ -9,7 +10,7 @@ from team_service import TeamService
 from draft_service import DraftService
 
 
-class TradeVisualizationService:
+class LeagueVisualizationService:
     def __init__(self, sleeper_api):
         self.sleeper_api = sleeper_api
         self.transaction_service = TransactionService(sleeper_api)
@@ -19,6 +20,14 @@ class TradeVisualizationService:
         
         template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
+        
+        # Define league IDs for each year (for matchup history)
+        self.league_years = {
+            2025: "1181025001438806016",
+            2024: "1048308938824937472", 
+            2023: "916445745966915584",
+            2022: "839251409999347712"
+        }
 
     def get_comprehensive_player_journey(self, league_id: str, player_name: str) -> Dict[str, Any]:
         """Track a specific player's complete history including draft, FA, and trades"""
@@ -501,8 +510,152 @@ class TradeVisualizationService:
         
         return draft_data
 
-    def generate_trade_visualization_html(self, league_id: str, visualization_type: str = 'all') -> str:
-        """Generate complete HTML visualization for trades"""
+    def get_matchup_data(self, league_id: str, year: int = None, week: int = None) -> Dict[str, Any]:
+        """Get all matchup data for the specified parameters."""
+        # Get league info for league name (use most recent league)
+        current_league_id = self.league_years.get(2025, league_id)
+        league = self.sleeper_api.league_service.get_league(current_league_id)
+        
+        # Get all years data
+        all_years_data = self._get_all_years_matchup_data()
+        
+        # Get team names from the most recent year for consistency
+        roster_to_team_mapping = self._get_roster_to_team_mapping(current_league_id)
+        team_names = list(set(roster_to_team_mapping.values()))
+        
+        # Calculate head-to-head records across all available years
+        head_to_head_records = self._calculate_cross_year_head_to_head_records(all_years_data, team_names)
+        
+        # If specific year is requested, filter to that year
+        if year is not None:
+            filtered_years_data = {year: all_years_data.get(year, {})}
+            selected_year = year
+        else:
+            filtered_years_data = all_years_data
+            selected_year = 'all'
+        
+        # Get current week matchups if specified and year is specified
+        current_week_matchups = []
+        if week and year and year in all_years_data and week in all_years_data[year]:
+            current_week_matchups = all_years_data[year][week]
+        
+        return {
+            'league_name': league.name,
+            'selected_year': selected_year,
+            'selected_week': week or 'all',
+            'max_week': 18,
+            'available_years': sorted(self.league_years.keys(), reverse=True),
+            'all_years_data': filtered_years_data,
+            'current_week_matchups': current_week_matchups,
+            'team_names': sorted(team_names),
+            'head_to_head_records': head_to_head_records,
+            'generated_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+    
+    def _get_roster_to_team_mapping(self, league_id: str) -> Dict[int, str]:
+        """Get mapping from roster_id to team display name."""
+        rosters = self.sleeper_api.league_service.get_league_rosters(league_id)
+        users = self.sleeper_api.league_service.get_league_users(league_id)
+        
+        roster_to_team = {}
+        for roster in rosters:
+            team = next((u for u in users if u.user_id == roster.owner_id), None)
+            if team:
+                roster_to_team[roster.roster_id] = team.display_name
+            else:
+                roster_to_team[roster.roster_id] = f"Team {roster.roster_id}"
+        
+        return roster_to_team
+    
+    def _get_all_years_matchup_data(self) -> Dict[int, Dict[int, List[Dict]]]:
+        """Get matchup data for all available years."""
+        all_years_data = {}
+        
+        for year, league_id in self.league_years.items():
+            try:
+                print(f"Loading matchup data for {year}...")
+                roster_to_team_mapping = self._get_roster_to_team_mapping(league_id)
+                year_data = {}
+                
+                for w in range(1, 19):  # Try all 18 weeks
+                    try:
+                        matchups = self.sleeper_api.matchup_service.get_matchups(league_id, w, 18)
+                        formatted_matchups = self.sleeper_api.matchup_service.format_matchups_for_display(
+                            matchups, roster_to_team_mapping
+                        )
+                        year_data[w] = formatted_matchups
+                    except Exception as e:
+                        # Some weeks might not have data, especially for current/future seasons
+                        year_data[w] = []
+                
+                all_years_data[year] = year_data
+                
+            except Exception as e:
+                print(f"Error loading data for year {year}: {e}")
+                all_years_data[year] = {}
+        
+        return all_years_data
+    
+    def _calculate_cross_year_head_to_head_records(self, all_years_data: Dict[int, Dict[int, List[Dict]]], current_team_names: List[str]) -> Dict[str, Dict[str, Dict[str, int]]]:
+        """Calculate head-to-head records across all years, handling team name changes."""
+        records = {}
+        
+        # Get all unique team names across all years
+        all_team_names = set(current_team_names)
+        for year_data in all_years_data.values():
+            for week_data in year_data.values():
+                for matchup in week_data:
+                    for team in matchup.get('teams', []):
+                        all_team_names.add(team['name'])
+        
+        all_team_names = sorted(list(all_team_names))
+        
+        # Initialize records structure for all teams
+        for team in all_team_names:
+            records[team] = {}
+            for opponent in all_team_names:
+                if team != opponent:
+                    records[team][opponent] = {'wins': 0, 'losses': 0, 'ties': 0}
+        
+        # Process all matchups across all years
+        for year, year_data in all_years_data.items():
+            for week, matchups in year_data.items():
+                for matchup in matchups:
+                    if len(matchup.get('teams', [])) == 2:
+                        team1, team2 = matchup['teams']
+                        team1_name = team1['name']
+                        team2_name = team2['name']
+                        team1_score = team1['score']
+                        team2_score = team2['score']
+                        
+                        # Skip matchups that haven't happened yet (both teams have 0 points)
+                        if team1_score == 0 and team2_score == 0:
+                            continue
+                        
+                        if team1_name in records and team2_name in records:
+                            if team1_score > team2_score:
+                                records[team1_name][team2_name]['wins'] += 1
+                                records[team2_name][team1_name]['losses'] += 1
+                            elif team2_score > team1_score:
+                                records[team2_name][team1_name]['wins'] += 1
+                                records[team1_name][team2_name]['losses'] += 1
+                            else:
+                                records[team1_name][team2_name]['ties'] += 1
+                                records[team2_name][team1_name]['ties'] += 1
+        
+        # Filter to only return records for current year team names
+        filtered_records = {}
+        for team in current_team_names:
+            if team in records:
+                filtered_records[team] = {}
+                for opponent in current_team_names:
+                    if opponent != team and opponent in records[team]:
+                        filtered_records[team][opponent] = records[team][opponent]
+        
+        return filtered_records
+
+    def generate_league_visualization_html(self, league_id: str, visualization_type: str = 'all') -> str:
+        """Generate complete HTML visualization for the league including trades, matchups, and drafts"""
         
         # Collect all data
         network_data = self.get_trade_network_data(league_id)
@@ -510,6 +663,7 @@ class TradeVisualizationService:
         player_counts = self.transaction_service.get_player_trade_counts(league_id)
         trade_matrix = self.get_team_trade_matrix(league_id)
         draft_data = self.get_draft_data(league_id)
+        matchup_data = self.get_matchup_data(league_id)
         
         # Convert tuple keys to strings for JSON serialization
         network_data_serializable = {
@@ -538,6 +692,7 @@ class TradeVisualizationService:
             'most_traded_players': most_traded_players,
             'trade_matrix': trade_matrix,
             'draft_data': draft_data,
+            'matchup_data': matchup_data,
             'visualization_type': visualization_type,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
@@ -545,15 +700,28 @@ class TradeVisualizationService:
         template = self.jinja_env.get_template('trade_visualization.html')
         return template.render(**template_data)
 
-    def save_trade_visualization(self, league_id: str, output_path: Optional[str] = None) -> str:
-        """Save trade visualization to HTML file"""
+    def save_league_visualization(self, league_id: str, output_path: Optional[str] = None) -> str:
+        """Save league visualization to HTML file"""
         if not output_path:
-            output_path = f'trade_visualization_league_{league_id}.html'
+            output_path = f'league_visualization_{league_id}.html'
         
-        html_content = self.generate_trade_visualization_html(league_id)
+        html_content = self.generate_league_visualization_html(league_id)
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
+        
+        return output_path
+    
+    def generate_league_report(self, league_id: str, output_path: str = "league_report.html", year: int = None, week: int = None):
+        """Generate a comprehensive HTML report of the league."""
+        html_content = self.generate_league_visualization_html(league_id)
+        
+        # Save to file
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        # Open in browser
+        webbrowser.open('file://' + os.path.abspath(output_path))
         
         return output_path
 
