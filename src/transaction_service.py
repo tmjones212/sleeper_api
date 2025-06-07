@@ -133,6 +133,7 @@ class TransactionService:
                             if receiving_team in team_assets:
                                 team_assets[receiving_team]['receives'].append({
                                     'player': player_name,
+                                    'player_id': player_id,
                                     'from_team': giving_team
                                 })
                             
@@ -140,6 +141,7 @@ class TransactionService:
                             if giving_team in team_assets:
                                 team_assets[giving_team]['gives'].append({
                                     'player': player_name,
+                                    'player_id': player_id,
                                     'to_team': receiving_team
                                 })
                 
@@ -150,19 +152,23 @@ class TransactionService:
                 for team_name, assets in team_assets.items():
                     # Only add what this team RECEIVES to the received list
                     for asset in assets['receives']:
-                        trade_info['received']['players'].append({
-                            'player': asset['player'],
-                            'team': team_name,
-                            'from_team': asset.get('from_team')
-                        })
+                        if 'player' in asset:  # Only add player assets
+                            trade_info['received']['players'].append({
+                                'player': asset['player'],
+                                'player_id': asset.get('player_id'),
+                                'team': team_name,
+                                'from_team': asset.get('from_team')
+                            })
                     
                     # Only add what this team GIVES to the given list  
                     for asset in assets['gives']:
-                        trade_info['given']['players'].append({
-                            'player': asset['player'], 
-                            'team': team_name,
-                            'to_team': asset.get('to_team')
-                        })
+                        if 'player' in asset:  # Only add player assets
+                            trade_info['given']['players'].append({
+                                'player': asset['player'],
+                                'player_id': asset.get('player_id'), 
+                                'team': team_name,
+                                'to_team': asset.get('to_team')
+                            })
                 
                 # Process draft picks
                 if transaction.get('draft_picks'):

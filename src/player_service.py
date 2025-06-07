@@ -52,6 +52,24 @@ class PlayerService:
     def get_player_name(self, player_id: str) -> str:
         player = self.players.get(player_id)
         return player.name if player else f"Unknown Player ({player_id})"
+    
+    def get_player_id_by_name(self, player_name: str) -> str:
+        """
+        Find a player ID by their name.
+        
+        Args:
+            player_name (str): The player's name
+            
+        Returns:
+            str: The player's ID, or None if not found
+        """
+        formatted_name = self.format_player_name(player_name)
+        
+        for player_id, player in self.players.items():
+            if player.name and self.format_player_name(player.name) == formatted_name:
+                return player_id
+        
+        return None
 
     @staticmethod
     def format_player_name(name: str) -> str:

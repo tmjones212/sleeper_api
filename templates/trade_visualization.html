@@ -723,7 +723,13 @@
                                 <h4>{{ team_data.team }}</h4>
                                 <ul class="asset-list">
                                     {% for player in team_data.receives.players %}
-                                    <li class="player-item">🏈 {{ player.player }}</li>
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/{{ player.player_id or 'unknown' }}.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="{{ player.player }}">
+                                        <span>{{ player.player }}</span>
+                                    </li>
                                     {% endfor %}
                                     {% for pick in team_data.receives.draft_picks %}
                                     <li class="pick-item">📋 {{ pick.round }} round {{ pick.season }}</li>
@@ -1065,7 +1071,15 @@
                         // Show players
                         if (teamData.receives.players && teamData.receives.players.length > 0) {
                             teamData.receives.players.forEach(player => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ff66;">🏈</span> ${player.player}</li>`;
+                                const playerImageUrl = `https://sleepercdn.com/content/nfl/players/thumb/${player.player_id || 'unknown'}.jpg`;
+                                tradesHTML += `
+                                    <li style="margin: 5px 0; padding: 8px; background: #606060; border-radius: 3px; color: #e0e0e0; display: flex; align-items: center; gap: 8px;">
+                                        <img src="${playerImageUrl}" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.style.display='none'; this.nextElementSibling.innerHTML='🏈 ' + this.nextElementSibling.innerHTML"
+                                             alt="${player.player}">
+                                        <span>${player.player}</span>
+                                    </li>`;
                                 hasReceivedAssets = true;
                             });
                         }
@@ -1106,7 +1120,15 @@
                         // Show players given
                         if (teamData.gives && teamData.gives.players && teamData.gives.players.length > 0) {
                             teamData.gives.players.forEach(player => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #ff6666;">🏈</span> ${player.player}</li>`;
+                                const playerImageUrl = `https://sleepercdn.com/content/nfl/players/thumb/${player.player_id || 'unknown'}.jpg`;
+                                tradesHTML += `
+                                    <li style="margin: 5px 0; padding: 8px; background: #606060; border-radius: 3px; color: #e0e0e0; display: flex; align-items: center; gap: 8px;">
+                                        <img src="${playerImageUrl}" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.style.display='none'; this.nextElementSibling.innerHTML='🏈 ' + this.nextElementSibling.innerHTML"
+                                             alt="${player.player}">
+                                        <span>${player.player}</span>
+                                    </li>`;
                                 hasGivenAssets = true;
                             });
                         }
@@ -1262,7 +1284,16 @@
             
             let journeyHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h3>🏈 ${journeyData.player_name}</h3>
+                    <div style="margin-bottom: 15px;">
+                        ${journeyData.player_image_url ? 
+                            `<img src="${journeyData.player_image_url}" 
+                                 style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
+                                 onerror="this.style.display='none'"
+                                 alt="${journeyData.player_name}">` : 
+                            '🏈'
+                        }
+                    </div>
+                    <h3>${journeyData.player_name}</h3>
                     <p style="color: #66ccff; font-size: 1.2rem;">
                         Total Trades: ${journeyData.total_trades} | 
                         Current Team: ${journeyData.current_team || 'Unknown'} |
@@ -1355,10 +1386,12 @@
                 }
             });
             
-            // Create team nodes
+            // Create team nodes with player image overlay
             teams.forEach(team => {
                 const isCurrentTeam = team === journeyData.current_team;
-                nodes.push({
+                
+                // Create a custom node with player image if available
+                const nodeConfig = {
                     id: team,
                     label: team,
                     color: {
@@ -1372,7 +1405,18 @@
                     },
                     size: isCurrentTeam ? 50 : 40,
                     title: isCurrentTeam ? `${team} (Current Team)` : team
-                });
+                };
+                
+                // Add player image if available
+                if (journeyData.player_image_url) {
+                    nodeConfig.shape = 'circularImage';
+                    nodeConfig.image = journeyData.player_image_url;
+                    nodeConfig.size = isCurrentTeam ? 60 : 50;
+                    nodeConfig.borderWidth = 3;
+                    nodeConfig.borderWidthSelected = 4;
+                }
+                
+                nodes.push(nodeConfig);
             });
             
             // Create edges for each transaction
@@ -1470,24 +1514,36 @@
                     const edge = edges.find(e => e.id === edgeId);
                     
                     if (edge && edge.stepData) {
-                        showJourneyStepDetails(edge.stepData);
+                        showJourneyStepDetails(edge.stepData, journeyData);
                     }
                 }
             });
         }
         
-        function showJourneyStepDetails(stepData) {
+        function showJourneyStepDetails(stepData, journeyData) {
             const infoPanel = document.getElementById('journeyInfoPanel');
             if (!infoPanel) return;
             
             let detailsHTML = `
-                <h4 style="color: #66ccff; margin-bottom: 10px;">Transaction Details</h4>
+                <h4 style="color: #66ccff; margin-bottom: 15px;">Transaction Details</h4>
                 <div style="background: #404040; padding: 15px; border-radius: 8px; border: 1px solid #606060;">
-                    <div style="margin-bottom: 10px;">
-                        <strong style="color: #e0e0e0;">Date:</strong> <span style="color: #66ccff;">${stepData.date}</span>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px; gap: 15px;">
+                        <div>
+                            ${journeyData.player_image_url ? 
+                                `<img src="${journeyData.player_image_url}" 
+                                     style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #66ccff; object-fit: cover;" 
+                                     onerror="this.style.display='none'"
+                                     alt="${journeyData.player_name}">` : 
+                                '<div style="width: 50px; height: 50px; background: #606060; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">🏈</div>'
+                            }
+                        </div>
+                        <div>
+                            <div style="font-weight: bold; color: #e0e0e0; font-size: 1.1rem;">${journeyData.player_name}</div>
+                            <div style="color: #b0b0b0; font-size: 0.9rem;">${stepData.type === 'trade' ? 'Trade' : stepData.type === 'free_agent' ? 'Free Agent Pickup' : 'Waiver Claim'}</div>
+                        </div>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <strong style="color: #e0e0e0;">Type:</strong> <span style="color: #66ccff;">${stepData.type === 'trade' ? 'Trade' : stepData.type === 'free_agent' ? 'Free Agent Pickup' : 'Waiver Claim'}</span>
+                        <strong style="color: #e0e0e0;">Date:</strong> <span style="color: #66ccff;">${stepData.date}</span>
                     </div>
             `;
             

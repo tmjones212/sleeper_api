@@ -24,8 +24,14 @@ class TradeVisualizationService:
         # Get all transactions (not just trades) to track complete history
         all_transactions = self.transaction_service.get_all_historical_transactions(league_id)
         
+        # Get player image URL
+        player_id = self.player_service.get_player_id_by_name(player_name)
+        player_image_url = self.player_service.get_player_image_url(player_id) if player_id else None
+        
         journey = {
             'player_name': player_name,
+            'player_id': player_id,
+            'player_image_url': player_image_url,
             'total_trades': 0,
             'timeline': [],
             'teams_involved': set(),
