@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 from datetime import datetime
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 import re
 import json
 import os
@@ -15,6 +15,14 @@ class DraftService:
 
 	def get_league_drafts(self, league_id: str) -> List[Dict[str, Any]]:
 		"""Get all drafts for a league."""
+		# Add caching to prevent infinite loops
+		cache_key = f"league_drafts_{league_id}"
+		if hasattr(self, '_drafts_cache') and cache_key in self._drafts_cache:
+			return self._drafts_cache[cache_key]
+		
+		if not hasattr(self, '_drafts_cache'):
+			self._drafts_cache = {}
+		
 		endpoint = f"{self.base_url}/league/{league_id}/drafts"
 		drafts = self._make_request(endpoint)
 		
@@ -23,8 +31,7 @@ class DraftService:
 			draft_id = draft['draft_id']
 			draft_details = self.get_draft_details(draft_id)
 			
-			# Print draft order information for debugging
-			print(f"\nDraft Order for draft {draft_id}:")
+			# Get draft order but don't print debug info every time
 			draft_order = draft_details.get('draft_order', {})
 			
 			# Get league data to map user IDs to team names
@@ -34,21 +41,26 @@ class DraftService:
 				for team in league.teams
 			}
 			
-			print("\nDraft Order Mapping:")
-			for user_id, position in draft_order.items():
-				team_name = user_id_to_team.get(user_id, f"Unknown Team ({user_id})")
-				print(f"Position {position}: {team_name} (User ID: {user_id})")
-			
 			# Store the processed draft order in the draft object
 			draft['processed_draft_order'] = {
 				position: user_id_to_team.get(user_id, f"Team {position}")
 				for user_id, position in draft_order.items()
 			}
 		
+		# Cache the result
+		self._drafts_cache[cache_key] = drafts
 		return drafts
 
 	def get_draft_picks(self, draft_id: str) -> List[Dict[str, Any]]:
 		"""Get all picks for a draft with enhanced information."""
+		# Add caching to prevent repeated processing
+		cache_key = f"draft_picks_{draft_id}"
+		if hasattr(self, '_picks_cache') and cache_key in self._picks_cache:
+			return self._picks_cache[cache_key]
+		
+		if not hasattr(self, '_picks_cache'):
+			self._picks_cache = {}
+		
 		endpoint = f"{self.base_url}/draft/{draft_id}/picks"
 		picks = self._make_request(endpoint)
 		
@@ -70,33 +82,16 @@ class DraftService:
 		enhanced_picks = []
 		teams_count = len(draft_order)
 		
-		# Get KTC data once for all picks
-		ktc_data = self.get_ktc_player_value()
-		print("\nDEBUG: First few KTC players:")
-		for player in ktc_data[:5]:
-			print(f"KTC Player: {player.get('player_name', 'NO NAME')} - Value: {player.get('value', 'NO VALUE')}")
-		
-		print("\nDraft Picks:")
-		print("-" * 80)
+		# Get KTC data once for all picks (temporarily disabled)
+		ktc_data = []  # self.get_ktc_player_value()
 		
 		for pick in picks:
 			picked_player_id = pick.get('player_id')
 			player_name = self.client.player_service.get_player_name(picked_player_id)
 			player_position = self.client.player_service.get_player_position(picked_player_id)
 			
-			# Get KTC value for the player with debug logging
-			ktc_value = None
-			if picked_player_id:
-				print(f"\nDEBUG: Looking for KTC value for {player_name}")
-				for ktc_player in ktc_data:
-					ktc_player_name = ktc_player.get('player_name', '')
-					print(f"Comparing with KTC player: {ktc_player_name}")
-					if self._match_player_name(ktc_player_name, player_name):
-						ktc_value = ktc_player.get('value', 0)
-						print(f"Found match! KTC value: {ktc_value}")
-						break
-				if ktc_value is None:
-					print(f"No KTC match found for {player_name}")
+			# Get KTC value for the player (temporarily disabled)
+			ktc_value = 0  # Placeholder value
 			
 			# Rest of the pick processing...
 			roster_id = pick.get('roster_id')
@@ -123,6 +118,8 @@ class DraftService:
 			}
 			enhanced_picks.append(enhanced_pick)
 		
+		# Cache the result
+		self._picks_cache[cache_key] = enhanced_picks
 		return enhanced_picks
 
 	def get_draft_details(self, draft_id: str) -> Dict[str, Any]:

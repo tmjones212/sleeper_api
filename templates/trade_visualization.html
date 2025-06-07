@@ -505,10 +505,144 @@
             color: #e0e0e0;
         }
 
+        .draft-board-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .draft-board {
+            display: grid;
+            gap: 1px;
+            background: #606060;
+            border: 2px solid #606060;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .draft-pick-cell {
+            background: #2d2d2d;
+            padding: 12px;
+            min-height: 120px;
+            position: relative;
+            border: 1px solid #404040;
+            transition: all 0.2s ease;
+        }
+
+        .draft-pick-cell:hover {
+            background: #404040;
+            transform: scale(1.02);
+            z-index: 10;
+            border-color: #66ccff;
+        }
+
+        .draft-pick-cell.traded {
+            background: rgba(255, 204, 102, 0.1);
+            border-color: #ffcc66;
+        }
+
+        .draft-pick-cell.traded:hover {
+            background: rgba(255, 204, 102, 0.2);
+        }
+
+        .pick-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pick-number {
+            background: #66ccff;
+            color: #1a1a1a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .player-position {
+            background: #404040;
+            color: #66ccff;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .actual-picker {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #66ccff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .actual-picker.traded {
+            color: #ffcc66;
+        }
+
+        .round-header {
+            background: #0066cc;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .team-header {
+            background: #404040;
+            color: #e0e0e0;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            border-bottom: 2px solid #606060;
+        }
+
+        .player-image {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #606060;
+        }
+
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
                 align-items: center;
+            }
+            
+            .draft-pick-cell {
+                min-height: 100px;
+                padding: 8px;
+            }
+            
+            .team-header {
+                writing-mode: horizontal-tb;
+                text-orientation: unset;
+                padding: 8px;
             }
 
             .trade-teams {
@@ -559,6 +693,7 @@
                     <button class="tab-button" onclick="showPanel('matrix')">📋 Trade Matrix</button>
                     <button class="tab-button" onclick="showPanel('timeline')">📅 Timeline</button>
                     <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
+                    <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
                 </div>
             </div>
         </div>
@@ -742,7 +877,7 @@
                                     </li>
                                     {% endfor %}
                                     {% for pick in team_data.receives.draft_picks %}
-                                    <li class="pick-item">📋 {{ pick.round }} round {{ pick.season }}</li>
+                                    <li class="pick-item">📋 {% if pick.pick_number and pick.player_name %}Pick #{{ pick.pick_number }} ({{ pick.original_owner }}'s {{ pick.season }} R{{ pick.round }}) - {{ pick.player_name }}{% else %}{{ pick.original_owner }}'s {{ pick.season }} Round {{ pick.round }} pick{% endif %}</li>
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -769,6 +904,35 @@
                 <div id="playerJourneyResult" class="player-journey-container"></div>
             </div>
         </div>
+
+        <!-- Draft Results Panel -->
+        <div class="visualization-panel" id="draft-panel">
+            <div class="panel-header">
+                <h2>🏈 Draft Results</h2>
+                <p>View draft picks by year with player images and trade information</p>
+            </div>
+            <div class="panel-content">
+                <div class="search-container">
+                    <label for="draftYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
+                    <select id="draftYearSelect" class="search-input" style="width: 200px;" onchange="showDraftYear()">
+                        {% for year in draft_data.available_years %}
+                        <option value="{{ year }}" {% if year == draft_data.current_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div id="draftResults">
+                    {% if draft_data.current_year and draft_data.drafts_by_year[draft_data.current_year] %}
+                    <!-- Initial draft board will be populated by JavaScript on page load -->
+                    {% else %}
+                    <div style="text-align: center; color: #b0b0b0; padding: 40px;">
+                        <h3>📭 No Draft Data Available</h3>
+                        <p>No draft information found for this league.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Trade Details Modal -->
@@ -784,6 +948,7 @@
         const networkData = {{ network_data | tojson }};
         const timelineData = {{ timeline_data | tojson }};
         const mostTradedPlayers = {{ most_traded_players | tojson }};
+        const draftData = {{ draft_data | tojson }};
 
         // Panel switching
         function showPanel(panelName) {
@@ -1097,7 +1262,13 @@
                         // Show draft picks
                         if (teamData.receives.draft_picks && teamData.receives.draft_picks.length > 0) {
                             teamData.receives.draft_picks.forEach(pick => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                let pickDisplay;
+                                if (pick.pick_number && pick.player_name) {
+                                    pickDisplay = `Pick #${pick.pick_number} (${pick.original_owner}'s ${pick.season} R${pick.round}) - ${pick.player_name}`;
+                                } else {
+                                    pickDisplay = pick.original_owner ? `${pick.original_owner}'s ${pick.season} Round ${pick.round} pick` : `${pick.season} Round ${pick.round} pick`;
+                                }
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pickDisplay}</li>`;
                                 hasReceivedAssets = true;
                             });
                         }
@@ -1146,7 +1317,13 @@
                         // Show draft picks given
                         if (teamData.gives && teamData.gives.draft_picks && teamData.gives.draft_picks.length > 0) {
                             teamData.gives.draft_picks.forEach(pick => {
-                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pick.round} round ${pick.season}</li>`;
+                                let pickDisplay;
+                                if (pick.pick_number && pick.player_name) {
+                                    pickDisplay = `Pick #${pick.pick_number} (${pick.original_owner}'s ${pick.season} R${pick.round}) - ${pick.player_name}`;
+                                } else {
+                                    pickDisplay = pick.original_owner ? `${pick.original_owner}'s ${pick.season} Round ${pick.round} pick` : `${pick.season} Round ${pick.round} pick`;
+                                }
+                                tradesHTML += `<li style="margin: 5px 0; padding: 5px; background: #606060; border-radius: 3px; color: #e0e0e0;"><span style="color: #66ccff;">📋</span> ${pickDisplay}</li>`;
                                 hasGivenAssets = true;
                             });
                         }
@@ -1642,9 +1819,137 @@
             `;
         }
 
+        // Draft year selection function
+        function showDraftYear() {
+            const selectedYear = document.getElementById('draftYearSelect').value;
+            const draftResults = document.getElementById('draftResults');
+            
+            if (!draftData.drafts_by_year[selectedYear] || draftData.drafts_by_year[selectedYear].length === 0) {
+                draftResults.innerHTML = `
+                    <div style="text-align: center; color: #b0b0b0; padding: 40px;">
+                        <h3>📭 No Draft Data for ${selectedYear}</h3>
+                        <p>No draft information found for this year.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const draftInfo = draftData.drafts_by_year[selectedYear][0];
+            createDraftBoard(draftInfo, draftResults);
+        }
+
+        // Create draft board layout
+        function createDraftBoard(draftInfo, container) {
+            // Get teams ordered by their draft position (1st pick, 2nd pick, etc.)
+            const teamsByPosition = {};
+            draftInfo.picks.forEach(pick => {
+                if (pick.round === 1) {
+                    teamsByPosition[pick.pick_in_round] = pick.original_owner;
+                }
+            });
+            
+            // Sort teams by their draft position
+            const teams = Object.keys(teamsByPosition)
+                .sort((a, b) => parseInt(a) - parseInt(b))
+                .map(position => teamsByPosition[position]);
+            
+            const rounds = Math.max(...draftInfo.picks.map(pick => pick.round));
+            
+            // Create a lookup for picks by original owner and round
+            const picksByTeamAndRound = {};
+            draftInfo.picks.forEach(pick => {
+                if (!picksByTeamAndRound[pick.original_owner]) {
+                    picksByTeamAndRound[pick.original_owner] = {};
+                }
+                picksByTeamAndRound[pick.original_owner][pick.round] = pick;
+            });
+
+            let draftHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>${draftInfo.stats.total_picks}</h3>
+                        <p>Total Picks</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${draftInfo.stats.traded_picks}</h3>
+                        <p>Traded Picks</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${draftInfo.stats.total_rounds}</h3>
+                        <p>Rounds</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${draftInfo.type.charAt(0).toUpperCase() + draftInfo.type.slice(1)}</h3>
+                        <p>Draft Type</p>
+                    </div>
+                </div>
+
+                <div class="draft-board-container" style="margin-top: 30px;">
+                    <div style="overflow-x: auto;">
+                        <div class="draft-board" style="grid-template-columns: 80px repeat(${teams.length}, 1fr);">
+            `;
+
+            // Header row with team names
+            draftHTML += '<div class="round-header">Round</div>';
+            teams.forEach(team => {
+                draftHTML += `<div class="team-header">${team}</div>`;
+            });
+
+            // Draft picks by round
+            for (let round = 1; round <= rounds; round++) {
+                // Round number
+                draftHTML += `<div class="round-header">${round}</div>`;
+                
+                // Picks for each team in this round
+                teams.forEach(team => {
+                    const pick = picksByTeamAndRound[team] && picksByTeamAndRound[team][round];
+                    
+                    if (pick) {
+                        const tradedClass = pick.was_traded ? ' traded' : '';
+                        const imageHTML = pick.image_url ? 
+                            `<img src="${pick.image_url}" class="player-image" 
+                                 onerror="this.style.display='none'" alt="${pick.player_name}">` :
+                            '';
+                        
+                        draftHTML += `
+                            <div class="draft-pick-cell${tradedClass}">
+                                <div class="pick-header">
+                                    <div class="pick-number">${pick.overall_pick}</div>
+                                    ${imageHTML}
+                                </div>
+                                <div class="player-info">
+                                    <div class="player-name">${pick.player_name}</div>
+                                    <div class="player-position">${pick.position}</div>
+                                </div>
+                                <div class="actual-picker${pick.was_traded ? ' traded' : ''}">
+                                    ${pick.team}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Empty cell if no pick for this team/round
+                        draftHTML += '<div class="draft-pick-cell" style="background: #1a1a1a;"></div>';
+                    }
+                });
+            }
+
+            draftHTML += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = draftHTML;
+        }
+
         // Initialize default chart on page load
         document.addEventListener('DOMContentLoaded', function() {
             initMonthlyChart();
+            
+            // Initialize draft board if data is available
+            if (draftData && draftData.current_year && draftData.drafts_by_year[draftData.current_year]) {
+                showDraftYear();
+            }
         });
 
         // Search on Enter key

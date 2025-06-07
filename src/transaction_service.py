@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 import json
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class TransactionService:
     def __init__(self, client):
@@ -90,7 +90,7 @@ class TransactionService:
         for transaction in all_transactions:
             if transaction['type'] == 'trade':
                 trade_info = {
-                    'date': datetime.fromtimestamp(transaction['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
+                    'date': datetime.fromtimestamp(transaction['status_updated'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
                     'league_id': league_id,
                     'received': {
                         'players': [],
@@ -173,35 +173,63 @@ class TransactionService:
                 # Process draft picks
                 if transaction.get('draft_picks'):
                     for pick in transaction['draft_picks']:
+                        # Get improved team name mapping that handles historical seasons
+                        from_team = self._get_historical_team_name(pick['previous_owner_id'], pick['season'], league_id, roster_to_team)
+                        to_team = self._get_historical_team_name(pick['owner_id'], pick['season'], league_id, roster_to_team)
+                        
                         pick_info = {
                             'round': pick['round'],
                             'season': pick['season'],
-                            'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
-                            'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
+                            'from_team': from_team,
+                            'to_team': to_team
                         }
                         
-                        # Add to receiving team (current owner)
-                        receiving_team = roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
+                        # Try to get actual draft pick details if draft has happened
+                        draft_details = self._get_draft_pick_details(pick, roster_to_team, league_id)
+                        if draft_details:
+                            pick_info.update(draft_details)
+                        
+                        # Create the pick asset once
+                        pick_asset = {
+                            'type': 'draft_pick',
+                            'round': pick['round'],
+                            'season': pick['season'],
+                            'original_owner': from_team,
+                            'from_team': from_team,
+                            'to_team': to_team
+                        }
+                        # Add draft details if available
+                        if draft_details:
+                            pick_asset.update(draft_details)
+                        
+                        # Add to receiving team's receives list (with deduplication)
+                        receiving_team = to_team
                         if receiving_team in team_assets:
-                            team_assets[receiving_team]['receives'].append({
-                                'type': 'draft_pick',
-                                'round': pick['round'],
-                                'season': pick['season'],
-                                'from_team': pick_info['from_team']
-                            })
+                            # Check if this exact pick asset already exists
+                            pick_exists = any(
+                                existing_pick.get('type') == 'draft_pick' and
+                                existing_pick.get('round') == pick_asset['round'] and
+                                existing_pick.get('season') == pick_asset['season'] and
+                                existing_pick.get('player_name') == pick_asset.get('player_name')
+                                for existing_pick in team_assets[receiving_team]['receives']
+                            )
+                            if not pick_exists:
+                                team_assets[receiving_team]['receives'].append(pick_asset.copy())
                         
-                        # Add to giving team (previous owner)
-                        giving_team = roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}")
+                        # Add to giving team's gives list (with deduplication)
+                        giving_team = from_team
                         if giving_team in team_assets:
-                            team_assets[giving_team]['gives'].append({
-                                'type': 'draft_pick',
-                                'round': pick['round'],
-                                'season': pick['season'],
-                                'to_team': pick_info['to_team']
-                            })
+                            # Check if this exact pick asset already exists
+                            pick_exists = any(
+                                existing_pick.get('type') == 'draft_pick' and
+                                existing_pick.get('round') == pick_asset['round'] and
+                                existing_pick.get('season') == pick_asset['season'] and
+                                existing_pick.get('player_name') == pick_asset.get('player_name')
+                                for existing_pick in team_assets[giving_team]['gives']
+                            )
+                            if not pick_exists:
+                                team_assets[giving_team]['gives'].append(pick_asset.copy())
                         
-                        # Also add to the main structure for backward compatibility
-                        trade_info['received']['draft_picks'].append(pick_info)
                 
                 # Process FAAB (waiver budget) trades
                 if transaction.get('waiver_budget'):
@@ -230,6 +258,8 @@ class TransactionService:
                                     'to_team': receiving_team
                                 })
                 
+                # Add timestamp for sorting
+                trade_info['timestamp'] = transaction['status_updated']
                 trades.append(trade_info)
         
         return trades
@@ -273,7 +303,7 @@ class TransactionService:
                 continue
 
             trade_info = {
-                'date': datetime.fromtimestamp(trade['created'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
+                'date': datetime.fromtimestamp(trade['status_updated'] / 1000).strftime('%Y-%m-%d %I:%M %p'),
                 'received': {
                     'players': [],
                     'draft_picks': []
@@ -312,13 +342,24 @@ class TransactionService:
                 for pick in trade['draft_picks']:
                     is_receiving = pick['owner_id'] in manager_roster_ids
                     category = 'received' if is_receiving else 'given'
-                    trade_info[category]['draft_picks'].append({
+                    
+                    pick_info = {
                         'round': pick['round'],
                         'season': pick['season'],
+                        'original_owner': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
                         'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
                         'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
-                    })
+                    }
+                    
+                    # Try to get actual draft pick details if draft has happened
+                    draft_details = self._get_draft_pick_details(pick, roster_to_team, league_id)
+                    if draft_details:
+                        pick_info.update(draft_details)
+                    
+                    trade_info[category]['draft_picks'].append(pick_info)
 
+            # Add timestamp for sorting
+            trade_info['timestamp'] = trade['status_updated']
             manager_trades.append(trade_info)
 
         return manager_trades
@@ -354,6 +395,164 @@ class TransactionService:
             current_league = self.client.league_service.get_league(previous_league_id)
         
         return all_transactions
+    
+    def _get_draft_pick_details(self, pick_data: Dict[str, Any], roster_to_team: Dict[int, str], league_id: str) -> Optional[Dict[str, Any]]:
+        """Get actual draft pick details (pick number, player) if the draft has happened."""
+        try:
+            season = pick_data['season']
+            round_num = pick_data['round']
+            
+            # Try to find the league for this season by following the league chain
+            target_league_id = self._find_league_for_season(league_id, season)
+            if not target_league_id:
+                return None
+            
+            # Get draft data for that season
+            from draft_service import DraftService
+            draft_service = DraftService(self.client)
+            
+            try:
+                drafts = draft_service.get_league_drafts(target_league_id)
+                if not drafts:
+                    return None
+                
+                # Get the main draft (usually first one)
+                draft_id = drafts[0]['draft_id']
+                picks = draft_service.get_draft_picks(draft_id)
+                
+                # Get better team name for original owner
+                original_owner_name = self._get_historical_team_name(
+                    pick_data['previous_owner_id'], season, league_id, roster_to_team
+                )
+                
+                # Try multiple matching strategies
+                for draft_pick in picks:
+                    # Strategy 1: Match by round and original owner name
+                    if (draft_pick['round'] == round_num and 
+                        draft_pick['original_owner'] == original_owner_name):
+                        return {
+                            'pick_number': draft_pick['overall_pick'],
+                            'player_name': draft_pick['player_name'],
+                            'player_id': draft_pick['player_id'],
+                            'position': draft_pick['position'],
+                            'image_url': draft_pick.get('image_url')
+                        }
+                
+                # Strategy 2: Match by round and pick number if we can calculate it
+                if 'roster_id' in pick_data:
+                    # Try to find pick by calculated position
+                    draft_order = drafts[0].get('processed_draft_order', {})
+                    for position, team_name in draft_order.items():
+                        if team_name == original_owner_name:
+                            # Calculate the pick number for this round and position
+                            teams_count = len(draft_order)
+                            if round_num % 2 == 1:  # Odd rounds go 1,2,3...
+                                pick_in_round = position
+                            else:  # Even rounds go ...3,2,1
+                                pick_in_round = teams_count - position + 1
+                            
+                            overall_pick = ((round_num - 1) * teams_count) + pick_in_round
+                            
+                            # Find the pick with this overall pick number
+                            for draft_pick in picks:
+                                if draft_pick['overall_pick'] == overall_pick:
+                                    return {
+                                        'pick_number': draft_pick['overall_pick'],
+                                        'player_name': draft_pick['player_name'],
+                                        'player_id': draft_pick['player_id'],
+                                        'position': draft_pick['position'],
+                                        'image_url': draft_pick.get('image_url')
+                                    }
+                            break
+                            
+            except Exception as e:
+                print(f"Could not get draft details for {season} round {round_num}: {e}")
+                return None
+                
+        except Exception as e:
+            print(f"Error getting draft pick details: {e}")
+            return None
+        
+        return None
+
+    def _find_league_for_season(self, league_id: str, season: int) -> Optional[str]:
+        """Find the league ID for a specific season by following the league chain."""
+        try:
+            current_league = self.client.league_service.get_league(league_id)
+            
+            # Check current league season
+            if str(current_league.season) == str(season):
+                return league_id
+            
+            # Follow previous_league_id chain to find the right season
+            while hasattr(current_league, 'previous_league_id') and current_league.previous_league_id:
+                previous_league_id = current_league.previous_league_id
+                current_league = self.client.league_service.get_league(previous_league_id)
+                if str(current_league.season) == str(season):
+                    return previous_league_id
+            
+            return None
+        except Exception as e:
+            print(f"Error finding league for season {season}: {e}")
+            return None
+
+    def _get_historical_team_name(self, roster_id: int, season: int, league_id: str, current_roster_to_team: Dict[int, str]) -> str:
+        """Get team name for a roster ID, handling historical seasons properly."""
+        try:
+            # Handle known team transitions for this specific league
+            if league_id == '1181025001438806016':
+                # Handle the caviar89 transition - they took over from a previous team
+                # If roster_id 9 and before caviar89 joined, use a better fallback name
+                if roster_id == 9 and int(season) < 2025:
+                    # Try to find the actual historical name, but use a better fallback
+                    season_league_id = self._find_league_for_season(league_id, season)
+                    if season_league_id:
+                        try:
+                            season_rosters = self.client.league_service.get_league_rosters(season_league_id)
+                            season_users = self.client.league_service.get_league_users(season_league_id)
+                            
+                            for roster in season_rosters:
+                                if roster.roster_id == roster_id:
+                                    user = next((u for u in season_users if u.user_id == roster.owner_id), None)
+                                    if user:
+                                        return user.display_name
+                                    break
+                        except Exception:
+                            pass
+                    # Better fallback for the previous team owner
+                    return f"Previous Team {roster_id}"
+            
+            # First try current mapping
+            if roster_id in current_roster_to_team:
+                team_name = current_roster_to_team[roster_id]
+                # If it's not a generic "Team X" name, use it
+                if not team_name.startswith("Team "):
+                    return team_name
+            
+            # Try to find the specific league for this season
+            season_league_id = self._find_league_for_season(league_id, season)
+            if season_league_id:
+                try:
+                    # Get the rosters and users for that specific season
+                    season_rosters = self.client.league_service.get_league_rosters(season_league_id)
+                    season_users = self.client.league_service.get_league_users(season_league_id)
+                    
+                    # Create season-specific mapping
+                    for roster in season_rosters:
+                        if roster.roster_id == roster_id:
+                            user = next((u for u in season_users if u.user_id == roster.owner_id), None)
+                            if user:
+                                return user.display_name
+                            break
+                except Exception as e:
+                    print(f"Error getting historical team name for roster {roster_id} in season {season}: {e}")
+            
+            # Fallback to current mapping or generic name
+            return current_roster_to_team.get(roster_id, f"Team {roster_id}")
+            
+        except Exception as e:
+            print(f"Error in _get_historical_team_name: {e}")
+            return current_roster_to_team.get(roster_id, f"Team {roster_id}")
 
     def get_player_trade_counts(self, league_id: str) -> Dict[str, int]:
         """

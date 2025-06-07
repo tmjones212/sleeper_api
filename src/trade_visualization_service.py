@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from transaction_service import TransactionService
 from player_service import PlayerService
 from team_service import TeamService
+from draft_service import DraftService
 
 
 class TradeVisualizationService:
@@ -14,6 +15,7 @@ class TradeVisualizationService:
         self.transaction_service = TransactionService(sleeper_api)
         self.player_service = PlayerService()
         self.team_service = TeamService()
+        self.draft_service = DraftService(sleeper_api)
         
         template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
@@ -411,6 +413,94 @@ class TradeVisualizationService:
         
         return timeline
 
+    def get_draft_data(self, league_id: str) -> Dict[str, Any]:
+        """Get all draft data for the league including all years from historical leagues"""
+        draft_data = {
+            'drafts_by_year': {},
+            'available_years': [],
+            'latest_year': None
+        }
+        
+        # Get current league and follow previous_league_id chain
+        current_league = self.sleeper_api.league_service.get_league(league_id)
+        leagues_to_check = [league_id]
+        
+        # Follow the previous_league_id chain to get all historical leagues
+        while hasattr(current_league, 'previous_league_id') and current_league.previous_league_id:
+            previous_league_id = current_league.previous_league_id
+            leagues_to_check.append(previous_league_id)
+            current_league = self.sleeper_api.league_service.get_league(previous_league_id)
+        
+        # Get drafts from all leagues in the chain
+        all_drafts = []
+        for check_league_id in leagues_to_check:
+            try:
+                league_drafts = self.draft_service.get_league_drafts(check_league_id)
+                for draft in league_drafts:
+                    draft['source_league_id'] = check_league_id  # Track which league this came from
+                all_drafts.extend(league_drafts)
+            except Exception as e:
+                print(f"Could not get drafts for league {check_league_id}: {e}")
+                continue
+        
+        for draft in all_drafts:
+            # Get draft details and picks
+            draft_id = draft['draft_id']
+            picks = self.draft_service.get_draft_picks(draft_id)
+            
+            # Extract year from draft (could be in season or draft_order or other field)
+            draft_year = draft.get('season', '2024')  # Default to 2024 if not found
+            
+            if draft_year not in draft_data['drafts_by_year']:
+                draft_data['drafts_by_year'][draft_year] = []
+            
+            # Process picks to include player images and additional info
+            enhanced_picks = []
+            for pick in picks:
+                enhanced_pick = {
+                    'round': pick['round'],
+                    'pick_in_round': pick['pick_in_round'],
+                    'overall_pick': pick['overall_pick'],
+                    'team': pick['team'],
+                    'original_owner': pick['original_owner'],
+                    'player_name': pick['player_name'],
+                    'player_id': pick['player_id'],
+                    'position': pick['position'],
+                    'ktc_value': pick.get('ktc_value', 0),
+                    'image_url': pick.get('image_url') or (
+                        f"https://sleepercdn.com/content/nfl/players/thumb/{pick['player_id']}.jpg" 
+                        if pick['player_id'] else None
+                    ),
+                    'was_traded': pick['team'] != pick['original_owner']
+                }
+                enhanced_picks.append(enhanced_pick)
+            
+            draft_info = {
+                'draft_id': draft_id,
+                'year': draft_year,
+                'type': draft.get('type', 'snake'),
+                'rounds': draft.get('settings', {}).get('rounds', 12),
+                'picks': enhanced_picks,
+                'stats': {
+                    'total_picks': len(enhanced_picks),
+                    'traded_picks': len([p for p in enhanced_picks if p['was_traded']]),
+                    'total_rounds': max([p['round'] for p in enhanced_picks]) if enhanced_picks else 0
+                }
+            }
+            
+            draft_data['drafts_by_year'][draft_year].append(draft_info)
+        
+        # Set available years and current year
+        draft_data['available_years'] = sorted(draft_data['drafts_by_year'].keys(), reverse=True)
+        # Default to current year (2025) if available, otherwise use latest
+        current_year = '2025'
+        if current_year in draft_data['drafts_by_year']:
+            draft_data['current_year'] = current_year
+        else:
+            draft_data['current_year'] = draft_data['available_years'][0] if draft_data['available_years'] else None
+        
+        return draft_data
+
     def generate_trade_visualization_html(self, league_id: str, visualization_type: str = 'all') -> str:
         """Generate complete HTML visualization for trades"""
         
@@ -419,6 +509,7 @@ class TradeVisualizationService:
         timeline_data = self.get_league_trade_timeline(league_id)
         player_counts = self.transaction_service.get_player_trade_counts(league_id)
         trade_matrix = self.get_team_trade_matrix(league_id)
+        draft_data = self.get_draft_data(league_id)
         
         # Convert tuple keys to strings for JSON serialization
         network_data_serializable = {
@@ -446,6 +537,7 @@ class TradeVisualizationService:
             'timeline_data': timeline_data,
             'most_traded_players': most_traded_players,
             'trade_matrix': trade_matrix,
+            'draft_data': draft_data,
             'visualization_type': visualization_type,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
