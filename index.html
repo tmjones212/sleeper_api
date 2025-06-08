@@ -17722,19 +17722,13 @@
                     // Update summary section with EVERYONE's averaged ratings
                     updateSummaryWithAverages(allRatings);
                     
-                    if (!silent) {
-                        alert(`✅ Manual refresh complete! Updated ${Object.keys(userRatings).length} personal ratings and ${Object.keys(allRatings).length} summary averages`);
-                    }
+                    // Removed annoying popup - manual refresh complete notification
                 }).catch(error => {
                     console.error('❌ Manual refresh failed:', error);
-                    if (!silent) {
-                        alert('❌ Manual refresh failed: ' + error.message);
-                    }
+                    // Removed annoying error popup - errors logged to console instead
                 });
             } else {
-                if (!silent) {
-                    alert('❌ Firebase not connected');
-                }
+                // Removed annoying Firebase connection popup - errors logged to console instead
             }
         }
 
