@@ -423,9 +423,37 @@ class TransactionService:
                 # Get better team name for original owner (use roster_id, not previous_owner_id)
                 # roster_id represents the original draft slot, previous_owner_id is just who traded it
                 original_roster_id = pick_data.get('roster_id', pick_data['previous_owner_id'])
-                original_owner_name = self._get_historical_team_name(
-                    original_roster_id, season, league_id, roster_to_team
+                
+                # For cross-league trades, we need to map the roster ID from the source league
+                # to the correct team in the target league where the draft happens
+                
+                # First, get the team name in the source league
+                source_team_name = self._get_historical_team_name(
+                    original_roster_id, pick_data.get('season', season), league_id, roster_to_team
                 )
+                
+                # Now find this team in the target league's draft order
+                draft_order_raw = drafts[0].get('draft_order', {})
+                target_users = self.client.league_service.get_league_users(target_league_id)
+                
+                # Create a mapping of user display names to user IDs in the target league
+                name_to_user_id = {}
+                for user in target_users:
+                    name_to_user_id[user.display_name] = user.user_id
+                
+                # Find the user ID for the source team name
+                user_id_in_target = name_to_user_id.get(source_team_name)
+                
+                # Use the team name from the target league
+                original_owner_name = source_team_name
+                
+                # Double-check by looking at draft position if we have the user ID
+                if user_id_in_target and user_id_in_target in draft_order_raw:
+                    draft_position = draft_order_raw[user_id_in_target]
+                    # Verify this matches what we expect
+                    processed_order = drafts[0].get('processed_draft_order', {})
+                    if str(draft_position) in processed_order:
+                        original_owner_name = processed_order[str(draft_position)]
                 
                 # Try multiple matching strategies
                 for draft_pick in picks:
@@ -448,10 +476,11 @@ class TransactionService:
                         if team_name == original_owner_name:
                             # Calculate the pick number for this round and position
                             teams_count = len(draft_order)
+                            position_int = int(position)  # Convert position to int
                             if round_num % 2 == 1:  # Odd rounds go 1,2,3...
-                                pick_in_round = position
+                                pick_in_round = position_int
                             else:  # Even rounds go ...3,2,1
-                                pick_in_round = teams_count - position + 1
+                                pick_in_round = teams_count - position_int + 1
                             
                             overall_pick = ((round_num - 1) * teams_count) + pick_in_round
                             
