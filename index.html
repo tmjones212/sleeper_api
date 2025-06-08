@@ -2014,6 +2014,7 @@
                         <span>📊 Trading Performance Summary</span>
                         <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
                         <span id="firebase-status" style="margin-left: 10px; font-size: 0.8rem; color: #b0b0b0;"></span>
+                        <button onclick="testFirebaseConnection()" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Firebase</button>
                     </h3>
                     <div id="trading-summary-container" style="margin-bottom: 20px;">
                         <!-- Trading summary will be populated here -->
@@ -17091,7 +17092,10 @@
             
             // Load real-time Firebase data if available
             if (db) {
-                loadAverageRatings();
+                setTimeout(() => {
+                    console.log('🚀 Initializing Firebase listener...');
+                    loadAverageRatings();
+                }, 1000); // Give Firebase time to fully initialize
             }
         }
 
@@ -17426,16 +17430,22 @@
         // Initialize Firebase (only if config is provided)
         let db = null;
         if (firebaseConfig.apiKey) {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            document.getElementById('firebase-status').textContent = '🔗 Real-time sync enabled';
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                document.getElementById('firebase-status').textContent = '🔗 Real-time sync enabled';
+                console.log('✅ Firebase initialized successfully');
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                document.getElementById('firebase-status').textContent = '❌ Firebase connection failed';
+            }
         } else {
             document.getElementById('firebase-status').textContent = '💾 Local storage only';
         }
 
         function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
             if (!db) {
-                console.log('Firebase not configured, using localStorage only');
+                console.log('❌ Firebase not configured, using localStorage only');
                 return;
             }
 
@@ -17447,24 +17457,35 @@
                 
                 const tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
                 
+                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}`);
+                
                 db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
                     rating: gradeValue,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     tradeIndex: tradeIndex,
                     userName: userName
+                }).then(() => {
+                    console.log('✅ Rating saved to Firebase successfully');
+                }).catch((error) => {
+                    console.error('❌ Error saving to Firebase:', error);
                 });
                 
-                console.log('Rating saved to Firebase');
             } catch (error) {
-                console.error('Error saving to Firebase:', error);
+                console.error('❌ Error in saveTradeGradeToFirebase:', error);
             }
         }
 
         function loadAverageRatings() {
-            if (!db) return;
+            if (!db) {
+                console.log('❌ No database connection for loading ratings');
+                return;
+            }
+
+            console.log('🔄 Setting up real-time listener for ratings...');
 
             // Listen for real-time updates
             const unsubscribe = db.collectionGroup('ratings').onSnapshot(snapshot => {
+                console.log(`📊 Received ${snapshot.size} ratings from Firebase`);
                 const allRatings = {};
                 
                 snapshot.forEach(doc => {
@@ -17477,6 +17498,8 @@
                     allRatings[tradeIndex].push(data.rating);
                 });
 
+                console.log('📈 Ratings by trade:', allRatings);
+
                 // Update sliders with average ratings
                 Object.entries(allRatings).forEach(([tradeIndex, ratings]) => {
                     const average = ratings.reduce((a, b) => a + b, 0) / ratings.length;
@@ -17484,10 +17507,13 @@
                     const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
                     
                     if (slider && resultElement) {
+                        console.log(`🎯 Updating trade ${tradeIndex} with average ${average} from ${ratings.length} ratings`);
                         slider.value = Math.round(average);
                         updateTradeGradeDisplay(tradeIndex, Math.round(average), ratings.length);
                     }
                 });
+            }, (error) => {
+                console.error('❌ Error listening to Firebase:', error);
             });
         }
 
@@ -17534,6 +17560,31 @@
                 }
             }
             return userName;
+        }
+
+        function testFirebaseConnection() {
+            if (!db) {
+                alert('❌ Firebase not connected');
+                return;
+            }
+
+            const testData = {
+                test: true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                user: getUserName()
+            };
+
+            console.log('🧪 Testing Firebase write...');
+            
+            db.collection('test').doc('connection').set(testData)
+                .then(() => {
+                    console.log('✅ Firebase write test successful');
+                    alert('✅ Firebase connection working!');
+                })
+                .catch((error) => {
+                    console.error('❌ Firebase write test failed:', error);
+                    alert('❌ Firebase write failed: ' + error.message);
+                });
         }
 
     </script>
