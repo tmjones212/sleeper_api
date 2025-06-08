@@ -2016,6 +2016,8 @@
                         <span id="firebase-status" style="margin-left: 10px; font-size: 0.8rem; color: #b0b0b0;"></span>
                         <button onclick="testFirebaseConnection()" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Firebase</button>
                         <button onclick="manualRefreshRatings()" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Force Refresh</button>
+                        <button onclick="debugFirebaseData()" style="background: #6f42c1; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Debug Data</button>
+                        <button onclick="testSummaryUpdate()" style="background: #fd7e14; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Summary</button>
                     </h3>
                     <div id="trading-summary-container" style="margin-bottom: 20px;">
                         <!-- Trading summary will be populated here -->
@@ -2072,7 +2074,7 @@
                             
                         </div>
                         <div class="trade-grade-container">
-                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">Trade Grade:</div>
+                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
                             <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
                                    id="trade-grade-0" onchange="updateTradeGrade(0, this.value)">
                             <div class="trade-grade-labels">
@@ -17089,14 +17091,14 @@
             populateTeamFilter();
             addTradingGradersToAllTrades();
             loadTradeGrades();
-            generateTradingSummary();
+            generateTradingSummary(); // This will show loading message initially
             
-            // Load real-time Firebase data if available
+            // Load Firebase data immediately for league consensus
             if (db) {
-                setTimeout(() => {
-                    console.log('🚀 Initializing Firebase listener...');
-                    loadAverageRatings();
-                }, 1000); // Give Firebase time to fully initialize
+                console.log('🚀 Loading Firebase data for league consensus...');
+                loadAverageRatings();
+            } else {
+                console.log('❌ No Firebase connection - only showing local data');
             }
         }
 
@@ -17118,7 +17120,7 @@
                 const gradeContainer = document.createElement('div');
                 gradeContainer.className = 'trade-grade-container';
                 gradeContainer.innerHTML = `
-                    <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">Trade Grade:</div>
+                    <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
                     <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
                            id="trade-grade-${index}" onchange="updateTradeGrade(${index}, this.value)">
                     <div class="trade-grade-labels">
@@ -17193,6 +17195,9 @@
         }
 
         function updateTradeGrade(tradeIndex, value) {
+            // Set flag to prevent real-time listener interference
+            isUserChangingSlider = true;
+            
             const gradeValue = parseInt(value);
             const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
             
@@ -17237,6 +17242,11 @@
             
             // Refresh the trading summary
             generateTradingSummary();
+            
+            // Clear the flag after a short delay to allow Firebase write to complete
+            setTimeout(() => {
+                isUserChangingSlider = false;
+            }, 1000);
         }
 
         function saveTradeGrade(tradeIndex, gradeValue) {
@@ -17257,7 +17267,8 @@
                     const slider = document.getElementById(`trade-grade-${tradeIndex}`);
                     if (slider) {
                         slider.value = grades[tradeIndex];
-                        updateTradeGrade(tradeIndex, grades[tradeIndex]);
+                        // Use display-only function to avoid infinite loop
+                        updateTradeGradeDisplay(tradeIndex, grades[tradeIndex], 1);
                     }
                 });
             } catch (error) {
@@ -17266,20 +17277,46 @@
         }
 
         function generateTradingSummary() {
+            console.log('🏗️ generateTradingSummary called');
+            console.log('🏗️ window.leagueAverageRatings:', window.leagueAverageRatings);
+            
             const teamStats = calculateTeamTradingStats();
             const summaryContainer = document.getElementById('trading-summary-container');
             
-            if (!summaryContainer || Object.keys(teamStats).length === 0) {
-                if (summaryContainer) {
-                    summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No trading data available. Grade some trades to see team performance!</p>';
+            console.log('🏗️ teamStats calculated:', teamStats);
+            console.log('🏗️ summaryContainer found:', !!summaryContainer);
+            
+            if (!summaryContainer) {
+                console.log('🏗️ Summary container not found');
+                return;
+            }
+            
+            if (Object.keys(teamStats).length === 0) {
+                // Check if we have Firebase connection but no data yet
+                if (db && !window.leagueAverageRatings) {
+                    summaryContainer.innerHTML = '<p style="color: #667eea; text-align: center; padding: 20px;">📡 Loading league consensus data...</p>';
+                } else if (!db) {
+                    summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Firebase not connected. Summary unavailable.</p>';
+                } else {
+                    summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No league ratings available yet. Grade some trades to see team performance!</p>';
                 }
+                console.log('🏗️ No team stats found, showing loading/no data message');
                 return;
             }
 
             // Sort teams by overall score (descending)
             const sortedTeams = Object.entries(teamStats).sort((a, b) => b[1].averageScore - a[1].averageScore);
 
-            let html = '<div class="trading-summary-grid">';
+            // Count total ratings
+            const totalRatings = Object.values(window.leagueAverageRatings).reduce((sum, ratings) => sum + ratings.length, 0);
+            const totalTrades = Object.keys(window.leagueAverageRatings).length;
+
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #0066cc; border-radius: 10px; color: white;">
+                    <h4 style="margin: 0 0 5px 0;">🏆 League Consensus Summary</h4>
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">${totalRatings} total ratings across ${totalTrades} trades by all league members</p>
+                </div>
+                <div class="trading-summary-grid">`;
             
             sortedTeams.forEach(([teamName, stats]) => {
                 const gradeClass = getGradeClass(stats.averageScore);
@@ -17326,7 +17363,18 @@
         }
 
         function calculateTeamTradingStats() {
-            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+            // ALWAYS use league average ratings for summary, never localStorage
+            const grades = window.leagueAverageRatings || {};
+            const isUsingLeagueData = !!window.leagueAverageRatings;
+            
+            console.log(`📊 Calculating team stats using ${isUsingLeagueData ? 'league average' : 'NO'} data:`, grades);
+            
+            // If no league data is available, don't show any summary
+            if (!isUsingLeagueData || Object.keys(grades).length === 0) {
+                console.log('📊 No league data available for summary');
+                return {};
+            }
+            
             const teamStats = {};
 
             // Initialize stats for all teams
@@ -17352,7 +17400,7 @@
             });
 
             // Process each graded trade
-            Object.entries(grades).forEach(([tradeIndex, gradeValue]) => {
+            Object.entries(grades).forEach(([tradeIndex, gradeData]) => {
                 const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
                 if (!tradeItem) return;
 
@@ -17361,6 +17409,16 @@
                 const rightTeam = teamHeaders[1]?.textContent.trim();
 
                 if (!leftTeam || !rightTeam) return;
+
+                // Handle both array (league data) and single value (personal data)
+                let gradeValue;
+                if (Array.isArray(gradeData)) {
+                    // League data - calculate average
+                    gradeValue = gradeData.reduce((a, b) => a + b, 0) / gradeData.length;
+                } else {
+                    // Personal data - use directly
+                    gradeValue = gradeData;
+                }
 
                 // Update stats for both teams
                 [leftTeam, rightTeam].forEach(teamName => {
@@ -17476,60 +17534,27 @@
             }
         }
 
+        // Flag to prevent infinite loops during user input
+        let isUserChangingSlider = false;
+
         function loadAverageRatings() {
             if (!db) {
                 console.log('❌ No database connection for loading ratings');
                 return;
             }
 
-            console.log('🔄 Setting up real-time listener for ratings...');
-
-            // Listen to the entire tradeRatings collection for changes
-            db.collection('tradeRatings').onSnapshot(snapshot => {
-                console.log(`📊 Collection changed, processing ${snapshot.size} trades...`);
-                
-                const allRatings = {};
-                const promises = [];
-
-                // For each trade document, get all its ratings
-                snapshot.forEach(tradeDoc => {
-                    const promise = tradeDoc.ref.collection('ratings').get().then(ratingsSnapshot => {
-                        const tradeId = tradeDoc.id;
-                        console.log(`📋 Processing trade ${tradeId} with ${ratingsSnapshot.size} ratings`);
-                        
-                        ratingsSnapshot.forEach(ratingDoc => {
-                            const data = ratingDoc.data();
-                            const tradeIndex = data.tradeIndex;
-                            
-                            if (!allRatings[tradeIndex]) {
-                                allRatings[tradeIndex] = [];
-                            }
-                            allRatings[tradeIndex].push(data.rating);
-                        });
-                    });
-                    promises.push(promise);
-                });
-
-                // Wait for all ratings to be collected, then update UI
-                Promise.all(promises).then(() => {
-                    console.log('📈 All ratings collected:', allRatings);
-
-                    // Update sliders with average ratings
-                    Object.entries(allRatings).forEach(([tradeIndex, ratings]) => {
-                        const average = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                        const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
-                        
-                        if (slider && resultElement) {
-                            console.log(`🎯 Updating trade ${tradeIndex} with average ${Math.round(average)} from ${ratings.length} ratings`);
-                            slider.value = Math.round(average);
-                            updateTradeGradeDisplay(tradeIndex, Math.round(average), ratings.length);
-                        }
-                    });
-                });
-            }, (error) => {
-                console.error('❌ Error listening to Firebase:', error);
-            });
+            console.log('🔄 Loading ratings (real-time disabled to prevent loops)...');
+            
+            // Instead of real-time listener, just load once
+            manualRefreshRatings();
+            
+            // Set up periodic refresh every 30 seconds (optional)
+            setInterval(() => {
+                if (!isUserChangingSlider) {
+                    console.log('🔄 Periodic refresh...');
+                    manualRefreshRatings(true); // Silent refresh
+                }
+            }, 30000);
         }
 
         function updateTradeGradeDisplay(tradeIndex, averageValue, numRatings) {
@@ -17602,10 +17627,163 @@
                 });
         }
 
-        function manualRefreshRatings() {
+        function debugFirebaseData() {
+            if (!db) {
+                alert('❌ Firebase not connected');
+                return;
+            }
+
+            console.log('🔍 Debugging Firebase data structure...');
+            
+            // First check the main collection
+            db.collection('tradeRatings').get().then(snapshot => {
+                console.log(`🗂️ Found ${snapshot.size} trade documents in main collection`);
+                
+                if (snapshot.size === 0) {
+                    console.log('🔍 No documents in main collection, checking for ratings using collectionGroup...');
+                    
+                    // Use collectionGroup to find all ratings across all subcollections
+                    db.collectionGroup('ratings').get().then(ratingsSnapshot => {
+                        console.log(`📊 Found ${ratingsSnapshot.size} ratings total using collectionGroup`);
+                        
+                        ratingsSnapshot.forEach(ratingDoc => {
+                            console.log(`   👤 Rating document:`, ratingDoc.data());
+                            console.log(`   📂 Parent path:`, ratingDoc.ref.parent.parent.path);
+                            console.log(`   📂 Parent ID:`, ratingDoc.ref.parent.parent.id);
+                        });
+                    });
+                } else {
+                    snapshot.forEach(tradeDoc => {
+                        console.log(`📄 Trade document ID: ${tradeDoc.id}`);
+                        console.log(`📄 Trade document data:`, tradeDoc.data());
+                        
+                        // Check for ratings subcollection
+                        tradeDoc.ref.collection('ratings').get().then(ratingsSnapshot => {
+                            console.log(`📋 Trade ${tradeDoc.id} has ${ratingsSnapshot.size} ratings:`);
+                            ratingsSnapshot.forEach(ratingDoc => {
+                                console.log(`   👤 Rating by ${ratingDoc.id}:`, ratingDoc.data());
+                            });
+                        });
+                    });
+                }
+            });
+        }
+
+        function manualRefreshRatings(silent = false) {
             console.log('🔄 Manually refreshing ratings from Firebase...');
             if (db) {
-                loadAverageRatings();
+                const currentUser = getUserName();
+                
+                // Use collectionGroup to get all ratings directly
+                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
+                    console.log(`📊 Manual refresh: found ${ratingsSnapshot.size} ratings`);
+                    
+                    const allRatings = {}; // Everyone's ratings for summary
+                    const userRatings = {}; // This user's ratings for sliders
+
+                    ratingsSnapshot.forEach(ratingDoc => {
+                        const data = ratingDoc.data();
+                        const tradeIndex = data.tradeIndex;
+                        const userName = data.userName;
+                        const rating = data.rating;
+                        
+                        if (!silent) console.log(`   🎯 Rating data:`, data);
+                        
+                        if (tradeIndex !== undefined && tradeIndex !== null) {
+                            // Collect all ratings for summary
+                            if (!allRatings[tradeIndex]) {
+                                allRatings[tradeIndex] = [];
+                            }
+                            allRatings[tradeIndex].push(rating);
+                            
+                            // Collect this user's ratings for sliders
+                            if (userName === currentUser) {
+                                userRatings[tradeIndex] = rating;
+                            }
+                        } else {
+                            console.log(`❌ Rating missing tradeIndex:`, data);
+                        }
+                    });
+
+                    console.log('📈 All ratings for summary:', allRatings);
+                    console.log('👤 Current user ratings for sliders:', userRatings);
+
+                    // Update individual sliders with THIS USER's ratings only (without saving)
+                    Object.entries(userRatings).forEach(([tradeIndex, rating]) => {
+                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                        if (slider) {
+                            if (!silent) console.log(`🎯 Setting slider ${tradeIndex} to user's rating: ${rating}`);
+                            slider.value = rating;
+                            // Update display only, don't save to Firebase to prevent infinite loop
+                            updateTradeGradeDisplay(tradeIndex, rating, 1);
+                        }
+                    });
+
+                    // Update summary section with EVERYONE's averaged ratings
+                    updateSummaryWithAverages(allRatings);
+                    
+                    if (!silent) {
+                        alert(`✅ Manual refresh complete! Updated ${Object.keys(userRatings).length} personal ratings and ${Object.keys(allRatings).length} summary averages`);
+                    }
+                }).catch(error => {
+                    console.error('❌ Manual refresh failed:', error);
+                    if (!silent) {
+                        alert('❌ Manual refresh failed: ' + error.message);
+                    }
+                });
+            } else {
+                if (!silent) {
+                    alert('❌ Firebase not connected');
+                }
+            }
+        }
+
+        function updateSummaryWithAverages(allRatings) {
+            // This will update the summary section to show league consensus
+            console.log('📊 Updating summary with averaged ratings from all users:', allRatings);
+            
+            // Store the averaged ratings for the summary calculation
+            window.leagueAverageRatings = allRatings;
+            
+            console.log('🔄 Calling generateTradingSummary with league data...');
+            // Refresh the trading summary to use the new data
+            generateTradingSummary();
+            
+            // Update Firebase status to show we have league data
+            const statusElement = document.getElementById('firebase-status');
+            if (statusElement && Object.keys(allRatings).length > 0) {
+                const totalRatings = Object.values(allRatings).reduce((sum, ratings) => sum + ratings.length, 0);
+                statusElement.textContent = `🔗 Real-time sync enabled (${totalRatings} league ratings)`;
+            }
+        }
+
+        function testSummaryUpdate() {
+            console.log('🧪 Testing summary update...');
+            console.log('🧪 Current window.leagueAverageRatings:', window.leagueAverageRatings);
+            
+            // First get fresh data from Firebase
+            if (db) {
+                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
+                    console.log(`🧪 Found ${ratingsSnapshot.size} ratings for test`);
+                    
+                    const allRatings = {};
+                    ratingsSnapshot.forEach(ratingDoc => {
+                        const data = ratingDoc.data();
+                        const tradeIndex = data.tradeIndex;
+                        const rating = data.rating;
+                        
+                        if (tradeIndex !== undefined && tradeIndex !== null) {
+                            if (!allRatings[tradeIndex]) {
+                                allRatings[tradeIndex] = [];
+                            }
+                            allRatings[tradeIndex].push(rating);
+                        }
+                    });
+                    
+                    console.log('🧪 Test data collected:', allRatings);
+                    updateSummaryWithAverages(allRatings);
+                    alert('Summary test complete - check console for debug info');
+                });
             } else {
                 alert('❌ Firebase not connected');
             }
