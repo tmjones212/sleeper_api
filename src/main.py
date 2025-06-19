@@ -40,6 +40,10 @@ league_id = "1181025001438806016" # 2025
 
 client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
+players = client.player_service.get_players()
+
+matchups = client.matchup_service.get_matchups(league_id, 1, players=players)
+
 
 # Get ShadyCommish88's trade history
 all_trades = client.transaction_service.get_trades(league_id)
@@ -67,7 +71,7 @@ teams = client.league_service.get_league_rosters(league_id)
 for team in teams:
     print(team)
 
-players = client.player_service.get_players()
+
 
 # 8183
 purdy = [x for x in players if x.name == "BROCK PURDY"][0]
@@ -102,6 +106,11 @@ for roster in rosters:
     team = next((u for u in users if u.user_id == roster.owner_id), None)
     if team:
         roster_to_team[roster.roster_id] = team.display_name
+    elif roster.roster_id == 9 and league_id == "1048308938824937472":
+        # Special case: Roster 9 belongs to caviar89 (mlum20) but has owner_id=None
+        caviar_user = next((u for u in users if u.user_id == "1176293990462615552"), None)
+        if caviar_user:
+            roster_to_team[roster.roster_id] = caviar_user.display_name
 
 # Get all players and starters from matchups, along with their teams for each week
 bench_players_by_week = {}

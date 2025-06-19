@@ -60,6 +60,11 @@ class LeagueVisualizationService:
             team = next((u for u in users if u.user_id == roster.owner_id), None)
             if team:
                 roster_to_team[roster.roster_id] = team.display_name
+            elif roster.roster_id == 9 and league_id == "1048308938824937472":
+                # Special case: Roster 9 belongs to caviar89 but has owner_id=None
+                caviar_user = next((u for u in users if u.user_id == "1176293990462615552"), None)
+                if caviar_user:
+                    roster_to_team[roster.roster_id] = caviar_user.display_name
         
         # Look for player in all transactions
         player_transactions = []
@@ -576,6 +581,13 @@ class LeagueVisualizationService:
             team = next((u for u in users if u.user_id == roster.owner_id), None)
             if team:
                 roster_to_team[roster.roster_id] = team.display_name
+            elif roster.roster_id == 9 and league_id == "1048308938824937472":
+                # Special case: Roster 9 belongs to caviar89 but has owner_id=None
+                caviar_user = next((u for u in users if u.user_id == "1176293990462615552"), None)
+                if caviar_user:
+                    roster_to_team[roster.roster_id] = caviar_user.display_name
+                else:
+                    roster_to_team[roster.roster_id] = f"Team {roster.roster_id}"
             else:
                 roster_to_team[roster.roster_id] = f"Team {roster.roster_id}"
         

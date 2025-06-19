@@ -61,9 +61,29 @@ class DraftVisualizationService:
 			while len(round_picks_slice) < teams_count:
 				round_picks_slice.append(None)
 			
-			for pick in round_picks_slice:
+			for position_in_round in range(1, teams_count + 1):
+				pick_index = position_in_round - 1
+				pick = round_picks_slice[pick_index] if pick_index < len(round_picks_slice) else None
+				
 				if pick:
 					pick['image_url'] = self._get_player_image_url(pick['player_id'])
+					
+					# Check if the actual picker is different from expected
+					# For snake draft, determine expected user based on round and position
+					if round_num % 2 == 1:  # Odd rounds go 1-10
+						expected_draft_position = position_in_round
+					else:  # Even rounds go 10-1
+						expected_draft_position = teams_count + 1 - position_in_round
+					
+					expected_user_id = next((uid for uid, pos in draft_order.items() if pos == expected_draft_position), None)
+					actual_user_id = pick.get('picked_by')
+					
+					if expected_user_id and actual_user_id and expected_user_id != actual_user_id:
+						actual_team_name = user_id_to_team.get(actual_user_id, f"User {actual_user_id}")
+						pick['actual_picker'] = actual_team_name
+					else:
+						pick['actual_picker'] = None
+				
 				round_picks.append(pick)
 			
 			draft_grid.append(round_picks)

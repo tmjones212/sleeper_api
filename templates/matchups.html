@@ -368,10 +368,22 @@
                 return;
             }
             
-            const matchupTeams = weekData.filter(team => team.matchup_id === matchupId);
+            // Convert matchupId to number to ensure type consistency
+            const numericMatchupId = parseInt(matchupId);
+            const matchupTeams = weekData.filter(team => team.matchup_id === numericMatchupId);
+            
+            // Debug logging
+            console.log(`Week ${week} Matchup ${numericMatchupId} teams:`, matchupTeams.map(t => ({
+                roster_id: t.roster_id,
+                team_name: t.team_name,
+                first_starter: t.starters[0]?.name || 'None'
+            })));
             
             if (matchupTeams.length === 0) {
-                modalContent.innerHTML = '<div class="error">No teams found for this matchup</div>';
+                // Debug info for troubleshooting
+                console.log('Available matchup IDs in week data:', weekData.map(t => t.matchup_id));
+                console.log('Looking for matchup ID:', numericMatchupId);
+                modalContent.innerHTML = `<div class="error">No teams found for matchup ${numericMatchupId}<br>Available matchups: ${weekData.map(t => t.matchup_id).join(', ')}</div>`;
                 return;
             }
             
@@ -397,10 +409,13 @@
                 <div class="breakdown-teams">
             `;
             
-            teams.forEach(team => {
+            teams.forEach((team, teamIndex) => {
+                // Debug logging for team display
+                console.log(`Displaying team ${teamIndex}: Roster ${team.roster_id} (${team.team_name}) - First starter: ${team.starters[0]?.name || 'None'}`);
+                
                 html += `
                     <div class="team-breakdown">
-                        <h3>Roster ${team.roster_id}</h3>
+                        <h3>${team.team_name || `Roster ${team.roster_id}`} (Roster ${team.roster_id})</h3>
                         <div class="points-summary">
                             <strong>Total: ${team.total_points.toFixed(1)} pts</strong><br>
                             Starters: ${team.starter_points.toFixed(1)} | Bench: ${team.bench_points.toFixed(1)}

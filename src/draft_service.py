@@ -75,6 +75,12 @@ class DraftService:
 		# Create mappings...
 		user_id_to_team = {team.user_id: team.display_name for team in league.teams}
 		roster_to_team = {team.roster.roster_id: team.display_name for team in league.teams if team.roster}
+		
+		# Special case: Add roster 9 -> caviar89 mapping for 2024 league
+		if league_id == "1048308938824937472" and 9 not in roster_to_team:
+			caviar_user = next((team for team in league.teams if team.user_id == "1176293990462615552"), None)
+			if caviar_user:
+				roster_to_team[9] = caviar_user.display_name
 		position_to_team = {position: user_id_to_team.get(user_id) 
 						   for user_id, position in draft_order.items() 
 						   if user_id_to_team.get(user_id)}
@@ -172,12 +178,18 @@ class DraftService:
 		
 		# Get roster_id to team name mapping
 		rosters = self.client.league_service.get_league_rosters(league_id)
+		users = self.client.league_service.get_league_users(league_id)
 		roster_to_team = {}
 		for roster in rosters:
-			team = next((team for team in self.client.league_service.get_league_users(league_id)
+			team = next((team for team in users
 						if team.user_id == roster.owner_id), None)
 			if team:
 				roster_to_team[roster.roster_id] = team.display_name
+			elif roster.roster_id == 9 and league_id == "1048308938824937472":
+				# Special case: Roster 9 belongs to caviar89 but has owner_id=None
+				caviar_user = next((u for u in users if u.user_id == "1176293990462615552"), None)
+				if caviar_user:
+					roster_to_team[roster.roster_id] = caviar_user.display_name
 		
 		# Create a lookup dictionary to track the earliest owner of each pick
 		pick_ownership = {}  # Format: {pick_key: {'earliest_owner': id, 'current_owner': id}}

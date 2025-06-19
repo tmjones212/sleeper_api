@@ -94,6 +94,38 @@ def get_roster_slot_for_starter(starter_index: int, roster_positions: List[str])
     else:
         return f"FLEX{starter_index - len(roster_positions) + 1}"
 
+def load_roster_to_team_mapping(api_cache: Dict[str, Any], league_id: str) -> Dict[int, str]:
+    """Load roster to team name mapping from API cache"""
+    users_key = f"https://api.sleeper.app/v1/league/{league_id}/users"
+    rosters_key = f"https://api.sleeper.app/v1/league/{league_id}/rosters"
+    
+    users = api_cache.get(users_key, [])
+    rosters = api_cache.get(rosters_key, [])
+    
+    roster_to_team = {}
+    for roster in rosters:
+        owner_id = roster.get('owner_id')
+        roster_id = roster.get('roster_id')
+        
+        # Find the user with this owner_id
+        team_name = None
+        for user in users:
+            if user.get('user_id') == owner_id:
+                team_name = user.get('display_name', f'Team {roster_id}')
+                break
+        
+        # Special cases for roster ownership issues
+        if not team_name and roster_id == 9:
+            if league_id == "1048308938824937472":  # 2024 league - caviar89
+                caviar_user = next((u for u in users if u.get('user_id') == "1176293990462615552"), None)
+                if caviar_user:
+                    team_name = caviar_user.get('display_name', f'Team {roster_id}')
+            # Add other special cases for different years if needed
+        
+        roster_to_team[roster_id] = team_name or f'Team {roster_id}'
+    
+    return roster_to_team
+
 def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict[str, Any], api_cache: Dict[str, Any]) -> Dict[str, Any]:
     """Process matchup data to create detailed breakdowns with player names and positions"""
     
@@ -108,8 +140,10 @@ def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict
         
         # Get league roster positions from API cache
         league_roster_positions = []
+        roster_to_team_mapping = {}
         if league_id:
             league_roster_positions = get_league_roster_positions(api_cache, league_id)
+            roster_to_team_mapping = load_roster_to_team_mapping(api_cache, league_id)
         
         # Convert to numbered positions (RB1, RB2, etc.)
         numbered_roster_positions = convert_to_numbered_roster_positions(league_roster_positions)
@@ -173,7 +207,7 @@ def process_matchup_breakdown(matchups_cache: Dict[str, Any], players_data: Dict
                 'all_players_count': len(all_players),
                 'starters_count': len(starters),
                 'bench_count': len(bench_players),
-                'team_name': None  # Will be populated from league data if available
+                'team_name': roster_to_team_mapping.get(roster_id, f'Team {roster_id}')
             }
             
             processed_week.append(processed_matchup)

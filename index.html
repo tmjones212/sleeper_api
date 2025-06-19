@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Visualization - League 1181025001438806016</title>
+    <title>Trade Visualization Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="matchup_breakdowns.js?v=3"></script>
+    <script src="league_mapping.js"></script>
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
@@ -835,7 +836,7 @@
     <div class="container">
         <div class="header">
             <h1>🏈 Trade Visualization Dashboard</h1>
-            <p>League 1181025001438806016 | Generated on 2025-06-07 14:25:12</p>
+            <p>Fantasy Football Analytics | Multi-Year League Data</p>
         </div>
 
         <div class="controls">
@@ -9311,11 +9312,11 @@
                 <div class="search-container">
                     <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
                     <select id="matchupYearSelect" class="search-input" style="width: 200px;" onchange="showMatchupYear()">
-                        <option value="all" selected>All Years</option>
+                        <option value="all">All Years</option>
                         
                         <option value="2025" >2025</option>
                         
-                        <option value="2024" >2024</option>
+                        <option value="2024" selected>2024</option>
                         
                         <option value="2023" >2023</option>
                         
@@ -16106,7 +16107,7 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
                     
-                    const response = await fetch(`http://localhost:5000/player_journey/1181025001438806016/${encodeURIComponent(playerName)}`, {
+                    const response = await fetch(`http://localhost:5000/player_journey/${getLeagueIdForYear('2024')}/${encodeURIComponent(playerName)}`, {
                         signal: controller.signal
                     });
                     clearTimeout(timeoutId);
@@ -16874,11 +16875,145 @@
             
             console.log(`Clicked matchup: ${team1Name} vs ${team2Name}, Week ${week}, Scores:`, scores);
             
-            showMatchupBreakdownModal('1048308938824937472', week, [team1Name, team2Name], scores);
+            // Try to find matchup_id from breakdown data
+            // First determine which league this is based on the year shown in UI
+            let leagueId = getLeagueIdForYear('2024') || '1048308938824937472'; // Default to 2024
+            
+            // Get year from the matchup year selector on the page
+            const yearSelector = document.getElementById('matchupYearSelect');
+            if (yearSelector && yearSelector.value && yearSelector.value !== 'all') {
+                const selectedYear = yearSelector.value;
+                const dynamicLeagueId = getLeagueIdForYear(selectedYear);
+                if (dynamicLeagueId) {
+                    leagueId = dynamicLeagueId;
+                    console.log('Using year from selector:', selectedYear, '-> leagueId:', leagueId);
+                } else {
+                    console.warn('No league ID found for year:', selectedYear);
+                }
+            } else {
+                // Try to detect the year from the page context or URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const yearParam = urlParams.get('year');
+                
+                // Also try to detect year from page title or headers
+                let detectedYear = null;
+                const pageTitle = document.title;
+                const yearMatch = pageTitle.match(/(202[2-5])/);
+                if (yearMatch) {
+                    detectedYear = yearMatch[1];
+                }
+                
+                // Try to detect from visible text on page
+                if (!detectedYear) {
+                    const headings = document.querySelectorAll('h1, h2, h3');
+                    for (const heading of headings) {
+                        const headingYearMatch = heading.textContent.match(/(202[2-5])/);
+                        if (headingYearMatch) {
+                            detectedYear = headingYearMatch[1];
+                            break;
+                        }
+                    }
+                }
+                
+                console.log('Year detection: urlParam=', yearParam, 'detectedYear=', detectedYear);
+                console.log('Page title:', pageTitle);
+                console.log('Page headings:', Array.from(document.querySelectorAll('h1, h2, h3')).map(h => h.textContent));
+                
+                if (yearParam || detectedYear) {
+                    const year = yearParam || detectedYear;
+                    const dynamicLeagueId = getLeagueIdForYear(year);
+                    if (dynamicLeagueId) {
+                        leagueId = dynamicLeagueId;
+                        console.log('Using year-based detection:', year, '-> leagueId:', leagueId);
+                    } else {
+                        console.warn('No league ID found for detected year:', year);
+                    }
+                } else {
+                // Fallback: check which breakdown data exists for this week
+                const possibleLeagues = [
+                    getLeagueIdForYear('2022'),  // 2022
+                    getLeagueIdForYear('2023'),  // 2023  
+                    getLeagueIdForYear('2024'),  // 2024
+                    getLeagueIdForYear('2025')   // 2025
+                ].filter(id => id); // Remove any null values
+                
+                for (const testLeagueId of possibleLeagues) {
+                    const testKey = `${testLeagueId}_${week}`;
+                    console.log('Testing league:', testLeagueId, 'key:', testKey);
+                    
+                    if (MATCHUP_BREAKDOWNS[testKey]) {
+                        // Check if the clicked team names exist in this league's data
+                        const testData = MATCHUP_BREAKDOWNS[testKey];
+                        const hasTeam1 = testData.some(t => t.team_name === team1Name);
+                        const hasTeam2 = testData.some(t => t.team_name === team2Name);
+                        
+                        console.log(`League ${testLeagueId}: hasTeam1(${team1Name})=${hasTeam1}, hasTeam2(${team2Name})=${hasTeam2}`);
+                        console.log('Available teams:', testData.map(t => t.team_name));
+                        
+                        if (hasTeam1 && hasTeam2) {
+                            // Also verify scores match to ensure we have the right year
+                            const team1Data = testData.find(t => t.team_name === team1Name);
+                            const team2Data = testData.find(t => t.team_name === team2Name);
+                            
+                            if (team1Data && team2Data && scores && scores.length === 2) {
+                                const dataScores = [team1Data.total_points, team2Data.total_points];
+                                const scoresMatch = 
+                                    (Math.abs(dataScores[0] - scores[0]) < 0.1 && Math.abs(dataScores[1] - scores[1]) < 0.1) ||
+                                    (Math.abs(dataScores[0] - scores[1]) < 0.1 && Math.abs(dataScores[1] - scores[0]) < 0.1);
+                                
+                                if (scoresMatch) {
+                                    leagueId = testLeagueId;
+                                    console.log('Auto-detected league ID with score verification:', leagueId);
+                                    break;
+                                } else {
+                                    console.log('Teams found but scores don\'t match, continuing search');
+                                }
+                            } else {
+                                // Fallback: use first match if no scores provided
+                                leagueId = testLeagueId;
+                                console.log('Auto-detected league ID (no score verification):', leagueId);
+                                break;
+                            }
+                        }
+                    } else {
+                        console.log('No data found for key:', testKey);
+                    }
+                }
+                }
+            }
+            
+            const cacheKey = `${leagueId}_${week}`;
+            console.log('Looking for cache key:', cacheKey);
+            const weekData = MATCHUP_BREAKDOWNS[cacheKey];
+            console.log('Found week data:', weekData ? `${weekData.length} teams` : 'NOT FOUND');
+            let matchupId = null;
+            
+            if (weekData) {
+                // Find teams that match the clicked team names and have the same matchup_id
+                const matchingTeams = weekData.filter(team => 
+                    team.team_name === team1Name || team.team_name === team2Name
+                );
+                console.log('Looking for teams:', [team1Name, team2Name]);
+                console.log('Available teams:', weekData.map(t => t.team_name));
+                console.log('Matching teams found:', matchingTeams.length);
+                
+                if (matchingTeams.length >= 2) {
+                    // Find common matchup_id
+                    const team1Data = matchingTeams.find(t => t.team_name === team1Name);
+                    const team2Data = matchingTeams.find(t => t.team_name === team2Name);
+                    
+                    if (team1Data && team2Data && team1Data.matchup_id === team2Data.matchup_id) {
+                        matchupId = team1Data.matchup_id;
+                        console.log('Found matchup_id:', matchupId);
+                    }
+                }
+            }
+            
+            showMatchupBreakdownModal(leagueId, week, [team1Name, team2Name], scores, matchupId);
         }
 
-        function showMatchupBreakdownModal(leagueId, week, teams, scores) {
-            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams, scores);
+        function showMatchupBreakdownModal(leagueId, week, teams, scores, matchupId) {
+            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams, scores, matchupId);
             
             // Create and show modal
             let modal = document.getElementById('playerBreakdownModal');
@@ -16908,41 +17043,48 @@
                 return;
             }
             
-            // Find the specific matchup by team names
-            console.log('Looking for teams:', teams);
+            // Find the specific matchup by matchup_id (much more reliable than score matching)
+            console.log('Looking for teams:', teams, 'matchupId:', matchupId);
             
-            // Find the matchup by matching scores if provided
             let matchupTeams = [];
-            const matchupGroups = {};
             
-            // Group by matchup_id
-            weekData.forEach(team => {
-                const matchupId = team.matchup_id;
-                if (!matchupGroups[matchupId]) {
-                    matchupGroups[matchupId] = [];
-                }
-                matchupGroups[matchupId].push(team);
-            });
-            
-            // Find the matchup with matching scores
-            if (scores && scores.length === 2) {
-                for (const matchupId in matchupGroups) {
-                    const matchup = matchupGroups[matchupId];
-                    if (matchup.length === 2) {
-                        const matchupScores = matchup.map(t => t.total_points);
-                        // Check if scores match (in either order)
-                        if ((Math.abs(matchupScores[0] - scores[0]) < 0.1 && Math.abs(matchupScores[1] - scores[1]) < 0.1) ||
-                            (Math.abs(matchupScores[0] - scores[1]) < 0.1 && Math.abs(matchupScores[1] - scores[0]) < 0.1)) {
-                            matchupTeams = matchup;
-                            break;
+            if (matchupId) {
+                // Use matchup_id directly (most reliable)
+                matchupTeams = weekData.filter(team => team.matchup_id === parseInt(matchupId));
+                console.log('Found teams by matchup_id:', matchupTeams.length);
+            } else {
+                // Fallback to score matching if no matchup_id provided
+                const matchupGroups = {};
+                
+                // Group by matchup_id
+                weekData.forEach(team => {
+                    const teamMatchupId = team.matchup_id;
+                    if (!matchupGroups[teamMatchupId]) {
+                        matchupGroups[teamMatchupId] = [];
+                    }
+                    matchupGroups[teamMatchupId].push(team);
+                });
+                
+                // Find the matchup with matching scores
+                if (scores && scores.length === 2) {
+                    for (const teamMatchupId in matchupGroups) {
+                        const matchup = matchupGroups[teamMatchupId];
+                        if (matchup.length === 2) {
+                            const matchupScores = matchup.map(t => t.total_points);
+                            // Check if scores match (in either order)
+                            if ((Math.abs(matchupScores[0] - scores[0]) < 0.1 && Math.abs(matchupScores[1] - scores[1]) < 0.1) ||
+                                (Math.abs(matchupScores[0] - scores[1]) < 0.1 && Math.abs(matchupScores[1] - scores[0]) < 0.1)) {
+                                matchupTeams = matchup;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            
-            if (matchupTeams.length === 0) {
-                console.log('Could not find matchup by scores, using first matchup');
-                matchupTeams = Object.values(matchupGroups)[0] || [];
+                
+                if (matchupTeams.length === 0) {
+                    console.log('Could not find matchup by scores, using first matchup');
+                    matchupTeams = Object.values(matchupGroups)[0] || [];
+                }
             }
             
             console.log('Found matchup teams:', matchupTeams);

@@ -98,6 +98,7 @@
         
         .pick-info {
             padding: 8px;
+            position: relative;
         }
         
         .player-name {
@@ -128,6 +129,18 @@
             justify-content: center;
             color: #aaa;
         }
+        
+        .actual-picker {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 10px;
+            color: #e74c3c;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +163,9 @@
                     <p class="player-name">{{ pick.player_name }}</p>
                     <p class="team-position">{{ pick.position }} - {{ pick.team }}</p>
                     <p class="ktc-value">KTC: {{ pick.ktc_value|default('N/A') }}</p>
+                    {% if pick.actual_picker %}
+                    <div class="actual-picker">{{ pick.actual_picker }}</div>
+                    {% endif %}
                 </div>
             </div>
             {% else %}
