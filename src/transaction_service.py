@@ -219,6 +219,7 @@ class TransactionService:
                                 existing_pick.get('type') == 'draft_pick' and
                                 existing_pick.get('round') == pick_asset['round'] and
                                 existing_pick.get('season') == pick_asset['season'] and
+                                existing_pick.get('original_owner') == pick_asset.get('original_owner') and
                                 existing_pick.get('player_name') == pick_asset.get('player_name')
                                 for existing_pick in team_assets[receiving_team]['receives']
                             )
@@ -233,6 +234,7 @@ class TransactionService:
                                 existing_pick.get('type') == 'draft_pick' and
                                 existing_pick.get('round') == pick_asset['round'] and
                                 existing_pick.get('season') == pick_asset['season'] and
+                                existing_pick.get('original_owner') == pick_asset.get('original_owner') and
                                 existing_pick.get('player_name') == pick_asset.get('player_name')
                                 for existing_pick in team_assets[giving_team]['gives']
                             )
