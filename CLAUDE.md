@@ -38,6 +38,21 @@ Whenever you learn something important about the codebase that would be useful t
 - **Trade Data Structure**: Uses `team_assets` structure with `receives`/`gives` arrays containing draft pick objects
 - **Deduplication**: When processing trades, be careful about deduplication logic for similar assets
 
+### Roster ID to Team Name Mapping (2025 Season)
+- **Important**: Always verify team names against actual roster data, not assumptions
+- **League 1181025001438806016 Mapping**:
+  - Roster ID 1: tmjones212
+  - Roster ID 2: BaoDown
+  - Roster ID 3: EBao
+  - Roster ID 4: Halteclere
+  - Roster ID 5: androooooo
+  - Roster ID 6: ShadyCommish88
+  - Roster ID 7: emanueljd3
+  - Roster ID 8: lamjohnson56
+  - Roster ID 9: caviar89
+  - Roster ID 10: connerstafford11
+- **Note**: If you see incorrect team names (e.g., "ItsAShow" for roster 1 or "Teehuss" for roster 7), these are wrong and should be corrected
+
 
 # Draft Pick Ownership Fix Documentation
 
