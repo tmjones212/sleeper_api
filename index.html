@@ -16651,6 +16651,23 @@
                 if (!isInMatchupsPanel) {
                     console.error('❌ matchupsContainer is NOT inside matchups-panel!');
                 }
+                
+                // Force the panel-content to have proper height
+                const panelContent = container.closest('.panel-content');
+                if (panelContent) {
+                    panelContent.style.minHeight = '500px';
+                    panelContent.style.overflow = 'visible';
+                    console.log('✅ Set panel-content min-height');
+                }
+                
+                // Force container to have height
+                container.style.minHeight = '100px';
+                container.style.overflow = 'visible';
+                
+                // Force a reflow to ensure styles are applied
+                container.offsetHeight;
+                
+                console.log('Container offsetHeight after fix:', container.offsetHeight);
             }
             
             console.log(`✅ Showing matchups for year: ${selectedYear}`);
