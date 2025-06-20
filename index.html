@@ -880,6 +880,39 @@
             display: none !important;
         }
     </style>
+    <script>
+        // Panel switching function - defined early so buttons can use it
+        function showPanel(panelName) {
+            console.log('Switching to panel:', panelName);
+            
+            // Hide all panels
+            document.querySelectorAll('.visualization-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected panel
+            const targetPanel = document.getElementById(panelName + '-panel');
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+                console.log('Activated panel:', panelName + '-panel');
+            } else {
+                console.error('Panel not found:', panelName + '-panel');
+            }
+            
+            // Find and activate the corresponding button based on onclick attribute
+            document.querySelectorAll('.tab-button').forEach(button => {
+                const onclickAttr = button.getAttribute('onclick');
+                if (onclickAttr && onclickAttr.includes(`'${panelName}'`)) {
+                    button.classList.add('active');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -9459,50 +9492,6 @@
 </div>
 </div>
 <script>
-        // Panel switching function - defined early so buttons can use it
-        function showPanel(panelName) {
-            console.log('Switching to panel:', panelName);
-            
-            // Hide all panels
-            document.querySelectorAll('.visualization-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            
-            // Remove active class from all buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            // Show selected panel
-            const targetPanel = document.getElementById(panelName + '-panel');
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-                console.log('Activated panel:', panelName + '-panel');
-            } else {
-                console.error('Panel not found:', panelName + '-panel');
-            }
-            
-            // Find and activate the corresponding button based on onclick attribute
-            document.querySelectorAll('.tab-button').forEach(button => {
-                const onclickAttr = button.getAttribute('onclick');
-                if (onclickAttr && onclickAttr.includes(`'${panelName}'`)) {
-                    button.classList.add('active');
-                }
-            });
-            
-            // Initialize visualizations if needed
-            if (panelName === 'network' && typeof initNetworkGraph === 'function') {
-                initNetworkGraph();
-            } else if (panelName === 'overview' && typeof initMonthlyChart === 'function') {
-                initMonthlyChart();
-            } else if (panelName === 'matchups') {
-                // Initialize matchups if needed
-                console.log('🎯 Matchups panel activated');
-                // Force immediate display
-                const matchupsContainer = document.getElementById('matchupsContainer');
-                if (matchupsContainer) {
-                    matchupsContainer.style.display = 'block';
-                }
                 // Call the function immediately
                 if (window.showMatchupYear) {
                     window.showMatchupYear();
@@ -10424,8 +10413,8 @@
             });
             
             // If selected year has no content, show a message
-            const container = document.getElementById('matchupsContainer');
-            if (container && !hasContent && selectedYear !== 'all') {
+            const matchupsContainer2 = document.getElementById('matchupsContainer');
+            if (matchupsContainer2 && !hasContent && selectedYear !== 'all') {
                 // Find the empty year div and add a message
                 yearMatchups.forEach(yearDiv => {
                     if (yearDiv.getAttribute('data-year') === selectedYear && yearDiv.style.display !== 'none') {
