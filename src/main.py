@@ -42,6 +42,11 @@ client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
 players = client.player_service.get_players()
 
+
+teams = client.league_service.get_league_rosters(league_id)
+
+users = client.league_service.get_league_users(league_id)
+
 matchups = client.matchup_service.get_matchups(league_id, 1, players=players)
 
 
