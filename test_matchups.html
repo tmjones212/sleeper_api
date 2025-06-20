@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Matchups</title>
+    <style>
+        .panel { display: none; border: 2px solid red; padding: 20px; margin: 20px; }
+        .panel.active { display: block; }
+        button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Testing Panel Visibility</h1>
+    
+    <button onclick="showPanel('test1')">Show Panel 1</button>
+    <button onclick="showPanel('test2')">Show Panel 2</button>
+    
+    <div id="test1-panel" class="panel">
+        <h2>Panel 1</h2>
+        <p>This is panel 1 content</p>
+    </div>
+    
+    <div id="test2-panel" class="panel">
+        <h2>Panel 2</h2>
+        <div style="margin: 20px; padding: 20px; background: yellow;">
+            <h3>Nested content</h3>
+            <p>This is nested content in panel 2</p>
+        </div>
+    </div>
+    
+    <script>
+        function showPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(name + '-panel');
+            if (panel) {
+                panel.classList.add('active');
+                console.log('Activated', name, '- display:', window.getComputedStyle(panel).display);
+            }
+        }
+    </script>
+</body>
+</html>

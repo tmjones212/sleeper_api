@@ -990,6 +990,50 @@
         }
     </style>
     <script>
+        // Diagnostic function to check element visibility
+        function checkVisibility(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) {
+                console.log(`Element ${elementId} not found`);
+                return;
+            }
+            
+            console.log(`\nChecking visibility of ${elementId}:`);
+            const rect = el.getBoundingClientRect();
+            const style = window.getComputedStyle(el);
+            
+            console.log('  Position:', rect.top, rect.left, rect.width, rect.height);
+            console.log('  Display:', style.display);
+            console.log('  Visibility:', style.visibility);
+            console.log('  Opacity:', style.opacity);
+            console.log('  Overflow:', style.overflow);
+            console.log('  Z-index:', style.zIndex);
+            console.log('  Has content:', el.innerHTML.length > 50);
+            
+            // Check parents
+            let parent = el.parentElement;
+            let level = 1;
+            while (parent && parent !== document.body) {
+                const pStyle = window.getComputedStyle(parent);
+                if (pStyle.display === 'none' || pStyle.visibility === 'hidden' || pStyle.opacity === '0') {
+                    console.log(`  PROBLEM: Parent ${level} is hidden!`, parent);
+                    console.log('    Display:', pStyle.display);
+                    console.log('    Visibility:', pStyle.visibility);
+                    console.log('    Opacity:', pStyle.opacity);
+                }
+                parent = parent.parentElement;
+                level++;
+            }
+            
+            // Check if it's in viewport
+            if (rect.width === 0 || rect.height === 0) {
+                console.log('  PROBLEM: Element has no dimensions!');
+            }
+            if (rect.bottom < 0 || rect.top > window.innerHeight) {
+                console.log('  PROBLEM: Element is outside viewport vertically!');
+            }
+        }
+        
         // Panel switching function - defined early so buttons can use it
         function showPanel(panelName) {
             console.log('Switching to panel:', panelName);
