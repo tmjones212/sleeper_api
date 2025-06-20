@@ -10794,7 +10794,6 @@
 <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
 <select class="search-input" id="matchupYearSelect" onchange="showMatchupYear()" style="width: 200px;">
 <option value="all">All Years</option>
-<option value="2025">2025</option>
 <option selected="" value="2024">2024</option>
 <option value="2023">2023</option>
 <option value="2022">2022</option>
@@ -14334,7 +14333,7 @@
 <label for="draftYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
 <select class="search-input" id="draftYearSelect" onchange="showDraftYear()" style="width: 200px;">
 <option value="2025">2025</option>
-<option value="2024">2024</option>
+<option selected="" value="2024">2024</option>
 <option value="2023">2023</option>
 <option value="2022">2022</option>
 </select>
@@ -14373,7 +14372,13 @@
             
             // Show selected panel
             document.getElementById(panelName + '-panel').classList.add('active');
-            event.target.classList.add('active');
+            
+            // Find and activate the corresponding button
+            document.querySelectorAll('.tab-button').forEach(button => {
+                if (button.textContent.toLowerCase().includes(panelName)) {
+                    button.classList.add('active');
+                }
+            });
             
             // Initialize visualizations if needed
             if (panelName === 'network') {
@@ -14383,20 +14388,25 @@
             } else if (panelName === 'matchups') {
                 // Initialize matchups if needed
                 console.log('🎯 Matchups panel activated');
-                const matchupsPanel = document.getElementById('matchups-panel');
-                if (matchupsPanel) {
-                    console.log('✅ Found matchups panel:', matchupsPanel);
-                    console.log('Panel classes:', matchupsPanel.classList.toString());
-                    console.log('Panel display style:', window.getComputedStyle(matchupsPanel).display);
-                }
-                if (typeof showMatchupYear === 'function') {
-                    showMatchupYear();
-                }
+                // The showMatchupYear function is defined later, so we'll call it after a short delay
+                setTimeout(() => {
+                    if (typeof showMatchupYear === 'function') {
+                        console.log('Calling showMatchupYear...');
+                        showMatchupYear();
+                    } else {
+                        console.log('showMatchupYear function not found');
+                    }
+                }, 100);
             } else if (panelName === 'draft') {
                 // Initialize draft results if needed
-                if (typeof initDraftResults === 'function') {
-                    initDraftResults();
-                }
+                setTimeout(() => {
+                    if (typeof showDraftYear === 'function') {
+                        console.log('Calling showDraftYear...');
+                        showDraftYear();
+                    } else {
+                        console.log('showDraftYear function not found');
+                    }
+                }, 100);
             }
         }
 
@@ -15247,17 +15257,52 @@
 
         // Draft year selection function
         function showMatchupYear() {
-            const selectedYear = document.getElementById('matchupYearSelect').value;
+            const yearSelect = document.getElementById('matchupYearSelect');
+            if (!yearSelect) {
+                console.log('Year selector not found');
+                return;
+            }
+            
+            const selectedYear = yearSelect.value;
             const yearMatchups = document.querySelectorAll('.year-matchups');
+            
+            console.log(`Showing matchups for year: ${selectedYear}`);
+            let hasContent = false;
             
             yearMatchups.forEach(yearDiv => {
                 if (selectedYear === 'all') {
                     yearDiv.style.display = 'block';
+                    // Check if this year has content
+                    const weeksContainer = yearDiv.querySelector('.weeks-container');
+                    if (weeksContainer && weeksContainer.children.length > 0) {
+                        hasContent = true;
+                    }
                 } else {
                     const yearValue = yearDiv.getAttribute('data-year');
                     yearDiv.style.display = yearValue === selectedYear ? 'block' : 'none';
+                    if (yearValue === selectedYear) {
+                        // Check if selected year has content
+                        const weeksContainer = yearDiv.querySelector('.weeks-container');
+                        if (weeksContainer && weeksContainer.children.length > 0) {
+                            hasContent = true;
+                        }
+                    }
                 }
             });
+            
+            // If selected year has no content, show a message
+            const container = document.getElementById('matchupsContainer');
+            if (container && !hasContent && selectedYear !== 'all') {
+                // Find the empty year div and add a message
+                yearMatchups.forEach(yearDiv => {
+                    if (yearDiv.getAttribute('data-year') === selectedYear && yearDiv.style.display !== 'none') {
+                        const weeksContainer = yearDiv.querySelector('.weeks-container');
+                        if (weeksContainer && weeksContainer.children.length === 0) {
+                            weeksContainer.innerHTML = `<p style="text-align: center; color: #999; padding: 40px;">No matchup data available for ${selectedYear} season</p>`;
+                        }
+                    }
+                });
+            }
             
             // Reapply head-to-head filter if active
             if (window.currentHeadToHeadFilter) {
@@ -16605,188 +16650,7 @@
             }
         });
 
-        // Show matchups for selected year
-        function showMatchupYear() {
-            console.log('📊 showMatchupYear called');
-            const yearSelect = document.getElementById('matchupYearSelect');
-            const selectedYear = yearSelect ? yearSelect.value : '2024';
-            
-            // The matchup content is already in the HTML, we just need to filter it
-            const allMatchups = document.querySelectorAll('.year-matchups');
-            if (allMatchups.length === 0) {
-                console.log('⚠️ No year-matchups found in DOM');
-                return;
-            }
-            
-            console.log(`📊 Found ${allMatchups.length} year-matchups sections`);
-            
-            allMatchups.forEach(matchup => {
-                const matchupYear = matchup.getAttribute('data-year');
-                if (selectedYear === 'all' || matchupYear === selectedYear) {
-                    matchup.style.display = 'block';
-                    matchup.style.visibility = 'visible';
-                    matchup.style.opacity = '1';
-                    console.log(`✅ Showing year ${matchupYear} matchups`);
-                } else {
-                    matchup.style.display = 'none';
-                    console.log(`❌ Hiding year ${matchupYear} matchups`);
-                }
-            });
-            
-            // Also ensure the container itself is visible
-            const container = document.getElementById('matchupsContainer');
-            if (container) {
-                container.style.display = 'block';
-                container.style.visibility = 'visible';
-                console.log('✅ Made matchupsContainer visible');
-                console.log('Container innerHTML length:', container.innerHTML.length);
-                console.log('Container offsetHeight:', container.offsetHeight);
-                console.log('Container parent:', container.parentElement?.id || container.parentElement?.className);
-                
-                // Check if we're in the right panel
-                const matchupsPanel = document.getElementById('matchups-panel');
-                const isInMatchupsPanel = matchupsPanel && matchupsPanel.contains(container);
-                console.log('Is container in matchups panel?', isInMatchupsPanel);
-                
-                if (!isInMatchupsPanel) {
-                    console.error('❌ matchupsContainer is NOT inside matchups-panel!');
-                }
-                
-                // Force the panel-content to have proper height
-                const panelContent = container.closest('.panel-content');
-                if (panelContent) {
-                    panelContent.style.minHeight = '500px';
-                    panelContent.style.overflow = 'visible';
-                    console.log('✅ Set panel-content min-height');
-                }
-                
-                // Force container to have height
-                container.style.minHeight = '100px';
-                container.style.overflow = 'visible';
-                
-                // Force a reflow to ensure styles are applied
-                container.offsetHeight;
-                
-                console.log('Container offsetHeight after fix:', container.offsetHeight);
-            }
-            
-            console.log(`✅ Showing matchups for year: ${selectedYear}`);
-        }
-
-        // Show draft results for selected year
-        function showDraftYear() {
-            console.log('🏈 showDraftYear called');
-            const yearSelect = document.getElementById('draftYearSelect');
-            const selectedYear = yearSelect ? yearSelect.value : '2025';
-            const draftResults = document.getElementById('draftResults');
-            
-            if (!draftResults) {
-                console.log('⚠️ Draft results container not found');
-                return;
-            }
-            
-            // Extract draft data from networkData
-            const draftPicks = [];
-            
-            // Iterate through all trades to find draft picks for the selected year
-            if (typeof networkData !== 'undefined' && networkData.edges) {
-                Object.values(networkData.edges).forEach(edge => {
-                    edge.trades.forEach(trade => {
-                        if (trade.details && trade.details.teams) {
-                            trade.details.teams.forEach(team => {
-                                // Check gives
-                                if (team.gives && team.gives.draft_picks) {
-                                    team.gives.draft_picks.forEach(pick => {
-                                        if (pick.season === selectedYear) {
-                                            draftPicks.push({
-                                                ...pick,
-                                                traded_from: team.team,
-                                                traded_to: pick.to_team
-                                            });
-                                        }
-                                    });
-                                }
-                                // Check receives
-                                if (team.receives && team.receives.draft_picks) {
-                                    team.receives.draft_picks.forEach(pick => {
-                                        if (pick.season === selectedYear) {
-                                            // Skip duplicates
-                                            const exists = draftPicks.some(p => 
-                                                p.pick_number === pick.pick_number && 
-                                                p.round === pick.round && 
-                                                p.season === pick.season
-                                            );
-                                            if (!exists) {
-                                                draftPicks.push({
-                                                    ...pick,
-                                                    traded_from: pick.from_team,
-                                                    traded_to: team.team
-                                                });
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                });
-            }
-            
-            // Sort picks by round and pick number
-            draftPicks.sort((a, b) => {
-                if (a.round !== b.round) return a.round - b.round;
-                return (a.pick_number || 0) - (b.pick_number || 0);
-            });
-            
-            // Generate HTML
-            let html = '<div class="draft-board">';
-            
-            if (draftPicks.length === 0) {
-                html += `<p style="text-align: center; color: #b0b0b0; padding: 40px;">No draft data available for ${selectedYear}</p>`;
-            } else {
-                // Group by round
-                const rounds = {};
-                draftPicks.forEach(pick => {
-                    if (!rounds[pick.round]) rounds[pick.round] = [];
-                    rounds[pick.round].push(pick);
-                });
-                
-                Object.entries(rounds).forEach(([round, picks]) => {
-                    html += `<div class="draft-round" style="margin-bottom: 30px;">`;
-                    html += `<h3 style="color: #66ccff; margin-bottom: 15px;">Round ${round}</h3>`;
-                    html += '<div class="draft-picks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">';
-                    
-                    picks.forEach(pick => {
-                        html += `<div class="draft-pick-card" style="background: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #404040;">`;
-                        if (pick.pick_number) {
-                            html += `<div style="font-size: 0.9rem; color: #b0b0b0; margin-bottom: 5px;">Pick #${pick.pick_number}</div>`;
-                        }
-                        if (pick.player_name) {
-                            html += `<div style="font-weight: bold; color: #e0e0e0; margin-bottom: 5px;">${pick.player_name}</div>`;
-                            if (pick.position) {
-                                html += `<div style="font-size: 0.9rem; color: #999;">${pick.position}</div>`;
-                            }
-                        } else {
-                            html += `<div style="color: #999; font-style: italic;">Future Pick</div>`;
-                        }
-                        if (pick.original_owner) {
-                            html += `<div style="font-size: 0.85rem; color: #66ccff; margin-top: 8px;">Originally: ${pick.original_owner}</div>`;
-                        }
-                        if (pick.traded_to) {
-                            html += `<div style="font-size: 0.85rem; color: #ffaa00; margin-top: 5px;">Traded to: ${pick.traded_to}</div>`;
-                        }
-                        html += '</div>';
-                    });
-                    
-                    html += '</div></div>';
-                });
-            }
-            
-            html += '</div>';
-            draftResults.innerHTML = html;
-            
-            console.log(`✅ Showing ${draftPicks.length} draft picks for year: ${selectedYear}`);
-        }
+        // Duplicate functions removed - using the ones defined earlier
 
     </script>
 </div></body>
