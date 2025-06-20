@@ -16605,11 +16605,13 @@
             const selectedYear = yearSelect ? yearSelect.value : '2024';
             
             // The matchup content is already in the HTML, we just need to filter it
-            const allMatchups = document.querySelectorAll('.matchup-week');
+            const allMatchups = document.querySelectorAll('.year-matchups');
             if (allMatchups.length === 0) {
-                console.log('⚠️ No matchup weeks found in DOM');
+                console.log('⚠️ No year-matchups found in DOM');
                 return;
             }
+            
+            console.log(`📊 Found ${allMatchups.length} year-matchups sections`);
             
             allMatchups.forEach(matchup => {
                 const matchupYear = matchup.getAttribute('data-year');
