@@ -14395,11 +14395,13 @@
                         console.log('Calling showMatchupYear...');
                         showMatchupYear();
                     } else {
-                        console.log('showMatchupYear function not found');
+                        console.error('ERROR: showMatchupYear function not found!');
+                        console.log('Available functions:', Object.keys(window).filter(k => k.includes('show')));
                     }
                 }, 100);
             } else if (panelName === 'draft') {
                 // Initialize draft results if needed
+                console.log('🏈 Draft panel activated');
                 setTimeout(() => {
                     if (typeof showDraftYear === 'function') {
                         console.log('Calling showDraftYear...');
@@ -15266,7 +15268,7 @@
         }
 
         // Draft year selection function
-        function showMatchupYear() {
+        window.showMatchupYear = function showMatchupYear() {
             const yearSelect = document.getElementById('matchupYearSelect');
             if (!yearSelect) {
                 console.log('Year selector not found');
@@ -15388,7 +15390,7 @@
             });
         }
 
-        function showDraftYear() {
+        window.showDraftYear = function showDraftYear() {
             const selectedYear = document.getElementById('draftYearSelect').value;
             const draftResults = document.getElementById('draftResults');
             
@@ -16663,35 +16665,9 @@
         // Duplicate functions removed - using the ones defined earlier
 
     
-        // Fix for matchups and draft tabs
-        function ensureTabsWork() {
-            console.log('Ensuring tabs work properly...');
-            
-            // Re-initialize when switching to matchups or draft
-            const _showPanel = window.showPanel;
-            window.showPanel = function(panelName) {
-                console.log('Switching to panel:', panelName);
-                
-                // Call original function
-                _showPanel(panelName);
-                
-                // Special handling for matchups and draft
-                setTimeout(() => {
-                    if (panelName === 'matchups' && typeof showMatchupYear === 'function') {
-                        console.log('Initializing matchups tab...');
-                        showMatchupYear();
-                    }
-                    if (panelName === 'draft' && typeof showDraftYear === 'function') {
-                        console.log('Initializing draft tab...');
-                        showDraftYear();
-                    }
-                }, 100);
-            };
-        }
-        
-        // Call on page load
+        // Ensure tabs initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            ensureTabsWork();
+            console.log('Page loaded, tabs ready');
         });
     </script>
 </div></body>
