@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eazy Pickens</title>
+    <title>Trade Visualization - League 1181025001438806016</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="matchup_breakdowns.js?v=3"></script>
-    <script src="league_mapping.js"></script>
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -234,139 +229,13 @@
         }
 
         .timeline-container {
-            max-height: 800px;
+            max-height: 600px;
             overflow-y: auto;
             border: 2px solid #606060;
             border-radius: 10px;
             padding: 20px;
             background: #2d2d2d;
-            margin-top: 15px;
         }
-
-        .trade-filter-container {
-            background: #2d2d2d;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #606060;
-            margin-bottom: 0;
-        }
-
-        .trade-grade-container {
-            margin-top: 15px;
-            padding: 10px;
-            background: #353535;
-            border-radius: 8px;
-            border: 1px solid #606060;
-        }
-
-        .trade-grade-slider {
-            width: 100%;
-            height: 8px;
-            background: linear-gradient(to right, #ff4444 0%, #ffaa00 25%, #999999 50%, #66bb6a 75%, #44ff44 100%);
-            border-radius: 4px;
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .trade-grade-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #ffffff;
-            border: 2px solid #333;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .trade-grade-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #ffffff;
-            border: 2px solid #333;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .trade-grade-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: #b0b0b0;
-        }
-
-        .trade-grade-result {
-            text-align: center;
-            margin-top: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .trading-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .team-summary-card {
-            background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid #606060;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .team-summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-        }
-
-        .team-name-header {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #66ccff;
-            border-bottom: 2px solid #66ccff;
-            padding-bottom: 5px;
-        }
-
-        .trade-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .stat-label {
-            color: #b0b0b0;
-        }
-
-        .stat-value {
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-
-        .overall-grade {
-            text-align: center;
-            margin-top: 12px;
-            padding: 8px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .grade-excellent { background: #44ff44; color: #000; }
-        .grade-good { background: #66bb6a; color: #000; }
-        .grade-average { background: #999999; color: #fff; }
-        .grade-poor { background: #ffaa00; color: #000; }
-        .grade-terrible { background: #ff4444; color: #fff; }
 
         .trade-item {
             background: #404040;
@@ -836,7 +705,7 @@
     <div class="container">
         <div class="header">
             <h1>🏈 Eazy Pickens</h1>
-            <p>Fantasy Football Analytics | Multi-Year League Data</p>
+            <p>League 1181025001438806016 | Generated on 2025-06-19 21:01:18</p>
         </div>
 
         <div class="controls">
@@ -846,7 +715,7 @@
                     <button class="tab-button active" onclick="showPanel('overview')">📊 Overview</button>
                     <button class="tab-button" onclick="showPanel('network')">🕸️ Trade Network</button>
                     <button class="tab-button" onclick="showPanel('matrix')">📋 Trade Matrix</button>
-                    <button class="tab-button" onclick="showPanel('timeline')">📅 Trade History</button>
+                    <button class="tab-button" onclick="showPanel('timeline')">📅 Timeline</button>
                     <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
                     <button class="tab-button" onclick="showPanel('matchups')">⚔️ Matchups</button>
                     <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
@@ -863,11 +732,11 @@
             <div class="panel-content">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>149</h3>
+                        <h3>158</h3>
                         <p>Total Trades</p>
                     </div>
                     <div class="stat-card">
-                        <h3>510</h3>
+                        <h3>538</h3>
                         <p>Players Traded</p>
                     </div>
                     <div class="stat-card">
@@ -885,9 +754,9 @@
                     
                     <div class="team-side">
                         <h4>ShadyCommish88</h4>
-                        <p><strong>79</strong> trades</p>
-                        <p>76 players acquired</p>
-                        <p>74 players given</p>
+                        <p><strong>83</strong> trades</p>
+                        <p>78 players acquired</p>
+                        <p>77 players given</p>
                     </div>
                     
                     <div class="team-side">
@@ -899,22 +768,22 @@
                     
                     <div class="team-side">
                         <h4>emanueljd3</h4>
-                        <p><strong>36</strong> trades</p>
-                        <p>34 players acquired</p>
-                        <p>34 players given</p>
+                        <p><strong>40</strong> trades</p>
+                        <p>38 players acquired</p>
+                        <p>37 players given</p>
                     </div>
                     
                     <div class="team-side">
                         <h4>BaoDown</h4>
-                        <p><strong>23</strong> trades</p>
-                        <p>24 players acquired</p>
-                        <p>23 players given</p>
+                        <p><strong>26</strong> trades</p>
+                        <p>26 players acquired</p>
+                        <p>26 players given</p>
                     </div>
                     
                     <div class="team-side">
                         <h4>Halteclere</h4>
-                        <p><strong>18</strong> trades</p>
-                        <p>9 players acquired</p>
+                        <p><strong>20</strong> trades</p>
+                        <p>11 players acquired</p>
                         <p>19 players given</p>
                     </div>
                     
@@ -933,7 +802,21 @@
                             
                         </div>
                         <h3>WILL LEVIS</h3>
-                        <div class="trade-count">6</div>
+                        <div class="trade-count">9</div>
+                        <p>trades</p>
+                    </div>
+                    
+                    <div class="player-card">
+                        <div style="margin-bottom: 15px;">
+                            
+                            <img src="https://sleepercdn.com/content/nfl/players/96.jpg" 
+                                 style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
+                                 onerror="this.style.display='none'"
+                                 alt="AARON RODGERS">
+                            
+                        </div>
+                        <h3>AARON RODGERS</h3>
+                        <div class="trade-count">5</div>
                         <p>trades</p>
                     </div>
                     
@@ -954,13 +837,13 @@
                     <div class="player-card">
                         <div style="margin-bottom: 15px;">
                             
-                            <img src="https://sleepercdn.com/content/nfl/players/96.jpg" 
+                            <img src="https://sleepercdn.com/content/nfl/players/4961.jpg" 
                                  style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
                                  onerror="this.style.display='none'"
-                                 alt="AARON RODGERS">
+                                 alt="DJ MOORE">
                             
                         </div>
-                        <h3>AARON RODGERS</h3>
+                        <h3>DJ MOORE</h3>
                         <div class="trade-count">4</div>
                         <p>trades</p>
                     </div>
@@ -1038,20 +921,6 @@
                     <div class="player-card">
                         <div style="margin-bottom: 15px;">
                             
-                            <img src="https://sleepercdn.com/content/nfl/players/4961.jpg" 
-                                 style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
-                                 onerror="this.style.display='none'"
-                                 alt="DJ MOORE">
-                            
-                        </div>
-                        <h3>DJ MOORE</h3>
-                        <div class="trade-count">3</div>
-                        <p>trades</p>
-                    </div>
-                    
-                    <div class="player-card">
-                        <div style="margin-bottom: 15px;">
-                            
                             <img src="https://sleepercdn.com/content/nfl/players/3321.jpg" 
                                  style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #66ccff; object-fit: cover;" 
                                  onerror="this.style.display='none'"
@@ -1095,7 +964,7 @@
                             <p>Teams</p>
                         </div>
                         <div class="stat-card">
-                            <h3>31</h3>
+                            <h3>32</h3>
                             <p>Trade Relationships</p>
                         </div>
                     </div>
@@ -1205,19 +1074,19 @@
                                     
                                 </td>
                                 
-                                <td class="" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;"
-                                    onclick="">
+                                <td class="clickable-cell" 
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);"
+                                    onclick="showTeamTrades('BaoDown', 'emanueljd3')">
                                     
-                                        0
+                                        2
                                     
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
                                     onclick="showTeamTrades('BaoDown', 'lamjohnson56')">
                                     
-                                        4
+                                        5
                                     
                                 </td>
                                 
@@ -1344,10 +1213,10 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);"
                                     onclick="showTeamTrades('Halteclere', 'ShadyCommish88')">
                                     
-                                        5
+                                        6
                                     
                                 </td>
                                 
@@ -1384,10 +1253,10 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);"
                                     onclick="showTeamTrades('Halteclere', 'lamjohnson56')">
                                     
-                                        1
+                                        2
                                     
                                 </td>
                                 
@@ -1421,10 +1290,10 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);"
                                     onclick="showTeamTrades('ShadyCommish88', 'Halteclere')">
                                     
-                                        5
+                                        6
                                     
                                 </td>
                                 
@@ -1464,15 +1333,15 @@
                                     style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);"
                                     onclick="showTeamTrades('ShadyCommish88', 'emanueljd3')">
                                     
-                                        18
+                                        19
                                     
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);"
                                     onclick="showTeamTrades('ShadyCommish88', 'lamjohnson56')">
                                     
-                                        2
+                                        4
                                     
                                 </td>
                                 
@@ -1744,11 +1613,11 @@
                             <tr>
                                 <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">emanueljd3</td>
                                 
-                                <td class="" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;"
-                                    onclick="">
+                                <td class="clickable-cell" 
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);"
+                                    onclick="showTeamTrades('emanueljd3', 'BaoDown')">
                                     
-                                        0
+                                        2
                                     
                                 </td>
                                 
@@ -1772,7 +1641,7 @@
                                     style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);"
                                     onclick="showTeamTrades('emanueljd3', 'ShadyCommish88')">
                                     
-                                        18
+                                        19
                                     
                                 </td>
                                 
@@ -1809,10 +1678,10 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);"
                                     onclick="showTeamTrades('emanueljd3', 'lamjohnson56')">
                                     
-                                        5
+                                        6
                                     
                                 </td>
                                 
@@ -1830,10 +1699,10 @@
                                 <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">lamjohnson56</td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
                                     onclick="showTeamTrades('lamjohnson56', 'BaoDown')">
                                     
-                                        4
+                                        5
                                     
                                 </td>
                                 
@@ -1846,21 +1715,21 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);"
-                                    onclick="showTeamTrades('lamjohnson56', 'Halteclere')">
-                                    
-                                        1
-                                    
-                                </td>
-                                
-                                <td class="clickable-cell" 
                                     style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);"
-                                    onclick="showTeamTrades('lamjohnson56', 'ShadyCommish88')">
+                                    onclick="showTeamTrades('lamjohnson56', 'Halteclere')">
                                     
                                         2
                                     
                                 </td>
                                 
+                                <td class="clickable-cell" 
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);"
+                                    onclick="showTeamTrades('lamjohnson56', 'ShadyCommish88')">
+                                    
+                                        4
+                                    
+                                </td>
+                                
                                 <td class="" 
                                     style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;"
                                     onclick="">
@@ -1886,10 +1755,10 @@
                                 </td>
                                 
                                 <td class="clickable-cell" 
-                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);"
+                                    style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);"
                                     onclick="showTeamTrades('lamjohnson56', 'emanueljd3')">
                                     
-                                        5
+                                        6
                                     
                                 </td>
                                 
@@ -2006,39 +1875,18 @@
         <!-- Timeline Panel -->
         <div class="visualization-panel" id="timeline-panel">
             <div class="panel-header">
-                <h2>📅 Trade History</h2>
+                <h2>📅 Trade Timeline</h2>
                 <p>Chronological view of all trades in the league</p>
             </div>
             <div class="panel-content">
-                <div class="trade-summary-section">
-                    <h3 style="color: #e0e0e0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                        <span>📊 Trading Performance Summary</span>
-                        <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
-                        <span id="firebase-status" style="margin-left: 10px; font-size: 0.8rem; color: #b0b0b0;"></span>
-                        <button onclick="testFirebaseConnection()" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Firebase</button>
-                        <button onclick="manualRefreshRatings()" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Force Refresh</button>
-                        <button onclick="debugFirebaseData()" style="background: #6f42c1; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Debug Data</button>
-                        <button onclick="testSummaryUpdate()" style="background: #fd7e14; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Summary</button>
-                    </h3>
-                    <div id="trading-summary-container" style="margin-bottom: 20px;">
-                        <!-- Trading summary will be populated here -->
-                    </div>
-                </div>
-                <div class="trade-filter-container">
-                    <label for="team-filter" style="color: #e0e0e0; margin-right: 10px;">Filter by Team:</label>
-                    <select id="team-filter" onchange="filterTradesByTeam()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px; margin-right: 10px;">
-                        <option value="">All Teams</option>
-                    </select>
-                    <button onclick="resetTradeFilter()" style="background: #606060; color: #e0e0e0; border: 1px solid #808080; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reset</button>
-                </div>
                 <div class="timeline-container">
-                    <!-- June 2025 Trades -->
+                    
                     <div class="trade-item">
-                        <div class="trade-date">2025-04-30 09:48 AM</div>
+                        <div class="trade-date">2025-06-16 04:18 PM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ ShadyCommish88</strong>
+                            <strong>Halteclere ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
-                                0 players, 4 picks
+                                2 players, 0 picks
                             </span>
                         </div>
                         <div class="trade-teams">
@@ -2049,7 +1897,684 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #6 (EBao's 2025 R1) - QUINSHON JUDKINS</li>
+                                    <li class="pick-item">📋 Halteclere's 2028 Round 1 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>Halteclere</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7526.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="JAYLEN WADDLE">
+                                        <span>JAYLEN WADDLE</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-16 01:13 AM</div>
+                        <div class="trade-summary">
+                            <strong>BaoDown ↔ lamjohnson56</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                4 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="WILL LEVIS">
+                                        <span>WILL LEVIS</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>BaoDown</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7527.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="MAC JONES">
+                                        <span>MAC JONES</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 08:21 PM</div>
+                        <div class="trade-summary">
+                            <strong>lamjohnson56 ↔ ShadyCommish88</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 ShadyCommish88's 2027 Round 3 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/11557.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="JOE MILTON">
+                                        <span>JOE MILTON</span>
+                                    </li>
+                                    
+                                    
+                                    <li class="pick-item">📋 lamjohnson56's 2026 Round 4 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 03:21 PM</div>
+                        <div class="trade-summary">
+                            <strong>BaoDown ↔ emanueljd3</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                4 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>BaoDown</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="WILL LEVIS">
+                                        <span>WILL LEVIS</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/2028.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="DEREK CARR">
+                                        <span>DEREK CARR</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 03:19 PM</div>
+                        <div class="trade-summary">
+                            <strong>ShadyCommish88 ↔ emanueljd3</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 emanueljd3's 2026 Round 2 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/4983.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="DJ MOORE">
+                                        <span>DJ MOORE</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 02:02 PM</div>
+                        <div class="trade-summary">
+                            <strong>lamjohnson56 ↔ emanueljd3</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                6 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7543.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="TRAVIS ETIENNE">
+                                        <span>TRAVIS ETIENNE</span>
+                                    </li>
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7670.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="JOSH PALMER">
+                                        <span>JOSH PALMER</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="WILL LEVIS">
+                                        <span>WILL LEVIS</span>
+                                    </li>
+                                    
+                                    
+                                    <li class="pick-item">📋 lamjohnson56's 2026 Round 3 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 12:29 PM</div>
+                        <div class="trade-summary">
+                            <strong>BaoDown ↔ emanueljd3</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>BaoDown</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 emanueljd3's 2027 Round 2 pick</li>
+                                    
+                                    <li class="pick-item">📋 emanueljd3's 2028 Round 2 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/4035.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="ALVIN KAMARA">
+                                        <span>ALVIN KAMARA</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-12 08:54 AM</div>
+                        <div class="trade-summary">
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>Halteclere</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/11628.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="MARVIN HARRISON">
+                                        <span>MARVIN HARRISON</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2026 Round 1 pick</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2027 Round 1 pick</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2027 Round 2 pick</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2028 Round 2 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-06-11 09:20 PM</div>
+                        <div class="trade-summary">
+                            <strong>ShadyCommish88 ↔ lamjohnson56</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                4 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/96.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="AARON RODGERS">
+                                        <span>AARON RODGERS</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/12520.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="XAVIER RESTREPO">
+                                        <span>XAVIER RESTREPO</span>
+                                    </li>
+                                    
+                                    
+                                    <li class="pick-item">📋 lamjohnson56's 2026 Round 4 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-05-02 08:44 PM</div>
+                        <div class="trade-summary">
+                            <strong>ShadyCommish88 ↔ emanueljd3</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 emanueljd3's 2027 Round 3 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/4950.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="CHRISTIAN KIRK">
+                                        <span>CHRISTIAN KIRK</span>
+                                    </li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-05-02 11:58 AM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #36 (emanueljd3's 2025 R4) - ELIJAH ARROYO</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 ShadyCommish88's 2027 Round 4 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-05-01 05:06 PM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 emanueljd3's 2027 Round 3 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>emanueljd3</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #29 (ShadyCommish88's 2025 R3) - TERRANCE FERGUSON</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-05-01 09:52 AM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #17 (ShadyCommish88's 2025 R2) - JALEN MILROE</li>
+                                    
+                                    <li class="pick-item">📋 Pick #26 (ShadyCommish88's 2025 R3) - ISAAC TESLAA</li>
+                                    
+                                    <li class="pick-item">📋 ShadyCommish88's 2026 Round 3 pick</li>
+                                    
+                                    <li class="pick-item">📋 ShadyCommish88's 2026 Round 4 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #14 (lamjohnson56's 2025 R2) - JAXSON DART</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-04-30 12:51 PM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>Halteclere</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #8 (ShadyCommish88's 2025 R1) - EMEKA EGBUKA</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #26 (Halteclere's 2025 R3) - ISAAC TESLAA</li>
+                                    
+                                    <li class="pick-item">📋 Pick #12 (Halteclere's 2025 R2) - RJ HARVEY</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2026 Round 2 pick</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2026 Round 3 pick</li>
+                                    
+                                    <li class="pick-item">📋 Halteclere's 2026 Round 4 pick</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-04-30 10:18 AM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #5 (androooooo's 2025 R1) - TETAIROA MCMILLAN</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>androooooo</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #6 (lamjohnson56's 2025 R1) - QUINSHON JUDKINS</li>
+                                    
+                                    <li class="pick-item">📋 Pick #16 (lamjohnson56's 2025 R2) - JAYDEN HIGGINS</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2025-04-30 09:48 AM</div>
+                        <div class="trade-summary">
+                            <strong></strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                0 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <ul class="asset-list">
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #6 (ShadyCommish88's 2025 R1) - QUINSHON JUDKINS</li>
                                     
                                     <li class="pick-item">📋 Pick #16 (ShadyCommish88's 2025 R2) - JAYDEN HIGGINS</li>
                                     
@@ -2065,14 +2590,13 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #4 (lamjohnson56's 2025 R1) - CAM WARD</li>
+                                    <li class="pick-item">📋 Pick #4 (lamjohnson56's 2025 R1) - CAMERON WARD</li>
                                     
                                 </ul>
                             </div>
                             
                             
                         </div>
-                    </div>
                     </div>
                     
                     <div class="trade-item">
@@ -2146,7 +2670,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2025-04-25 05:32 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -2250,7 +2774,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2025-04-22 07:22 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -2514,7 +3038,7 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #39 (emanueljd3's 2025 R4) - Unknown Player (12540)</li>
+                                    <li class="pick-item">📋 Pick #39 (emanueljd3's 2025 R4) - CHIMERE DIKE</li>
                                     
                                     <li class="pick-item">📋 Pick #21 (emanueljd3's 2025 R3) - JALEN ROYALS</li>
                                     
@@ -2662,7 +3186,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2025-01-09 06:40 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ tmjones212</strong>
+                            <strong>tmjones212 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -2717,7 +3241,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2025-01-01 04:24 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -2764,7 +3288,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 06:49 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -2821,7 +3345,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 06:16 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 8 players, 0 picks
                             </span>
@@ -2876,7 +3400,7 @@
                                     </li>
                                     
                                     
-                                    <li class="pick-item">📋 Pick #20 (androooooo's 2025 R2) - Unknown Player (12547)</li>
+                                    <li class="pick-item">📋 Pick #20 (androooooo's 2025 R2) - KYLE WILLIAMS</li>
                                     
                                 </ul>
                             </div>
@@ -2888,7 +3412,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 04:46 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ tmjones212</strong>
+                            <strong>tmjones212 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -2943,7 +3467,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 03:11 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -2986,7 +3510,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-10 09:17 PM</div>
                         <div class="trade-summary">
-                            <strong>EBao ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -3035,7 +3559,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-10 08:49 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -3084,7 +3608,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-12-03 12:38 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ EBao</strong>
+                            <strong>EBao ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -3160,7 +3684,7 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #39 (ShadyCommish88's 2025 R4) - Unknown Player (12540)</li>
+                                    <li class="pick-item">📋 Pick #39 (ShadyCommish88's 2025 R4) - CHIMERE DIKE</li>
                                     
                                     <li class="pick-item">📋 Pick #21 (ShadyCommish88's 2025 R3) - JALEN ROYALS</li>
                                     
@@ -3223,7 +3747,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 07:52 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -3266,7 +3790,7 @@
                                     
                                     <li class="pick-item">📋 Pick #29 (connerstafford11's 2025 R3) - TERRANCE FERGUSON</li>
                                     
-                                    <li class="pick-item">📋 Pick #39 (connerstafford11's 2025 R4) - Unknown Player (12540)</li>
+                                    <li class="pick-item">📋 Pick #39 (connerstafford11's 2025 R4) - CHIMERE DIKE</li>
                                     
                                 </ul>
                             </div>
@@ -3278,7 +3802,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 09:16 AM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -3325,7 +3849,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 07:26 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ EBao</strong>
+                            <strong>EBao ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -3417,7 +3941,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-07 09:57 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ emanueljd3 ↔ EBao</strong>
+                            <strong>ShadyCommish88 ↔ EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 12 players, 0 picks
                             </span>
@@ -3516,7 +4040,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-03 09:00 AM</div>
                         <div class="trade-summary">
-                            <strong>EBao ↔ Halteclere ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ Halteclere ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -3583,7 +4107,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-02 10:08 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -3638,7 +4162,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-11-01 08:40 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -3687,7 +4211,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-10-29 08:10 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -3834,7 +4358,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-10-16 02:56 PM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -3867,7 +4391,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-10-10 07:40 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -4012,7 +4536,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-09-21 06:15 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 12 players, 0 picks
                             </span>
@@ -4051,9 +4575,9 @@
                                     
                                     <li class="pick-item">📋 Pick #35 (ShadyCommish88's 2025 R4) - SAVION WILLIAMS</li>
                                     
-                                    <li class="pick-item">📋 Pick #30 (ShadyCommish88's 2025 R3) - Unknown Player (12545)</li>
+                                    <li class="pick-item">📋 Pick #30 (ShadyCommish88's 2025 R3) - TYLER SHOUGH</li>
                                     
-                                    <li class="pick-item">📋 Pick #40 (ShadyCommish88's 2025 R4) - Unknown Player (12574)</li>
+                                    <li class="pick-item">📋 Pick #40 (ShadyCommish88's 2025 R4) - ABDUL CARTER</li>
                                     
                                 </ul>
                             </div>
@@ -4146,7 +4670,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-09-15 03:50 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4179,7 +4703,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-08-28 11:23 AM</div>
                         <div class="trade-summary">
-                            <strong>EBao ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4212,7 +4736,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-08-26 03:38 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4243,7 +4767,7 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #40 (caviar89's 2025 R4) - Unknown Player (12574)</li>
+                                    <li class="pick-item">📋 Pick #40 (caviar89's 2025 R4) - ABDUL CARTER</li>
                                     
                                 </ul>
                             </div>
@@ -4255,7 +4779,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-08-26 03:12 PM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4333,7 +4857,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-08-21 10:35 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4415,7 +4939,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-07-24 05:41 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4501,7 +5025,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-07-21 07:59 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ EBao</strong>
+                            <strong>EBao ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4630,7 +5154,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-05-12 03:23 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -4689,7 +5213,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-05-11 01:31 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -4722,7 +5246,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-05-11 07:25 AM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ EBao</strong>
+                            <strong>EBao ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -5000,7 +5524,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-03-27 08:12 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5043,7 +5567,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-03-20 09:00 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 10 players, 0 picks
                             </span>
@@ -5118,7 +5642,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-01-26 04:19 AM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5204,7 +5728,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-01-24 08:18 AM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -5356,7 +5880,7 @@
                                     </li>
                                     
                                     
-                                    <li class="pick-item">📋 Pick #40 (emanueljd3's 2025 R4) - Unknown Player (12574)</li>
+                                    <li class="pick-item">📋 Pick #40 (emanueljd3's 2025 R4) - ABDUL CARTER</li>
                                     
                                 </ul>
                             </div>
@@ -5475,7 +5999,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-01-17 11:02 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5561,7 +6085,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2024-01-16 09:15 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 10 players, 0 picks
                             </span>
@@ -5636,7 +6160,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-29 04:54 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5669,7 +6193,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-28 08:10 PM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -5720,7 +6244,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 06:12 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5753,7 +6277,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 08:12 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5786,7 +6310,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 08:11 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5888,7 +6412,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-05 10:19 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -5921,7 +6445,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-11-04 10:30 AM</div>
                         <div class="trade-summary">
-                            <strong>tmjones212 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ tmjones212</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -6056,7 +6580,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-10-29 06:08 PM</div>
                         <div class="trade-summary">
-                            <strong>tmjones212 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ tmjones212</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -6099,7 +6623,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-10-24 11:04 AM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -6198,13 +6722,13 @@
                                 <ul class="asset-list">
                                     
                                     
-                                    <li class="pick-item">📋 Pick #8 (connerstafford11's 2024 R1) - JJ MCCARTHY</li>
+                                    <li class="pick-item">📋 Pick #8 (EBao's 2024 R1) - JJ MCCARTHY</li>
                                     
                                     <li class="pick-item">📋 Pick #27 (EBao's 2024 R3) - MARSHAWN LLOYD</li>
                                     
                                     <li class="pick-item">📋 Pick #10 (EBao's 2024 R1) - XAVIER WORTHY</li>
                                     
-                                    <li class="pick-item">📋 Pick #9 (mlum20's 2024 R1) - BRIAN THOMAS</li>
+                                    <li class="pick-item">📋 EBao's 2024 Round 1 pick</li>
                                     
                                 </ul>
                             </div>
@@ -6242,7 +6766,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-10-19 06:58 PM</div>
                         <div class="trade-summary">
-                            <strong>Halteclere ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ Halteclere</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -6332,7 +6856,7 @@
                                     
                                     <li class="pick-item">📋 Pick #22 (Previous Team 9's 2024 R3) - TROY FRANKLIN</li>
                                     
-                                    <li class="pick-item">📋 Pick #20 (caviar89's 2025 R2) - Unknown Player (12547)</li>
+                                    <li class="pick-item">📋 Pick #20 (caviar89's 2025 R2) - KYLE WILLIAMS</li>
                                     
                                     <li class="pick-item">📋 Previous Team 9's 2024 Round 4 pick</li>
                                     
@@ -6412,7 +6936,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-10-04 08:19 PM</div>
                         <div class="trade-summary">
-                            <strong>Halteclere ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ Halteclere</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -6656,7 +7180,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-06-22 01:40 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 8 players, 0 picks
                             </span>
@@ -6792,7 +7316,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-05-22 01:59 PM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -6886,7 +7410,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-05-19 08:07 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -6943,7 +7467,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-05-14 08:30 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ tmjones212</strong>
+                            <strong>tmjones212 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -7166,7 +7690,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-05-08 10:01 AM</div>
                         <div class="trade-summary">
-                            <strong>tmjones212 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ tmjones212</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -7418,7 +7942,7 @@
                                     
                                     <li class="pick-item">📋 Pick #26 (emanueljd3's 2024 R3) - ROMAN WILSON</li>
                                     
-                                    <li class="pick-item">📋 Pick #30 (emanueljd3's 2025 R3) - Unknown Player (12545)</li>
+                                    <li class="pick-item">📋 Pick #30 (emanueljd3's 2025 R3) - TYLER SHOUGH</li>
                                     
                                 </ul>
                             </div>
@@ -7448,7 +7972,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-04-09 07:04 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ caviar89</strong>
+                            <strong>caviar89 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -7648,7 +8172,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-03-21 02:08 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ tmjones212</strong>
+                            <strong>tmjones212 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -7740,7 +8264,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-01-04 10:00 PM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -7799,7 +8323,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2023-01-04 01:58 PM</div>
                         <div class="trade-summary">
-                            <strong>tmjones212 ↔ Halteclere</strong>
+                            <strong>Halteclere ↔ tmjones212</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -7909,7 +8433,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-12-07 09:35 AM</div>
                         <div class="trade-summary">
-                            <strong>EBao ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -7942,7 +8466,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-12-07 09:35 AM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -7991,7 +8515,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-12-01 04:40 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ EBao ↔ connerstafford11</strong>
+                            <strong>ShadyCommish88 ↔ connerstafford11 ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 10 players, 0 picks
                             </span>
@@ -8156,7 +8680,7 @@
                                     </li>
                                     
                                     
-                                    <li class="pick-item">📋 Pick #20 (emanueljd3's 2025 R2) - Unknown Player (12547)</li>
+                                    <li class="pick-item">📋 Pick #20 (emanueljd3's 2025 R2) - KYLE WILLIAMS</li>
                                     
                                 </ul>
                             </div>
@@ -8196,7 +8720,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-10-27 02:30 PM</div>
                         <div class="trade-summary">
-                            <strong>tmjones212 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ tmjones212</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -8245,7 +8769,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-10-25 12:52 PM</div>
                         <div class="trade-summary">
-                            <strong>EBao ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ EBao</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -8425,7 +8949,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 05:03 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 6 players, 0 picks
                             </span>
@@ -8488,7 +9012,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 02:29 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 8 players, 0 picks
                             </span>
@@ -8557,7 +9081,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 02:29 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ androooooo</strong>
+                            <strong>androooooo ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -8608,7 +9132,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-09-13 02:49 PM</div>
                         <div class="trade-summary">
-                            <strong>emanueljd3 ↔ EBao</strong>
+                            <strong>EBao ↔ emanueljd3</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -8659,7 +9183,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-09-08 01:45 PM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ connerstafford11</strong>
+                            <strong>connerstafford11 ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -8712,7 +9236,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-08-20 01:11 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ EBao</strong>
+                            <strong>EBao ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -8755,7 +9279,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-08-17 10:48 AM</div>
                         <div class="trade-summary">
-                            <strong>ShadyCommish88 ↔ BaoDown</strong>
+                            <strong>BaoDown ↔ ShadyCommish88</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 4 players, 0 picks
                             </span>
@@ -8977,7 +9501,7 @@
                     <div class="trade-item">
                         <div class="trade-date">2022-07-21 02:37 PM</div>
                         <div class="trade-summary">
-                            <strong>lamjohnson56 ↔ EBao</strong>
+                            <strong>EBao ↔ lamjohnson56</strong>
                             <span style="color: #666; margin-left: 20px;">
                                 2 players, 0 picks
                             </span>
@@ -9043,26 +9567,16 @@
             <div class="panel-header">
                 <h2>⚔️ League Matchups</h2>
                 <p>View matchup history across all years (2025, 2024, 2023, 2022)</p>
-                
-                <!-- Player Breakdown Info -->
-                <div style="margin: 20px 0; text-align: center;">
-                    <p style="font-size: 1.1rem; color: #667eea; font-weight: bold;">
-                        🎯 Click any matchup below to see detailed player breakdowns!
-                    </p>
-                    <p style="margin-top: 5px; font-size: 0.9rem; color: #b0b0b0;">
-                        View individual player points, roster positions, and bench performance
-                    </p>
-                </div>
             </div>
             <div class="panel-content">
                 <div class="search-container">
                     <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
                     <select id="matchupYearSelect" class="search-input" style="width: 200px;" onchange="showMatchupYear()">
-                        <option value="all">All Years</option>
+                        <option value="all" selected>All Years</option>
                         
                         <option value="2025" >2025</option>
                         
-                        <option value="2024" selected>2024</option>
+                        <option value="2024" >2024</option>
                         
                         <option value="2023" >2023</option>
                         
@@ -9184,7 +9698,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -9322,7 +9836,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">2</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -9460,7 +9974,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -9598,7 +10112,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">5</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -9736,7 +10250,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -9811,7 +10325,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -9825,7 +10339,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">2</span>
                                             </div>
                                         
                                     </td>
@@ -9839,7 +10353,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -9853,7 +10367,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">5</span>
                                             </div>
                                         
                                     </td>
@@ -9867,7 +10381,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -9888,7 +10402,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -9902,7 +10416,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">2</span>
                                             </div>
                                         
                                     </td>
@@ -9916,7 +10430,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">2</span>
                                             </div>
                                         
                                     </td>
@@ -9930,7 +10444,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">1</span>
                                             </div>
                                         
                                     </td>
@@ -10019,7 +10533,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -10157,7 +10671,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">2</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -10295,7 +10809,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">2</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -10433,7 +10947,7 @@
                                         
                                             
                                             <div style="font-size: 0.8rem;">
-                                                <span style="color: #4CAF50;">0</span>-<span style="color: #f44336;">0</span>
+                                                <span style="color: #4CAF50;">1</span>-<span style="color: #f44336;">0</span>
                                             </div>
                                         
                                     </td>
@@ -10830,7 +11344,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team winner" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">203.2</div>
                                         </div>
                                     </div>
@@ -10919,7 +11433,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">187.0</div>
                                         </div>
                                     </div>
@@ -11020,7 +11534,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">172.1</div>
                                         </div>
                                     </div>
@@ -11109,7 +11623,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">170.4</div>
                                         </div>
                                     </div>
@@ -11174,7 +11688,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">252.0</div>
                                         </div>
                                     </div>
@@ -11282,7 +11796,7 @@
                                     
                                     <div class="matchup-card" style="background: #404040; padding: 10px; margin: 5px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">159.7</div>
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
@@ -11340,7 +11854,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">133.1</div>
                                         </div>
                                     </div>
@@ -11453,7 +11967,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">223.1</div>
                                         </div>
                                     </div>
@@ -11506,7 +12020,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">166.1</div>
                                         </div>
                                     </div>
@@ -11631,7 +12145,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">136.0</div>
                                         </div>
                                     </div>
@@ -11720,7 +12234,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">179.8</div>
                                         </div>
                                     </div>
@@ -11821,7 +12335,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">142.1</div>
                                         </div>
                                     </div>
@@ -11910,7 +12424,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">236.8</div>
                                         </div>
                                     </div>
@@ -11975,7 +12489,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">164.4</div>
                                         </div>
                                     </div>
@@ -12088,7 +12602,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">147.0</div>
                                         </div>
                                     </div>
@@ -12165,7 +12679,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">186.3</div>
                                         </div>
                                     </div>
@@ -12254,7 +12768,7 @@
                                         </div>
                                         <div style="padding: 0 10px; color: #666;">vs</div>
                                         <div class="team loser" style="flex: 1; text-align: center;">
-                                            <div style="font-weight: bold;">Team 9</div>
+                                            <div style="font-weight: bold;">caviar89</div>
                                             <div style="font-size: 1.2rem; margin: 5px 0;">149.5</div>
                                         </div>
                                     </div>
@@ -15853,7 +16367,7 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
                     
-                    const response = await fetch(`http://localhost:5000/player_journey/${getLeagueIdForYear('2024')}/${encodeURIComponent(playerName)}`, {
+                    const response = await fetch(`http://localhost:5000/player_journey/1181025001438806016/${encodeURIComponent(playerName)}`, {
                         signal: controller.signal
                     });
                     clearTimeout(timeoutId);
@@ -16488,1098 +17002,6 @@
                 }
             });
         });
-
-        // Player Breakdown Functionality
-        let playerBreakdownsEnabled = true; // Always enabled
-
-        function loadMatchupBreakdowns() {
-            // Data is already loaded from matchup_breakdowns.js
-            if (typeof MATCHUP_BREAKDOWNS !== 'undefined') {
-                console.log('Loaded matchup breakdowns:', Object.keys(MATCHUP_BREAKDOWNS).length, 'weeks');
-                console.log('Available weeks:', Object.keys(MATCHUP_BREAKDOWNS));
-                return true;
-            } else {
-                console.error('MATCHUP_BREAKDOWNS not found - make sure matchup_breakdowns.js is loaded');
-                return false;
-            }
-        }
-
-        function togglePlayerBreakdowns() {
-            const toggleText = document.getElementById('breakdownToggleText');
-            const statusText = document.getElementById('breakdownStatusText');
-            
-            if (!playerBreakdownsEnabled) {
-                // Enable breakdowns
-                statusText.textContent = 'Loading breakdown data...';
-                
-                const loaded = loadMatchupBreakdowns();
-                if (loaded) {
-                    playerBreakdownsEnabled = true;
-                    toggleText.textContent = 'Disable';
-                    statusText.textContent = 'Click any matchup below to see detailed player breakdowns!';
-                    
-                    // Add click handlers to existing matchups
-                    addMatchupClickHandlers();
-                } else {
-                    statusText.textContent = 'Error loading breakdown data. Please try again.';
-                }
-            } else {
-                // Disable breakdowns
-                playerBreakdownsEnabled = false;
-                toggleText.textContent = 'Enable';
-                statusText.textContent = 'Click to enable clicking matchups for detailed player breakdowns';
-                
-                // Remove click handlers
-                removeMatchupClickHandlers();
-            }
-        }
-
-        function addMatchupClickHandlers() {
-            // Add click handlers to matchup cards
-            const cards = document.querySelectorAll('.matchup-card');
-            console.log('Found', cards.length, 'matchup cards to add handlers to');
-            cards.forEach(card => {
-                if (!card.dataset.hasBreakdownHandler) {
-                    card.style.cursor = 'pointer';
-                    card.style.transition = 'all 0.2s';
-                    card.addEventListener('click', handleMatchupClick);
-                    card.addEventListener('mouseover', () => {
-                        if (playerBreakdownsEnabled) {
-                            card.style.backgroundColor = 'rgba(102, 126, 234, 0.3)';
-                            card.style.transform = 'scale(1.02)';
-                        }
-                    });
-                    card.addEventListener('mouseout', () => {
-                        card.style.backgroundColor = '#404040';
-                        card.style.transform = 'scale(1)';
-                    });
-                    card.dataset.hasBreakdownHandler = 'true';
-                    
-                    // Add visual indicator that it's clickable
-                    if (playerBreakdownsEnabled) {
-                        card.style.border = '2px solid rgba(102, 126, 234, 0.4)';
-                    }
-                }
-            });
-        }
-
-        function removeMatchupClickHandlers() {
-            document.querySelectorAll('.matchup-card').forEach(card => {
-                card.style.cursor = '';
-                card.style.backgroundColor = '#404040';
-                card.style.transform = '';
-                card.style.border = '';
-                card.removeEventListener('click', handleMatchupClick);
-                delete card.dataset.hasBreakdownHandler;
-            });
-        }
-
-        function handleMatchupClick(event) {
-            if (!playerBreakdownsEnabled) return;
-            
-            const card = event.currentTarget;
-            
-            // Extract team names from the matchup card structure
-            const teamDivs = card.querySelectorAll('.team');
-            if (teamDivs.length !== 2) {
-                console.log('Could not find 2 teams in matchup card');
-                return;
-            }
-            
-            const team1Name = teamDivs[0].querySelector('div').textContent.trim();
-            const team2Name = teamDivs[1].querySelector('div').textContent.trim();
-            
-            // Extract week from the parent week-card
-            const weekCard = card.closest('.week-card');
-            if (!weekCard) {
-                console.log('Could not find parent week card');
-                return;
-            }
-            
-            const weekHeader = weekCard.querySelector('h4');
-            if (!weekHeader) {
-                console.log('Could not find week header');
-                return;
-            }
-            
-            const weekText = weekHeader.textContent;
-            const weekMatch = weekText.match(/Week (\d+)/);
-            
-            if (!weekMatch) {
-                console.log('Could not extract week number from:', weekText);
-                return;
-            }
-            
-            const week = parseInt(weekMatch[1]);
-            
-            // Extract scores to help identify the exact matchup
-            const scores = [];
-            const scoreDivs = card.querySelectorAll('.team > div:nth-child(2)');
-            scoreDivs.forEach(div => {
-                scores.push(parseFloat(div.textContent));
-            });
-            
-            console.log(`Clicked matchup: ${team1Name} vs ${team2Name}, Week ${week}, Scores:`, scores);
-            
-            // Try to find matchup_id from breakdown data
-            // First, find the year from the parent year-matchups container
-            const yearMatchupsContainer = card.closest('.year-matchups');
-            let year = '2024'; // Default year
-            
-            if (yearMatchupsContainer && yearMatchupsContainer.dataset.year) {
-                year = yearMatchupsContainer.dataset.year;
-                console.log('Found year from container:', year);
-            } else {
-                console.warn('Could not find year-matchups container, defaulting to 2024');
-            }
-            
-            // Get the league ID for this year
-            const leagueId = getLeagueIdForYear(year) || '1048308938824937472';
-            console.log('Using year:', year, '-> leagueId:', leagueId);
-            
-            const cacheKey = `${leagueId}_${week}`;
-            console.log('Looking for cache key:', cacheKey);
-            const weekData = MATCHUP_BREAKDOWNS[cacheKey];
-            console.log('Found week data:', weekData ? `${weekData.length} teams` : 'NOT FOUND');
-            let matchupId = null;
-            
-            if (weekData) {
-                // Find teams that match the clicked team names and have the same matchup_id
-                const matchingTeams = weekData.filter(team => 
-                    team.team_name === team1Name || team.team_name === team2Name
-                );
-                console.log('Looking for teams:', [team1Name, team2Name]);
-                console.log('Available teams:', weekData.map(t => t.team_name));
-                console.log('Matching teams found:', matchingTeams.length);
-                
-                if (matchingTeams.length >= 2) {
-                    // Find common matchup_id
-                    const team1Data = matchingTeams.find(t => t.team_name === team1Name);
-                    const team2Data = matchingTeams.find(t => t.team_name === team2Name);
-                    
-                    if (team1Data && team2Data && team1Data.matchup_id === team2Data.matchup_id) {
-                        matchupId = team1Data.matchup_id;
-                        console.log('Found matchup_id:', matchupId);
-                    }
-                }
-            }
-            
-            showMatchupBreakdownModal(leagueId, week, [team1Name, team2Name], scores, matchupId);
-        }
-
-        function showMatchupBreakdownModal(leagueId, week, teams, scores, matchupId) {
-            console.log('showMatchupBreakdownModal called with:', leagueId, week, teams, scores, matchupId);
-            
-            // Create and show modal
-            let modal = document.getElementById('playerBreakdownModal');
-            if (!modal) {
-                console.log('Creating new modal');
-                modal = createBreakdownModal();
-            }
-            
-            const modalContent = modal.querySelector('.breakdown-modal-content');
-            modalContent.innerHTML = '<div class="breakdown-loading">Loading player breakdown...</div>';
-            modal.style.display = 'block';
-            // Force display with important flag
-            modal.style.setProperty('display', 'block', 'important');
-            console.log('Modal should be visible now');
-            console.log('Modal display style:', modal.style.display);
-            console.log('Modal in DOM:', document.contains(modal));
-            console.log('Modal element:', modal);
-            
-            // Find breakdown data
-            const cacheKey = `${leagueId}_${week}`;
-            console.log('Looking for cache key:', cacheKey);
-            const weekData = MATCHUP_BREAKDOWNS[cacheKey];
-            console.log('Found week data:', weekData ? weekData.length + ' teams' : 'null');
-            
-            if (!weekData) {
-                modalContent.innerHTML = '<div class="breakdown-error">No breakdown data available for this week<br>Cache key: ' + cacheKey + '</div>';
-                return;
-            }
-            
-            // Find the specific matchup by matchup_id (much more reliable than score matching)
-            console.log('Looking for teams:', teams, 'matchupId:', matchupId);
-            
-            let matchupTeams = [];
-            
-            if (matchupId) {
-                // Use matchup_id directly (most reliable)
-                matchupTeams = weekData.filter(team => team.matchup_id === parseInt(matchupId));
-                console.log('Found teams by matchup_id:', matchupTeams.length);
-            } else {
-                // Fallback to score matching if no matchup_id provided
-                const matchupGroups = {};
-                
-                // Group by matchup_id
-                weekData.forEach(team => {
-                    const teamMatchupId = team.matchup_id;
-                    if (!matchupGroups[teamMatchupId]) {
-                        matchupGroups[teamMatchupId] = [];
-                    }
-                    matchupGroups[teamMatchupId].push(team);
-                });
-                
-                // Find the matchup with matching scores
-                if (scores && scores.length === 2) {
-                    for (const teamMatchupId in matchupGroups) {
-                        const matchup = matchupGroups[teamMatchupId];
-                        if (matchup.length === 2) {
-                            const matchupScores = matchup.map(t => t.total_points);
-                            // Check if scores match (in either order)
-                            if ((Math.abs(matchupScores[0] - scores[0]) < 0.1 && Math.abs(matchupScores[1] - scores[1]) < 0.1) ||
-                                (Math.abs(matchupScores[0] - scores[1]) < 0.1 && Math.abs(matchupScores[1] - scores[0]) < 0.1)) {
-                                matchupTeams = matchup;
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                if (matchupTeams.length === 0) {
-                    console.log('Could not find matchup by scores, using first matchup');
-                    matchupTeams = Object.values(matchupGroups)[0] || [];
-                }
-            }
-            
-            console.log('Found matchup teams:', matchupTeams);
-            
-            // Pass the actual team names from the clicked matchup
-            modalContent.innerHTML = generateBreakdownHTML(matchupTeams, week, teams);
-        }
-
-        function createBreakdownModal() {
-            const modal = document.createElement('div');
-            modal.id = 'playerBreakdownModal';
-            modal.style.cssText = `
-                position: fixed;
-                z-index: 10000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.8);
-                overflow-y: auto;
-                display: none;
-            `;
-            modal.innerHTML = `
-                    <div class="breakdown-modal-content" style="
-                        background-color: #2d2d2d;
-                        margin: 50px auto;
-                        padding: 20px;
-                        border-radius: 15px;
-                        width: 90%;
-                        max-width: 1200px;
-                        color: #e0e0e0;
-                        position: relative;
-                    ">
-                        <span onclick="closeBreakdownModal()" style="
-                            color: #aaa;
-                            float: right;
-                            font-size: 28px;
-                            font-weight: bold;
-                            cursor: pointer;
-                            padding: 10px;
-                        ">&times;</span>
-                        <!-- Content will be loaded here -->
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            return modal;
-        }
-
-        function generateBreakdownHTML(teams, week, teamNames) {
-            if (!teams || teams.length === 0) {
-                return '<div class="breakdown-error">No team data available</div>';
-            }
-            
-            let html = `
-                <h2 style="color: #e0e0e0; margin-bottom: 20px;">Week ${week} Player Breakdown</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-            `;
-            
-            teams.forEach((team, index) => {
-                // Calculate actual bench points
-                const actualBenchPoints = team.bench.reduce((sum, player) => sum + player.points, 0);
-                // Use the team names from the clicked matchup
-                const teamName = (teamNames && teamNames[index]) ? teamNames[index] : `Roster ${team.roster_id}`;
-                
-                html += `
-                    <div style="border: 1px solid #555; border-radius: 10px; padding: 15px;">
-                        <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">
-                            ${teamName} - ${team.total_points.toFixed(1)} pts
-                        </h3>
-                        
-                        <div style="background: #404040; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
-                            <strong>Starters: ${team.starter_points.toFixed(1)} | Bench: ${actualBenchPoints.toFixed(1)}</strong>
-                        </div>
-                        
-                        <h4 style="color: #667eea; margin-bottom: 10px;">Starters</h4>
-                        <div style="margin-bottom: 20px;">
-                `;
-                
-                team.starters.forEach(player => {
-                    html += `
-                        <div style="display: grid; grid-template-columns: 50px 1fr 40px 50px; gap: 10px; padding: 5px; background: #404040; margin-bottom: 2px; border-radius: 3px; align-items: center;">
-                            <span style="background: #667eea; color: white; padding: 2px 4px; border-radius: 3px; font-size: 12px; text-align: center;">${player.roster_slot}</span>
-                            <span>${player.name}</span>
-                            <span style="font-size: 12px; color: #aaa;">${player.position}</span>
-                            <span style="font-weight: bold; text-align: right; color: #4CAF50;">${player.points.toFixed(1)}</span>
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                        <h4 style="color: #667eea; margin-bottom: 10px;">Bench</h4>
-                        <div>
-                `;
-                
-                team.bench.slice(0, 8).forEach(player => { // Show top 8 bench players
-                    html += `
-                        <div style="display: grid; grid-template-columns: 50px 1fr 40px 50px; gap: 10px; padding: 5px; background: #353535; margin-bottom: 2px; border-radius: 3px; align-items: center;">
-                            <span style="background: #666; color: white; padding: 2px 4px; border-radius: 3px; font-size: 12px; text-align: center;">BN</span>
-                            <span>${player.name}</span>
-                            <span style="font-size: 12px; color: #aaa;">${player.position}</span>
-                            <span style="font-weight: bold; text-align: right; color: #4CAF50;">${player.points.toFixed(1)}</span>
-                        </div>
-                    `;
-                });
-                
-                html += '</div></div>';
-            });
-            
-            html += '</div>';
-            return html;
-        }
-
-        function closeBreakdownModal() {
-            const modal = document.getElementById('playerBreakdownModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Close modal when clicking outside
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('playerBreakdownModal');
-            if (event.target === modal) {
-                closeBreakdownModal();
-            }
-        });
-        
-        // Initialize matchup handlers after page loads
-        setTimeout(() => {
-            if (loadMatchupBreakdowns()) {
-                console.log('Initializing matchup click handlers...');
-                addMatchupClickHandlers();
-            }
-        }, 2000);
-
-        // Trade History Functions
-
-        // Initialize trade history on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            initializeTradeHistory();
-        });
-
-        function initializeTradeHistory() {
-            populateTeamFilter();
-            addTradingGradersToAllTrades();
-            loadTradeGrades();
-            generateTradingSummary(); // This will show loading message initially
-            
-            // Load Firebase data immediately for league consensus
-            if (db) {
-                console.log('🚀 Loading Firebase data for league consensus...');
-                loadAverageRatings();
-            } else {
-                console.log('❌ No Firebase connection - only showing local data');
-            }
-        }
-
-        function addTradingGradersToAllTrades() {
-            const tradeItems = document.querySelectorAll('.trade-item');
-            
-            tradeItems.forEach((tradeItem, index) => {
-                // Skip if already has a grader
-                if (tradeItem.querySelector('.trade-grade-container')) {
-                    return;
-                }
-
-                // Get team names for this trade
-                const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-                const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
-                const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
-
-                // Create the grading container
-                const gradeContainer = document.createElement('div');
-                gradeContainer.className = 'trade-grade-container';
-                gradeContainer.innerHTML = `
-                    <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
-                    <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
-                           id="trade-grade-${index}" onchange="updateTradeGrade(${index}, this.value)">
-                    <div class="trade-grade-labels">
-                        <span>${leftTeam} Won</span>
-                        <span>Even</span>
-                        <span>${rightTeam} Won</span>
-                    </div>
-                    <div class="trade-grade-result" id="trade-result-${index}">Even Trade</div>
-                `;
-
-                // Add it to the trade item
-                tradeItem.appendChild(gradeContainer);
-            });
-        }
-
-        function populateTeamFilter() {
-            const teamFilter = document.getElementById('team-filter');
-            if (!teamFilter) return;
-
-            // Get all team names from the trade items
-            const tradeItems = document.querySelectorAll('.trade-item');
-            const teams = new Set();
-
-            tradeItems.forEach(item => {
-                const teamHeaders = item.querySelectorAll('.team-side h4');
-                teamHeaders.forEach(header => {
-                    const teamName = header.textContent.trim();
-                    if (teamName) teams.add(teamName);
-                });
-            });
-
-            // Sort teams alphabetically
-            const sortedTeams = Array.from(teams).sort();
-
-            // Add options to select
-            sortedTeams.forEach(team => {
-                const option = document.createElement('option');
-                option.value = team;
-                option.textContent = team;
-                teamFilter.appendChild(option);
-            });
-        }
-
-        function filterTradesByTeam() {
-            const selectedTeam = document.getElementById('team-filter').value;
-            const tradeItems = document.querySelectorAll('.trade-item');
-
-            tradeItems.forEach(item => {
-                if (!selectedTeam) {
-                    // Show all trades
-                    item.style.display = 'block';
-                } else {
-                    // Check if the selected team is involved in this trade
-                    const teamHeaders = item.querySelectorAll('.team-side h4');
-                    let teamInvolved = false;
-
-                    teamHeaders.forEach(header => {
-                        if (header.textContent.trim() === selectedTeam) {
-                            teamInvolved = true;
-                        }
-                    });
-
-                    item.style.display = teamInvolved ? 'block' : 'none';
-                }
-            });
-        }
-
-        function resetTradeFilter() {
-            const teamFilter = document.getElementById('team-filter');
-            teamFilter.value = '';
-            filterTradesByTeam();
-        }
-
-        function updateTradeGrade(tradeIndex, value) {
-            // Set flag to prevent real-time listener interference
-            isUserChangingSlider = true;
-            
-            const gradeValue = parseInt(value);
-            const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
-            
-            // Get team names from the trade item
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
-            const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-            const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
-            const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
-
-            let gradeText, gradeColor;
-
-            if (gradeValue < 20) {
-                gradeText = `Strong Win for ${leftTeam}`;
-                gradeColor = "#ff4444";
-            } else if (gradeValue < 40) {
-                gradeText = `Slight Win for ${leftTeam}`;
-                gradeColor = "#ffaa00";
-            } else if (gradeValue < 60) {
-                gradeText = "Even Trade";
-                gradeColor = "#999999";
-            } else if (gradeValue < 80) {
-                gradeText = `Slight Win for ${rightTeam}`;
-                gradeColor = "#66bb6a";
-            } else {
-                gradeText = `Strong Win for ${rightTeam}`;
-                gradeColor = "#44ff44";
-            }
-
-            if (resultElement) {
-                resultElement.textContent = gradeText;
-                resultElement.style.color = gradeColor;
-            }
-
-            // Save the grade to localStorage
-            saveTradeGrade(tradeIndex, gradeValue);
-            
-            // Save to Firebase if available
-            const userName = getUserName();
-            if (userName) {
-                saveTradeGradeToFirebase(tradeIndex, gradeValue, userName);
-            }
-            
-            // Refresh the trading summary
-            generateTradingSummary();
-            
-            // Clear the flag after a short delay to allow Firebase write to complete
-            setTimeout(() => {
-                isUserChangingSlider = false;
-            }, 1000);
-        }
-
-        function saveTradeGrade(tradeIndex, gradeValue) {
-            try {
-                const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
-                grades[tradeIndex] = gradeValue;
-                localStorage.setItem('tradeGrades', JSON.stringify(grades));
-            } catch (error) {
-                console.error('Error saving trade grade:', error);
-            }
-        }
-
-        function loadTradeGrades() {
-            try {
-                const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
-                
-                Object.keys(grades).forEach(tradeIndex => {
-                    const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                    if (slider) {
-                        slider.value = grades[tradeIndex];
-                        // Use display-only function to avoid infinite loop
-                        updateTradeGradeDisplay(tradeIndex, grades[tradeIndex], 1);
-                    }
-                });
-            } catch (error) {
-                console.error('Error loading trade grades:', error);
-            }
-        }
-
-        function generateTradingSummary() {
-            console.log('🏗️ generateTradingSummary called');
-            console.log('🏗️ window.leagueAverageRatings:', window.leagueAverageRatings);
-            
-            const teamStats = calculateTeamTradingStats();
-            const summaryContainer = document.getElementById('trading-summary-container');
-            
-            console.log('🏗️ teamStats calculated:', teamStats);
-            console.log('🏗️ summaryContainer found:', !!summaryContainer);
-            
-            if (!summaryContainer) {
-                console.log('🏗️ Summary container not found');
-                return;
-            }
-            
-            if (Object.keys(teamStats).length === 0) {
-                // Check if we have Firebase connection but no data yet
-                if (db && !window.leagueAverageRatings) {
-                    summaryContainer.innerHTML = '<p style="color: #667eea; text-align: center; padding: 20px;">📡 Loading league consensus data...</p>';
-                } else if (!db) {
-                    summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Firebase not connected. Summary unavailable.</p>';
-                } else {
-                    summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No league ratings available yet. Grade some trades to see team performance!</p>';
-                }
-                console.log('🏗️ No team stats found, showing loading/no data message');
-                return;
-            }
-
-            // Sort teams by overall score (descending)
-            const sortedTeams = Object.entries(teamStats).sort((a, b) => b[1].averageScore - a[1].averageScore);
-
-            // Count total ratings
-            const totalRatings = Object.values(window.leagueAverageRatings).reduce((sum, ratings) => sum + ratings.length, 0);
-            const totalTrades = Object.keys(window.leagueAverageRatings).length;
-
-            let html = `
-                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #0066cc; border-radius: 10px; color: white;">
-                    <h4 style="margin: 0 0 5px 0;">🏆 League Consensus Summary</h4>
-                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">${totalRatings} total ratings across ${totalTrades} trades by all league members</p>
-                </div>
-                <div class="trading-summary-grid">`;
-            
-            sortedTeams.forEach(([teamName, stats]) => {
-                const gradeClass = getGradeClass(stats.averageScore);
-                const gradeText = getGradeText(stats.averageScore);
-                
-                html += `
-                    <div class="team-summary-card">
-                        <div class="team-name-header">${teamName}</div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Total Trades:</span>
-                            <span class="stat-value">${stats.totalTrades}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Big Wins:</span>
-                            <span class="stat-value" style="color: #44ff44;">${stats.bigWins}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Slight Wins:</span>
-                            <span class="stat-value" style="color: #66bb6a;">${stats.slightWins}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Even Trades:</span>
-                            <span class="stat-value" style="color: #999999;">${stats.evenTrades}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Slight Losses:</span>
-                            <span class="stat-value" style="color: #ffaa00;">${stats.slightLosses}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Big Losses:</span>
-                            <span class="stat-value" style="color: #ff4444;">${stats.bigLosses}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Win Rate:</span>
-                            <span class="stat-value">${stats.winRate}%</span>
-                        </div>
-                        <div class="overall-grade ${gradeClass}">${gradeText}</div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            summaryContainer.innerHTML = html;
-        }
-
-        function calculateTeamTradingStats() {
-            // ALWAYS use league average ratings for summary, never localStorage
-            const grades = window.leagueAverageRatings || {};
-            const isUsingLeagueData = !!window.leagueAverageRatings;
-            
-            console.log(`📊 Calculating team stats using ${isUsingLeagueData ? 'league average' : 'NO'} data:`, grades);
-            
-            // If no league data is available, don't show any summary
-            if (!isUsingLeagueData || Object.keys(grades).length === 0) {
-                console.log('📊 No league data available for summary');
-                return {};
-            }
-            
-            const teamStats = {};
-
-            // Initialize stats for all teams
-            const tradeItems = document.querySelectorAll('.trade-item');
-            tradeItems.forEach(item => {
-                const teamHeaders = item.querySelectorAll('.team-side h4');
-                teamHeaders.forEach(header => {
-                    const teamName = header.textContent.trim();
-                    if (teamName && !teamStats[teamName]) {
-                        teamStats[teamName] = {
-                            totalTrades: 0,
-                            bigWins: 0,
-                            slightWins: 0,
-                            evenTrades: 0,
-                            slightLosses: 0,
-                            bigLosses: 0,
-                            totalScore: 0,
-                            averageScore: 50,
-                            winRate: 0
-                        };
-                    }
-                });
-            });
-
-            // Process each graded trade
-            Object.entries(grades).forEach(([tradeIndex, gradeData]) => {
-                const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
-                if (!tradeItem) return;
-
-                const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-                const leftTeam = teamHeaders[0]?.textContent.trim();
-                const rightTeam = teamHeaders[1]?.textContent.trim();
-
-                if (!leftTeam || !rightTeam) return;
-
-                // Handle both array (league data) and single value (personal data)
-                let gradeValue;
-                if (Array.isArray(gradeData)) {
-                    // League data - calculate average
-                    gradeValue = gradeData.reduce((a, b) => a + b, 0) / gradeData.length;
-                } else {
-                    // Personal data - use directly
-                    gradeValue = gradeData;
-                }
-
-                // Update stats for both teams
-                [leftTeam, rightTeam].forEach(teamName => {
-                    if (!teamStats[teamName]) return;
-                    
-                    teamStats[teamName].totalTrades++;
-                    
-                    // Determine the result for this team
-                    let teamScore;
-                    if (teamName === leftTeam) {
-                        teamScore = 100 - gradeValue; // Invert for left team
-                    } else {
-                        teamScore = gradeValue; // Direct for right team
-                    }
-                    
-                    teamStats[teamName].totalScore += teamScore;
-                    
-                    // Categorize the result
-                    if (teamScore >= 80) teamStats[teamName].bigWins++;
-                    else if (teamScore >= 60) teamStats[teamName].slightWins++;
-                    else if (teamScore >= 40) teamStats[teamName].evenTrades++;
-                    else if (teamScore >= 20) teamStats[teamName].slightLosses++;
-                    else teamStats[teamName].bigLosses++;
-                });
-            });
-
-            // Calculate averages and win rates
-            Object.values(teamStats).forEach(stats => {
-                if (stats.totalTrades > 0) {
-                    stats.averageScore = stats.totalScore / stats.totalTrades;
-                    stats.winRate = Math.round(((stats.bigWins + stats.slightWins) / stats.totalTrades) * 100);
-                }
-            });
-
-            return teamStats;
-        }
-
-        function getGradeClass(averageScore) {
-            if (averageScore >= 70) return 'grade-excellent';
-            if (averageScore >= 60) return 'grade-good';
-            if (averageScore >= 40) return 'grade-average';
-            if (averageScore >= 30) return 'grade-poor';
-            return 'grade-terrible';
-        }
-
-        function getGradeText(averageScore) {
-            if (averageScore >= 70) return '🏆 Excellent Trader';
-            if (averageScore >= 60) return '👍 Good Trader';
-            if (averageScore >= 40) return '😐 Average Trader';
-            if (averageScore >= 30) return '👎 Poor Trader';
-            return '💸 Terrible Trader';
-        }
-
-        function refreshTradingSummary() {
-            generateTradingSummary();
-        }
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCyPZgFFjuWcjop2MkhqUeE70iH9WBvsVQ",
-            authDomain: "easypickens-95989.firebaseapp.com",
-            projectId: "easypickens-95989",
-            storageBucket: "easypickens-95989.firebasestorage.app",
-            messagingSenderId: "732973559000",
-            appId: "1:732973559000:web:6c1da5da08ce39ed3d3bad"
-        };
-
-        // Initialize Firebase (only if config is provided)
-        let db = null;
-        if (firebaseConfig.apiKey) {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-                document.getElementById('firebase-status').textContent = '🔗 Real-time sync enabled';
-                console.log('✅ Firebase initialized successfully');
-            } catch (error) {
-                console.error('❌ Firebase initialization failed:', error);
-                document.getElementById('firebase-status').textContent = '❌ Firebase connection failed';
-            }
-        } else {
-            document.getElementById('firebase-status').textContent = '💾 Local storage only';
-        }
-
-        function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
-            if (!db) {
-                console.log('❌ Firebase not configured, using localStorage only');
-                return;
-            }
-
-            try {
-                // Get trade info
-                const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
-                const dateElement = tradeItem?.querySelector('.trade-date');
-                const summaryElement = tradeItem?.querySelector('.trade-summary strong');
-                
-                const tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
-                
-                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}`);
-                
-                db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
-                    rating: gradeValue,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    tradeIndex: tradeIndex,
-                    userName: userName
-                }).then(() => {
-                    console.log('✅ Rating saved to Firebase successfully');
-                }).catch((error) => {
-                    console.error('❌ Error saving to Firebase:', error);
-                });
-                
-            } catch (error) {
-                console.error('❌ Error in saveTradeGradeToFirebase:', error);
-            }
-        }
-
-        // Flag to prevent infinite loops during user input
-        let isUserChangingSlider = false;
-
-        function loadAverageRatings() {
-            if (!db) {
-                console.log('❌ No database connection for loading ratings');
-                return;
-            }
-
-            console.log('🔄 Loading ratings (real-time disabled to prevent loops)...');
-            
-            // Instead of real-time listener, just load once
-            manualRefreshRatings();
-            
-            // Set up periodic refresh every 30 seconds (optional)
-            setInterval(() => {
-                if (!isUserChangingSlider) {
-                    console.log('🔄 Periodic refresh...');
-                    manualRefreshRatings(true); // Silent refresh
-                }
-            }, 30000);
-        }
-
-        function updateTradeGradeDisplay(tradeIndex, averageValue, numRatings) {
-            const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
-            
-            // Get team names
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
-            const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-            const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
-            const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
-
-            let gradeText, gradeColor;
-
-            if (averageValue < 20) {
-                gradeText = `Strong Win for ${leftTeam}`;
-                gradeColor = "#ff4444";
-            } else if (averageValue < 40) {
-                gradeText = `Slight Win for ${leftTeam}`;
-                gradeColor = "#ffaa00";
-            } else if (averageValue < 60) {
-                gradeText = "Even Trade";
-                gradeColor = "#999999";
-            } else if (averageValue < 80) {
-                gradeText = `Slight Win for ${rightTeam}`;
-                gradeColor = "#66bb6a";
-            } else {
-                gradeText = `Strong Win for ${rightTeam}`;
-                gradeColor = "#44ff44";
-            }
-
-            if (resultElement) {
-                resultElement.innerHTML = `${gradeText}<br><small style="color: #b0b0b0;">(${numRatings} rating${numRatings !== 1 ? 's' : ''})</small>`;
-                resultElement.style.color = gradeColor;
-            }
-        }
-
-        function getUserName() {
-            let userName = localStorage.getItem('tradeRaterName');
-            if (!userName) {
-                userName = prompt('Enter your name (this will be saved for future ratings):');
-                if (userName) {
-                    localStorage.setItem('tradeRaterName', userName);
-                }
-            }
-            return userName;
-        }
-
-        function testFirebaseConnection() {
-            if (!db) {
-                alert('❌ Firebase not connected');
-                return;
-            }
-
-            const testData = {
-                test: true,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                user: getUserName()
-            };
-
-            console.log('🧪 Testing Firebase write...');
-            
-            db.collection('test').doc('connection').set(testData)
-                .then(() => {
-                    console.log('✅ Firebase write test successful');
-                    alert('✅ Firebase connection working!');
-                })
-                .catch((error) => {
-                    console.error('❌ Firebase write test failed:', error);
-                    alert('❌ Firebase write failed: ' + error.message);
-                });
-        }
-
-        function debugFirebaseData() {
-            if (!db) {
-                alert('❌ Firebase not connected');
-                return;
-            }
-
-            console.log('🔍 Debugging Firebase data structure...');
-            
-            // First check the main collection
-            db.collection('tradeRatings').get().then(snapshot => {
-                console.log(`🗂️ Found ${snapshot.size} trade documents in main collection`);
-                
-                if (snapshot.size === 0) {
-                    console.log('🔍 No documents in main collection, checking for ratings using collectionGroup...');
-                    
-                    // Use collectionGroup to find all ratings across all subcollections
-                    db.collectionGroup('ratings').get().then(ratingsSnapshot => {
-                        console.log(`📊 Found ${ratingsSnapshot.size} ratings total using collectionGroup`);
-                        
-                        ratingsSnapshot.forEach(ratingDoc => {
-                            console.log(`   👤 Rating document:`, ratingDoc.data());
-                            console.log(`   📂 Parent path:`, ratingDoc.ref.parent.parent.path);
-                            console.log(`   📂 Parent ID:`, ratingDoc.ref.parent.parent.id);
-                        });
-                    });
-                } else {
-                    snapshot.forEach(tradeDoc => {
-                        console.log(`📄 Trade document ID: ${tradeDoc.id}`);
-                        console.log(`📄 Trade document data:`, tradeDoc.data());
-                        
-                        // Check for ratings subcollection
-                        tradeDoc.ref.collection('ratings').get().then(ratingsSnapshot => {
-                            console.log(`📋 Trade ${tradeDoc.id} has ${ratingsSnapshot.size} ratings:`);
-                            ratingsSnapshot.forEach(ratingDoc => {
-                                console.log(`   👤 Rating by ${ratingDoc.id}:`, ratingDoc.data());
-                            });
-                        });
-                    });
-                }
-            });
-        }
-
-        function manualRefreshRatings(silent = false) {
-            console.log('🔄 Manually refreshing ratings from Firebase...');
-            if (db) {
-                const currentUser = getUserName();
-                
-                // Use collectionGroup to get all ratings directly
-                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
-                    console.log(`📊 Manual refresh: found ${ratingsSnapshot.size} ratings`);
-                    
-                    const allRatings = {}; // Everyone's ratings for summary
-                    const userRatings = {}; // This user's ratings for sliders
-
-                    ratingsSnapshot.forEach(ratingDoc => {
-                        const data = ratingDoc.data();
-                        const tradeIndex = data.tradeIndex;
-                        const userName = data.userName;
-                        const rating = data.rating;
-                        
-                        if (!silent) console.log(`   🎯 Rating data:`, data);
-                        
-                        if (tradeIndex !== undefined && tradeIndex !== null) {
-                            // Collect all ratings for summary
-                            if (!allRatings[tradeIndex]) {
-                                allRatings[tradeIndex] = [];
-                            }
-                            allRatings[tradeIndex].push(rating);
-                            
-                            // Collect this user's ratings for sliders
-                            if (userName === currentUser) {
-                                userRatings[tradeIndex] = rating;
-                            }
-                        } else {
-                            console.log(`❌ Rating missing tradeIndex:`, data);
-                        }
-                    });
-
-                    console.log('📈 All ratings for summary:', allRatings);
-                    console.log('👤 Current user ratings for sliders:', userRatings);
-
-                    // Update individual sliders with THIS USER's ratings only (without saving)
-                    Object.entries(userRatings).forEach(([tradeIndex, rating]) => {
-                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                        if (slider) {
-                            if (!silent) console.log(`🎯 Setting slider ${tradeIndex} to user's rating: ${rating}`);
-                            slider.value = rating;
-                            // Update display only, don't save to Firebase to prevent infinite loop
-                            updateTradeGradeDisplay(tradeIndex, rating, 1);
-                        }
-                    });
-
-                    // Update summary section with EVERYONE's averaged ratings
-                    updateSummaryWithAverages(allRatings);
-                    
-                    // Removed annoying popup - manual refresh complete notification
-                }).catch(error => {
-                    console.error('❌ Manual refresh failed:', error);
-                    // Removed annoying error popup - errors logged to console instead
-                });
-            } else {
-                // Removed annoying Firebase connection popup - errors logged to console instead
-            }
-        }
-
-        function updateSummaryWithAverages(allRatings) {
-            // This will update the summary section to show league consensus
-            console.log('📊 Updating summary with averaged ratings from all users:', allRatings);
-            
-            // Store the averaged ratings for the summary calculation
-            window.leagueAverageRatings = allRatings;
-            
-            console.log('🔄 Calling generateTradingSummary with league data...');
-            // Refresh the trading summary to use the new data
-            generateTradingSummary();
-            
-            // Update Firebase status to show we have league data
-            const statusElement = document.getElementById('firebase-status');
-            if (statusElement && Object.keys(allRatings).length > 0) {
-                const totalRatings = Object.values(allRatings).reduce((sum, ratings) => sum + ratings.length, 0);
-                statusElement.textContent = `🔗 Real-time sync enabled (${totalRatings} league ratings)`;
-            }
-        }
-
-        function testSummaryUpdate() {
-            console.log('🧪 Testing summary update...');
-            console.log('🧪 Current window.leagueAverageRatings:', window.leagueAverageRatings);
-            
-            // First get fresh data from Firebase
-            if (db) {
-                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
-                    console.log(`🧪 Found ${ratingsSnapshot.size} ratings for test`);
-                    
-                    const allRatings = {};
-                    ratingsSnapshot.forEach(ratingDoc => {
-                        const data = ratingDoc.data();
-                        const tradeIndex = data.tradeIndex;
-                        const rating = data.rating;
-                        
-                        if (tradeIndex !== undefined && tradeIndex !== null) {
-                            if (!allRatings[tradeIndex]) {
-                                allRatings[tradeIndex] = [];
-                            }
-                            allRatings[tradeIndex].push(rating);
-                        }
-                    });
-                    
-                    console.log('🧪 Test data collected:', allRatings);
-                    updateSummaryWithAverages(allRatings);
-                    alert('Summary test complete - check console for debug info');
-                });
-            } else {
-                alert('❌ Firebase not connected');
-            }
-        }
-
     </script>
 </body>
 </html>
