@@ -182,6 +182,10 @@ class TransactionService:
                         from_team = self._get_historical_team_name(pick['previous_owner_id'], pick['season'], league_id, roster_to_team)
                         to_team = self._get_historical_team_name(pick['owner_id'], pick['season'], league_id, roster_to_team)
                         
+                        # Get the original owner using roster_id (original draft slot) instead of previous_owner_id
+                        original_roster_id = pick.get('roster_id', pick['previous_owner_id'])
+                        original_owner = self._get_historical_team_name(original_roster_id, pick['season'], league_id, roster_to_team)
+                        
                         pick_info = {
                             'round': pick['round'],
                             'season': pick['season'],
@@ -199,7 +203,7 @@ class TransactionService:
                             'type': 'draft_pick',
                             'round': pick['round'],
                             'season': pick['season'],
-                            'original_owner': from_team,
+                            'original_owner': original_owner,
                             'from_team': from_team,
                             'to_team': to_team
                         }
@@ -353,10 +357,14 @@ class TransactionService:
                     is_receiving = pick['owner_id'] in manager_roster_ids
                     category = 'received' if is_receiving else 'given'
                     
+                    # Get the original owner using roster_id (original draft slot) instead of previous_owner_id
+                    original_roster_id = pick.get('roster_id', pick['previous_owner_id'])
+                    original_owner = self._get_historical_team_name(original_roster_id, pick['season'], league_id, roster_to_team)
+                    
                     pick_info = {
                         'round': pick['round'],
                         'season': pick['season'],
-                        'original_owner': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
+                        'original_owner': original_owner,
                         'from_team': roster_to_team.get(pick['previous_owner_id'], f"Team {pick['previous_owner_id']}"),
                         'to_team': roster_to_team.get(pick['owner_id'], f"Team {pick['owner_id']}")
                     }

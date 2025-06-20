@@ -398,9 +398,23 @@ class LeagueVisualizationService:
             except (ValueError, OSError):
                 month_key = 'unknown'
             
-            # Count assets
-            players_count = len(trade.get('received', {}).get('players', [])) + len(trade.get('given', {}).get('players', []))
-            picks_count = len(trade.get('received', {}).get('draft_picks', []))
+            # Count assets using team_assets structure
+            players_count = 0
+            picks_count = 0
+            
+            if 'team_assets' in trade:
+                for team_name, assets in trade['team_assets'].items():
+                    for direction in ['receives', 'gives']:
+                        if direction in assets:
+                            for asset in assets[direction]:
+                                if asset.get('type') == 'draft_pick':
+                                    picks_count += 1
+                                elif asset.get('player'):
+                                    players_count += 1
+            else:
+                # Fallback to old structure
+                players_count = len(trade.get('received', {}).get('players', [])) + len(trade.get('given', {}).get('players', []))
+                picks_count = len(trade.get('received', {}).get('draft_picks', []))
             
             timeline['stats']['total_players_traded'] += players_count
             timeline['stats']['total_picks_traded'] += picks_count
