@@ -16347,21 +16347,26 @@
 
         // Initialize Firebase (only if config is provided)
         let db = null;
+        console.log('🔍 Initializing Firebase with config:', firebaseConfig);
         if (firebaseConfig.apiKey) {
             try {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
-                document.getElementById('firebase-status').textContent = '🔗 Real-time sync enabled';
-                console.log('✅ Firebase initialized successfully');
+                const statusEl = document.getElementById('firebase-status');
+                if (statusEl) statusEl.textContent = '🔗 Real-time sync enabled';
+                console.log('✅ Firebase initialized successfully, db =', db);
             } catch (error) {
                 console.error('❌ Firebase initialization failed:', error);
-                document.getElementById('firebase-status').textContent = '❌ Firebase connection failed';
+                const statusEl = document.getElementById('firebase-status');
+                if (statusEl) statusEl.textContent = '❌ Firebase connection failed';
             }
         } else {
-            document.getElementById('firebase-status').textContent = '💾 Local storage only';
+            const statusEl = document.getElementById('firebase-status');
+            if (statusEl) statusEl.textContent = '💾 Local storage only';
         }
 
         function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
+            console.log('🔍 saveTradeGradeToFirebase called with:', { tradeIndex, gradeValue, userName, dbExists: !!db });
             if (!db) {
                 console.log('❌ Firebase not configured, using localStorage only');
                 return;
@@ -16545,6 +16550,23 @@
             }
         }
 
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM loaded, initializing app...');
+            
+            // Load trade grades from localStorage
+            loadTradeGrades();
+            
+            // Load average ratings from Firebase
+            if (db) {
+                loadAverageRatings();
+            } else {
+                console.log('⚠️ Firebase not initialized yet, skipping average ratings load');
+            }
+            
+            // Generate trading summary
+            generateTradingSummary();
+        });
 
     </script>
 </div></body>
