@@ -5932,7 +5932,7 @@
 <div class="panel-content">
 <div class="search-container">
 <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
-<select class="search-input" id="matchupYearSelect" onchange="showMatchupYear()" style="width: 200px;">
+<select class="search-input" id="matchupYearSelect" onchange="window.showMatchupYear()" style="width: 200px;">
 <option value="all">All Years</option>
 <option selected="" value="2024">2024</option>
 <option value="2023">2023</option>
@@ -9473,7 +9473,7 @@
 <div class="panel-content">
 <div class="search-container">
 <label for="draftYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
-<select class="search-input" id="draftYearSelect" onchange="showDraftYear()" style="width: 200px;">
+<select class="search-input" id="draftYearSelect" onchange="window.showDraftYear()" style="width: 200px;">
 <option value="2025">2025</option>
 <option selected="" value="2024">2024</option>
 <option value="2023">2023</option>
@@ -10629,13 +10629,13 @@
             initMonthlyChart();
             
             // Initialize matchups
-            if (typeof showMatchupYear === 'function') {
-                showMatchupYear();
+            if (typeof window.showMatchupYear === 'function') {
+                window.showMatchupYear();
             }
             
             // Initialize draft board if data is available
-            if (draftData && draftData.current_year && draftData.drafts_by_year[draftData.current_year]) {
-                showDraftYear();
+            if (typeof window.showDraftYear === 'function' && draftData && draftData.current_year && draftData.drafts_by_year[draftData.current_year]) {
+                window.showDraftYear();
             }
         });
 
