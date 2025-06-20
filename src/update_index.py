@@ -12,7 +12,7 @@ service = LeagueVisualizationService(client)
 
 # Generate and save as index.html
 html_content = service.generate_league_visualization_html(league_id)
-with open('../index.html', 'w', encoding='utf-8') as f:
+with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
 print("index.html has been updated with the latest trades!")

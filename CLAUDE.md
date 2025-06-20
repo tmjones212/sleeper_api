@@ -14,10 +14,29 @@ Whenever you learn something important about the codebase that would be useful t
 - **Fix**: Simply regenerating the HTML with `python src/update_index.py` resolved the issue
 - **Key Insight**: The data processing and template logic were correct; it was just a matter of regenerating the output
 
+### Multiple Draft Picks Issue (Fixed Dec 2025)
+- **Issue**: When a trade involves multiple picks of the same round/season (e.g., 2 2026 2nd round picks), only one was showing
+- **Root Cause**: Draft pick deduplication logic in `transaction_service.py` was too aggressive
+  - It only checked `round`, `season`, and `player_name` for uniqueness
+  - For future picks, `player_name` is None, making different picks look identical
+- **Fix**: Added `original_owner` to the deduplication check (lines 222 and 237)
+- **Example**: DJ Moore trade now correctly shows both 2026 2nd round picks
+
+### Trade Rating Sliders
+- **Note**: Trade rating sliders are NOT part of the trade visualization template
+- They appear to be a custom addition that's not in the current codebase
+- If needed, they would need to be re-implemented separately
+
+### Index.html Generation
+- **File Location**: `update_index.py` saves to `../index.html` (one level up from src/)
+- **Fix**: Changed line 15 to save to `'index.html'` instead of `'../index.html'`
+- **Important**: Always check where generated files are being saved
+
 ### Code Structure
 - **Transaction Service**: Correctly uses `roster_id` to determine original draft pick owner
 - **Template Logic**: Has proper fallback logic for displaying picks with/without ownership
 - **Trade Data Structure**: Uses `team_assets` structure with `receives`/`gives` arrays containing draft pick objects
+- **Deduplication**: When processing trades, be careful about deduplication logic for similar assets
 
 
 # Draft Pick Ownership Fix Documentation
