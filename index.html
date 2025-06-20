@@ -16617,10 +16617,22 @@
                 const matchupYear = matchup.getAttribute('data-year');
                 if (selectedYear === 'all' || matchupYear === selectedYear) {
                     matchup.style.display = 'block';
+                    matchup.style.visibility = 'visible';
+                    matchup.style.opacity = '1';
+                    console.log(`✅ Showing year ${matchupYear} matchups`);
                 } else {
                     matchup.style.display = 'none';
+                    console.log(`❌ Hiding year ${matchupYear} matchups`);
                 }
             });
+            
+            // Also ensure the container itself is visible
+            const container = document.getElementById('matchupsContainer');
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                console.log('✅ Made matchupsContainer visible');
+            }
             
             console.log(`✅ Showing matchups for year: ${selectedYear}`);
         }
