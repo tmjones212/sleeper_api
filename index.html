@@ -1065,7 +1065,21 @@
                 // If showing draft panel, ensure year is shown
                 if (panelName === 'draft' && window.showDraftYear) {
                     console.log('Calling showDraftYear for draft panel');
-                    setTimeout(() => window.showDraftYear(), 100);
+                    // Try immediately and also with a delay
+                    if (typeof draftData !== 'undefined') {
+                        window.showDraftYear();
+                    } else {
+                        // Try multiple times to catch when draftData loads
+                        const attempts = [100, 500, 1000, 2000];
+                        attempts.forEach(delay => {
+                            setTimeout(() => {
+                                if (typeof draftData !== 'undefined' && !window.draftDataLoaded) {
+                                    window.draftDataLoaded = true;
+                                    window.showDraftYear();
+                                }
+                            }, delay);
+                        });
+                    }
                 }
             } else {
                 console.error('Panel not found:', panelName + '-panel');
@@ -1123,9 +1137,19 @@
                 draftResults.innerHTML = `
                     <div style="text-align: center; color: #b0b0b0; padding: 40px;">
                         <h3>⏳ Loading Draft Data...</h3>
-                        <p>Please wait a moment and try again.</p>
+                        <p>Draft data is still loading. This usually takes a few seconds.</p>
+                        <button onclick="window.showDraftYear()" style="margin-top: 20px; padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            🔄 Retry
+                        </button>
                     </div>
                 `;
+                // Keep trying
+                setTimeout(() => {
+                    if (typeof draftData !== 'undefined' && !window.draftDataLoaded) {
+                        window.draftDataLoaded = true;
+                        window.showDraftYear();
+                    }
+                }, 1000);
                 return;
             }
             console.log('draftData exists, years available:', Object.keys(draftData.drafts_by_year));
@@ -12095,6 +12119,26 @@
                 console.log(`Panel ${panel.id}: active=${panel.classList.contains('active')}`);
             });
         });
+        
+        // Global watcher for draftData
+        let draftDataWatcher = setInterval(() => {
+            if (typeof draftData !== 'undefined' && !window.draftDataLoaded) {
+                window.draftDataLoaded = true;
+                console.log('Draft data is now available!');
+                
+                // If we're on the draft panel, show the data
+                const draftPanel = document.getElementById('draft-panel');
+                if (draftPanel && draftPanel.classList.contains('active')) {
+                    window.showDraftYear();
+                }
+                
+                // Stop watching
+                clearInterval(draftDataWatcher);
+            }
+        }, 500);
+        
+        // Stop watching after 30 seconds
+        setTimeout(() => clearInterval(draftDataWatcher), 30000);
     </script>
 </div></body>
 </html>
