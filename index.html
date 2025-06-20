@@ -1608,11 +1608,6 @@
 <h3 style="color: #e0e0e0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
 <span>📊 Trading Performance Summary</span>
 <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
-<span id="firebase-status" style="margin-left: 10px; font-size: 0.8rem; color: #b0b0b0;"></span>
-<button onclick="testFirebaseConnection()" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Firebase</button>
-<button onclick="manualRefreshRatings()" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Force Refresh</button>
-<button onclick="debugFirebaseData()" style="background: #6f42c1; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Debug Data</button>
-<button onclick="testSummaryUpdate()" style="background: #fd7e14; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Summary</button>
 </h3>
 <div id="trading-summary-container" style="margin-bottom: 20px;">
 <!-- Trading summary will be populated here -->
@@ -6430,11 +6425,6 @@
 <h3 style="color: #e0e0e0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
 <span>📊 Trading Performance Summary</span>
 <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
-<span id="firebase-status" style="margin-left: 10px; font-size: 0.8rem; color: #b0b0b0;"></span>
-<button onclick="testFirebaseConnection()" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Firebase</button>
-<button onclick="manualRefreshRatings()" style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Force Refresh</button>
-<button onclick="debugFirebaseData()" style="background: #6f42c1; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Debug Data</button>
-<button onclick="testSummaryUpdate()" style="background: #fd7e14; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 5px;">Test Summary</button>
 </h3>
 <div id="trading-summary-container" style="margin-bottom: 20px;">
 <!-- Trading summary will be populated here -->
@@ -16350,72 +16340,7 @@
             return userName;
         }
 
-        function testFirebaseConnection() {
-            if (!db) {
-                alert('❌ Firebase not connected');
-                return;
-            }
 
-            const testData = {
-                test: true,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                user: getUserName()
-            };
-
-            console.log('🧪 Testing Firebase write...');
-            
-            db.collection('test').doc('connection').set(testData)
-                .then(() => {
-                    console.log('✅ Firebase write test successful');
-                    alert('✅ Firebase connection working!');
-                })
-                .catch((error) => {
-                    console.error('❌ Firebase write test failed:', error);
-                    alert('❌ Firebase write failed: ' + error.message);
-                });
-        }
-
-        function debugFirebaseData() {
-            if (!db) {
-                alert('❌ Firebase not connected');
-                return;
-            }
-
-            console.log('🔍 Debugging Firebase data structure...');
-            
-            // First check the main collection
-            db.collection('tradeRatings').get().then(snapshot => {
-                console.log(`🗂️ Found ${snapshot.size} trade documents in main collection`);
-                
-                if (snapshot.size === 0) {
-                    console.log('🔍 No documents in main collection, checking for ratings using collectionGroup...');
-                    
-                    // Use collectionGroup to find all ratings across all subcollections
-                    db.collectionGroup('ratings').get().then(ratingsSnapshot => {
-                        console.log(`📊 Found ${ratingsSnapshot.size} ratings total using collectionGroup`);
-                        
-                        ratingsSnapshot.forEach(ratingDoc => {
-                            console.log(`   👤 Rating document:`, ratingDoc.data());
-                            console.log(`   📂 Parent path:`, ratingDoc.ref.parent.parent.path);
-                            console.log(`   📂 Parent ID:`, ratingDoc.ref.parent.parent.id);
-                        });
-                    });
-                } else {
-                    snapshot.forEach(tradeDoc => {
-                        console.log(`📄 Trade document ID: ${tradeDoc.id}`);
-                        console.log(`📄 Trade document data:`, tradeDoc.data());
-                        
-                        // Check for ratings subcollection
-                        tradeDoc.ref.collection('ratings').get().then(ratingsSnapshot => {
-                            console.log(`📋 Trade ${tradeDoc.id} has ${ratingsSnapshot.size} ratings:`);
-                            ratingsSnapshot.forEach(ratingDoc => {
-                                console.log(`   👤 Rating by ${ratingDoc.id}:`, ratingDoc.data());
-                            });
-                        });
-                    });
-                }
-            });
-        }
 
         function manualRefreshRatings(silent = false) {
             console.log('🔄 Manually refreshing ratings from Firebase...');
@@ -16499,37 +16424,6 @@
             }
         }
 
-        function testSummaryUpdate() {
-            console.log('🧪 Testing summary update...');
-            console.log('🧪 Current window.leagueAverageRatings:', window.leagueAverageRatings);
-            
-            // First get fresh data from Firebase
-            if (db) {
-                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
-                    console.log(`🧪 Found ${ratingsSnapshot.size} ratings for test`);
-                    
-                    const allRatings = {};
-                    ratingsSnapshot.forEach(ratingDoc => {
-                        const data = ratingDoc.data();
-                        const tradeIndex = data.tradeIndex;
-                        const rating = data.rating;
-                        
-                        if (tradeIndex !== undefined && tradeIndex !== null) {
-                            if (!allRatings[tradeIndex]) {
-                                allRatings[tradeIndex] = [];
-                            }
-                            allRatings[tradeIndex].push(rating);
-                        }
-                    });
-                    
-                    console.log('🧪 Test data collected:', allRatings);
-                    updateSummaryWithAverages(allRatings);
-                    alert('Summary test complete - check console for debug info');
-                });
-            } else {
-                alert('❌ Firebase not connected');
-            }
-        }
 
     </script>
 </div></body>
