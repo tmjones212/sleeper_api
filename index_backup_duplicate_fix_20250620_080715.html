@@ -2032,6 +2032,42 @@
                     <button onclick="resetTradeFilter()" style="background: #606060; color: #e0e0e0; border: 1px solid #808080; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reset</button>
                 </div>
                 <div class="timeline-container">
+                    
+                </div>
+                                <ul class="asset-list">
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7526.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="Jaylen Waddle">
+                                        <span>JAYLEN WADDLE</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="team-side">
+                                <h4>lamjohnson56</h4>
+                                <div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+                                <ul class="asset-list">
+                                    <li class="pick-item">📋 Halteclere's 2028 Round 1 pick</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="trade-grade-container">
+                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
+                                   id="trade-grade-0" onchange="updateTradeGrade(0, this.value)">
+                            <div class="trade-grade-labels">
+                                <span>Halteclere Won</span>
+                                <span>Even</span>
+                                <span>lamjohnson56 Won</span>
+                            </div>
+                            <div class="trade-grade-result" id="trade-result-0">
+                                <span style="color: #999999;">Move slider to grade</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="trade-item">
                         <div class="trade-date">2025-06-16 01:13 AM</div>
                         <div class="trade-summary">
@@ -2114,6 +2150,20 @@
                                 </ul>
                             </div>
                         </div></div>
+                        <div class="trade-grade-container">
+                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
+                                   id="trade-grade-4" onchange="updateTradeGrade(4, this.value)">
+                            <div class="trade-grade-labels">
+                                <span>ShadyCommish88 Won</span>
+                                <span>Even</span>
+                                <span>emanueljd3 Won</span>
+                            </div>
+                            <div class="trade-grade-result" id="trade-result-4">
+                                <span style="color: #999999;">Move slider to grade</span>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="trade-item">
                         <div class="trade-date">2025-06-12 02:02 PM</div>
@@ -2145,7 +2195,19 @@
                                 </ul>
                             </div>
                         </div></div>
-
+                        <div class="trade-grade-container">
+                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
+                                   id="trade-grade-0" onchange="updateTradeGrade(0, this.value)">
+                            <div class="trade-grade-labels">
+                                <span>ShadyCommish88 Won</span>
+                                <span>Even</span>
+                                <span>emanueljd3 Won</span>
+                            </div>
+                            <div class="trade-grade-result" id="trade-result-0">Even Trade</div>
+                        </div>
+                    </div>
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-05-02 11:58 AM</div>
                         <div class="trade-summary">
@@ -2182,7 +2244,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-05-01 05:06 PM</div>
                         <div class="trade-summary">
@@ -2219,7 +2281,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-05-01 09:52 AM</div>
                         <div class="trade-summary">
@@ -2262,7 +2324,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-30 12:51 PM</div>
                         <div class="trade-summary">
@@ -2307,7 +2369,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-30 10:18 AM</div>
                         <div class="trade-summary">
@@ -2346,7 +2408,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-30 09:48 AM</div>
                         <div class="trade-summary">
@@ -2387,7 +2449,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-26 11:55 AM</div>
                         <div class="trade-summary">
@@ -2414,7 +2476,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-26 10:58 AM</div>
                         <div class="trade-summary">
@@ -2455,7 +2517,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-25 05:32 PM</div>
                         <div class="trade-summary">
@@ -2500,7 +2562,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-22 07:23 PM</div>
                         <div class="trade-summary">
@@ -2559,7 +2621,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-22 07:22 PM</div>
                         <div class="trade-summary">
@@ -2620,7 +2682,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-22 05:00 PM</div>
                         <div class="trade-summary">
@@ -2673,7 +2735,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-16 04:48 AM</div>
                         <div class="trade-summary">
@@ -2710,7 +2772,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-04-14 01:37 PM</div>
                         <div class="trade-summary">
@@ -2767,7 +2829,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-03-05 05:27 PM</div>
                         <div class="trade-summary">
@@ -2810,7 +2872,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-02-26 05:36 PM</div>
                         <div class="trade-summary">
@@ -2839,7 +2901,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-02-11 10:28 AM</div>
                         <div class="trade-summary">
@@ -2890,7 +2952,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-01-29 07:08 PM</div>
                         <div class="trade-summary">
@@ -2971,7 +3033,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-01-09 06:40 AM</div>
                         <div class="trade-summary">
@@ -3026,7 +3088,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2025-01-01 04:24 PM</div>
                         <div class="trade-summary">
@@ -3073,7 +3135,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 06:49 PM</div>
                         <div class="trade-summary">
@@ -3130,7 +3192,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 06:16 PM</div>
                         <div class="trade-summary">
@@ -3197,7 +3259,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 04:46 PM</div>
                         <div class="trade-summary">
@@ -3252,7 +3314,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-11 03:11 PM</div>
                         <div class="trade-summary">
@@ -3295,7 +3357,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-10 09:17 PM</div>
                         <div class="trade-summary">
@@ -3344,7 +3406,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-10 08:49 PM</div>
                         <div class="trade-summary">
@@ -3393,7 +3455,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-12-03 12:38 PM</div>
                         <div class="trade-summary">
@@ -3438,7 +3500,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-30 05:37 PM</div>
                         <div class="trade-summary">
@@ -3483,7 +3545,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-20 10:59 PM</div>
                         <div class="trade-summary">
@@ -3532,7 +3594,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 07:52 PM</div>
                         <div class="trade-summary">
@@ -3587,7 +3649,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 09:16 AM</div>
                         <div class="trade-summary">
@@ -3634,7 +3696,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-13 07:26 AM</div>
                         <div class="trade-summary">
@@ -3677,7 +3739,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-07 03:54 PM</div>
                         <div class="trade-summary">
@@ -3726,7 +3788,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-07 09:57 AM</div>
                         <div class="trade-summary">
@@ -3825,7 +3887,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-03 09:00 AM</div>
                         <div class="trade-summary">
@@ -3892,7 +3954,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-02 10:08 PM</div>
                         <div class="trade-summary">
@@ -3947,7 +4009,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-11-01 08:40 AM</div>
                         <div class="trade-summary">
@@ -3996,7 +4058,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-10-29 08:10 PM</div>
                         <div class="trade-summary">
@@ -4045,7 +4107,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-10-29 05:20 PM</div>
                         <div class="trade-summary">
@@ -4100,7 +4162,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-10-25 12:40 PM</div>
                         <div class="trade-summary">
@@ -4143,7 +4205,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-10-16 02:56 PM</div>
                         <div class="trade-summary">
@@ -4176,7 +4238,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-10-10 07:40 AM</div>
                         <div class="trade-summary">
@@ -4225,7 +4287,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-09-30 12:20 PM</div>
                         <div class="trade-summary">
@@ -4268,7 +4330,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-09-25 07:10 PM</div>
                         <div class="trade-summary">
@@ -4321,7 +4383,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-09-21 06:15 AM</div>
                         <div class="trade-summary">
@@ -4408,7 +4470,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-09-17 08:54 AM</div>
                         <div class="trade-summary">
@@ -4455,7 +4517,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-09-15 03:50 PM</div>
                         <div class="trade-summary">
@@ -4488,7 +4550,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-08-28 11:23 AM</div>
                         <div class="trade-summary">
@@ -4521,7 +4583,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-08-26 03:38 PM</div>
                         <div class="trade-summary">
@@ -4564,7 +4626,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-08-26 03:12 PM</div>
                         <div class="trade-summary">
@@ -4609,7 +4671,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-08-21 09:08 PM</div>
                         <div class="trade-summary">
@@ -4642,7 +4704,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-08-21 10:35 AM</div>
                         <div class="trade-summary">
@@ -4675,7 +4737,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-07-24 05:47 PM</div>
                         <div class="trade-summary">
@@ -4724,7 +4786,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-07-24 05:41 PM</div>
                         <div class="trade-summary">
@@ -4757,7 +4819,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-07-24 12:31 PM</div>
                         <div class="trade-summary">
@@ -4810,7 +4872,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-07-21 07:59 PM</div>
                         <div class="trade-summary">
@@ -4843,7 +4905,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-14 08:20 AM</div>
                         <div class="trade-summary">
@@ -4886,7 +4948,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-13 09:58 PM</div>
                         <div class="trade-summary">
@@ -4939,7 +5001,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-12 03:23 PM</div>
                         <div class="trade-summary">
@@ -4998,7 +5060,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-11 01:31 PM</div>
                         <div class="trade-summary">
@@ -5031,7 +5093,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-11 07:25 AM</div>
                         <div class="trade-summary">
@@ -5082,7 +5144,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-09 01:33 PM</div>
                         <div class="trade-summary">
@@ -5127,7 +5189,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-07 08:25 PM</div>
                         <div class="trade-summary">
@@ -5166,7 +5228,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-07 04:08 PM</div>
                         <div class="trade-summary">
@@ -5223,7 +5285,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-05-03 07:43 AM</div>
                         <div class="trade-summary">
@@ -5264,7 +5326,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-04-29 12:46 PM</div>
                         <div class="trade-summary">
@@ -5309,7 +5371,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-03-27 08:12 PM</div>
                         <div class="trade-summary">
@@ -5352,7 +5414,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-03-20 09:00 AM</div>
                         <div class="trade-summary">
@@ -5427,7 +5489,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-26 04:19 AM</div>
                         <div class="trade-summary">
@@ -5470,7 +5532,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-24 03:58 PM</div>
                         <div class="trade-summary">
@@ -5513,7 +5575,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-24 08:18 AM</div>
                         <div class="trade-summary">
@@ -5564,7 +5626,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-24 06:24 AM</div>
                         <div class="trade-summary">
@@ -5597,7 +5659,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-23 08:31 PM</div>
                         <div class="trade-summary">
@@ -5644,7 +5706,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-17 09:46 PM</div>
                         <div class="trade-summary">
@@ -5735,7 +5797,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-17 12:57 PM</div>
                         <div class="trade-summary">
@@ -5784,7 +5846,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-17 11:02 AM</div>
                         <div class="trade-summary">
@@ -5833,7 +5895,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-17 05:11 AM</div>
                         <div class="trade-summary">
@@ -5870,7 +5932,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2024-01-16 09:15 PM</div>
                         <div class="trade-summary">
@@ -5945,7 +6007,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-29 04:54 PM</div>
                         <div class="trade-summary">
@@ -5978,7 +6040,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-28 08:10 PM</div>
                         <div class="trade-summary">
@@ -6029,7 +6091,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 06:12 PM</div>
                         <div class="trade-summary">
@@ -6062,7 +6124,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 08:12 AM</div>
                         <div class="trade-summary">
@@ -6095,7 +6157,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-21 08:11 AM</div>
                         <div class="trade-summary">
@@ -6138,7 +6200,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-20 08:38 PM</div>
                         <div class="trade-summary">
@@ -6197,7 +6259,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-05 10:19 AM</div>
                         <div class="trade-summary">
@@ -6230,7 +6292,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-04 10:30 AM</div>
                         <div class="trade-summary">
@@ -6273,7 +6335,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-03 10:57 PM</div>
                         <div class="trade-summary">
@@ -6322,7 +6384,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-11-03 07:55 PM</div>
                         <div class="trade-summary">
@@ -6365,7 +6427,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-29 06:08 PM</div>
                         <div class="trade-summary">
@@ -6408,7 +6470,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-24 11:04 AM</div>
                         <div class="trade-summary">
@@ -6461,7 +6523,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-22 09:21 PM</div>
                         <div class="trade-summary">
@@ -6494,7 +6556,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-20 09:17 PM</div>
                         <div class="trade-summary">
@@ -6551,7 +6613,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-19 06:58 PM</div>
                         <div class="trade-summary">
@@ -6600,7 +6662,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-19 05:23 AM</div>
                         <div class="trade-summary">
@@ -6655,7 +6717,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-08 08:41 AM</div>
                         <div class="trade-summary">
@@ -6688,7 +6750,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-07 08:52 PM</div>
                         <div class="trade-summary">
@@ -6721,7 +6783,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-10-04 08:19 PM</div>
                         <div class="trade-summary">
@@ -6754,7 +6816,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-09-18 03:56 PM</div>
                         <div class="trade-summary">
@@ -6787,7 +6849,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-09-17 09:41 AM</div>
                         <div class="trade-summary">
@@ -6838,7 +6900,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-09-12 03:17 PM</div>
                         <div class="trade-summary">
@@ -6899,7 +6961,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-09-12 08:49 AM</div>
                         <div class="trade-summary">
@@ -6916,7 +6978,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-07-09 09:51 PM</div>
                         <div class="trade-summary">
@@ -6965,7 +7027,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-06-22 01:40 PM</div>
                         <div class="trade-summary">
@@ -7030,7 +7092,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-06-22 01:21 PM</div>
                         <div class="trade-summary">
@@ -7101,7 +7163,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-22 01:59 PM</div>
                         <div class="trade-summary">
@@ -7162,7 +7224,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-20 10:53 AM</div>
                         <div class="trade-summary">
@@ -7195,7 +7257,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-19 08:07 PM</div>
                         <div class="trade-summary">
@@ -7252,7 +7314,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-14 08:30 PM</div>
                         <div class="trade-summary">
@@ -7295,7 +7357,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-14 02:50 PM</div>
                         <div class="trade-summary">
@@ -7346,7 +7408,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-12 07:52 AM</div>
                         <div class="trade-summary">
@@ -7395,7 +7457,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-11 09:22 AM</div>
                         <div class="trade-summary">
@@ -7446,7 +7508,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-09 08:35 AM</div>
                         <div class="trade-summary">
@@ -7475,7 +7537,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-08 10:01 AM</div>
                         <div class="trade-summary">
@@ -7526,7 +7588,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-08 09:35 AM</div>
                         <div class="trade-summary">
@@ -7565,7 +7627,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-07 10:08 PM</div>
                         <div class="trade-summary">
@@ -7610,7 +7672,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-05-04 07:28 PM</div>
                         <div class="trade-summary">
@@ -7655,7 +7717,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-04-12 10:37 AM</div>
                         <div class="trade-summary">
@@ -7704,7 +7766,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-04-11 12:39 PM</div>
                         <div class="trade-summary">
@@ -7757,7 +7819,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-04-09 07:04 PM</div>
                         <div class="trade-summary">
@@ -7810,7 +7872,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-04-07 11:22 AM</div>
                         <div class="trade-summary">
@@ -7865,7 +7927,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-04-06 01:36 PM</div>
                         <div class="trade-summary">
@@ -7914,7 +7976,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-03-29 05:35 PM</div>
                         <div class="trade-summary">
@@ -7957,7 +8019,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-03-21 02:08 PM</div>
                         <div class="trade-summary">
@@ -8010,7 +8072,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-02-07 08:31 AM</div>
                         <div class="trade-summary">
@@ -8049,7 +8111,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-01-04 10:00 PM</div>
                         <div class="trade-summary">
@@ -8108,7 +8170,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2023-01-04 01:58 PM</div>
                         <div class="trade-summary">
@@ -8169,7 +8231,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-12-07 10:35 AM</div>
                         <div class="trade-summary">
@@ -8218,7 +8280,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-12-07 09:35 AM</div>
                         <div class="trade-summary">
@@ -8251,7 +8313,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-12-07 09:35 AM</div>
                         <div class="trade-summary">
@@ -8300,7 +8362,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-12-01 04:40 PM</div>
                         <div class="trade-summary">
@@ -8385,7 +8447,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-11-29 06:23 PM</div>
                         <div class="trade-summary">
@@ -8436,7 +8498,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-11-24 10:15 PM</div>
                         <div class="trade-summary">
@@ -8505,7 +8567,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-10-27 02:30 PM</div>
                         <div class="trade-summary">
@@ -8554,7 +8616,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-10-25 12:52 PM</div>
                         <div class="trade-summary">
@@ -8599,7 +8661,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-10-13 04:23 PM</div>
                         <div class="trade-summary">
@@ -8642,7 +8704,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-26 09:52 PM</div>
                         <div class="trade-summary">
@@ -8691,7 +8753,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-19 04:37 PM</div>
                         <div class="trade-summary">
@@ -8734,7 +8796,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 05:03 PM</div>
                         <div class="trade-summary">
@@ -8797,7 +8859,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 02:29 PM</div>
                         <div class="trade-summary">
@@ -8866,7 +8928,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-15 02:29 PM</div>
                         <div class="trade-summary">
@@ -8917,7 +8979,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-13 02:49 PM</div>
                         <div class="trade-summary">
@@ -8968,7 +9030,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-09-08 01:45 PM</div>
                         <div class="trade-summary">
@@ -9021,7 +9083,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-08-20 01:11 AM</div>
                         <div class="trade-summary">
@@ -9064,7 +9126,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-08-17 10:48 AM</div>
                         <div class="trade-summary">
@@ -9115,7 +9177,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-08-17 07:25 AM</div>
                         <div class="trade-summary">
@@ -9172,7 +9234,7 @@
                             
                         </div>
                     </div>
-
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-08-16 03:27 PM</div>
                         <div class="trade-summary">
@@ -9215,7 +9277,78 @@
                             
                         </div>
                     </div>
-
+                    
+                    <div class="trade-item">
+                        <div class="trade-date">2022-08-16 03:27 PM</div>
+                        <div class="trade-summary">
+                            <strong>ShadyCommish88 ↔ EBao</strong>
+                            <span style="color: #666; margin-left: 20px;">
+                                8 players, 0 picks
+                            </span>
+                        </div>
+                        <div class="trade-teams">
+                            
+                            
+                            <div class="team-side">
+                                <h4>EBao</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7601.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="RONDALE MOORE">
+                                        <span>RONDALE MOORE</span>
+                                    </li>
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #3 (ShadyCommish88's 2023 R1) - BRYCE YOUNG</li>
+                                    
+                                    <li class="pick-item">📋 Pick #1 (ShadyCommish88's 2024 R1) - MARVIN HARRISON</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                            
+                            <div class="team-side">
+                                <h4>ShadyCommish88</h4>
+                                <ul class="asset-list">
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/6843.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="ALBERT OKWUEGBUNAM">
+                                        <span>ALBERT OKWUEGBUNAM</span>
+                                    </li>
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7523.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="TREVOR LAWRENCE">
+                                        <span>TREVOR LAWRENCE</span>
+                                    </li>
+                                    
+                                    <li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+                                        <img src="https://sleepercdn.com/content/nfl/players/thumb/7569.jpg" 
+                                             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" 
+                                             onerror="this.outerHTML='<span style=&quot;color: #66ff66;&quot;>🏈</span>'"
+                                             alt="NICO COLLINS">
+                                        <span>NICO COLLINS</span>
+                                    </li>
+                                    
+                                    
+                                    <li class="pick-item">📋 Pick #11 (EBao's 2023 R2) - DALTON KINCAID</li>
+                                    
+                                </ul>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    
                     <div class="trade-item">
                         <div class="trade-date">2022-07-21 02:37 PM</div>
                         <div class="trade-summary">
@@ -9260,12 +9393,13 @@
                             
                         </div>
                     </div>
-
+                    
                 </div>
             </div>
         </div>
 
-<div class="visualization-panel" id="players-panel">
+        <!-- Player Journey Panel -->
+        <div class="visualization-panel" id="players-panel">
             <div class="panel-header">
                 <h2>👤 Player Journey Tracker</h2>
                 <p>Track how individual players have moved between teams</p>
