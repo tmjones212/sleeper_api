@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Visualization - League {{ league_id }}</title>
+    <title>Eazy Pickens</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -251,6 +251,56 @@
             transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             background: #505050;
+        }
+
+        .trade-grade-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: #353535;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .trade-grade-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #606060;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .trade-grade-slider:hover {
+            opacity: 1;
+        }
+
+        .trade-grade-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #0066cc;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .trade-grade-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #0066cc;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .trade-grade-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #66ccff;
+            margin-top: 10px;
         }
 
         .trade-date {
@@ -909,6 +959,12 @@
                             {% endif %}
                             {% endfor %}
                         </div>
+                        <div class="trade-grade-container">
+                            <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" class="trade-grade-slider" 
+                                   id="trade-grade-{{ loop.index }}" onchange="updateTradeGrade({{ loop.index }}, this.value)">
+                            <div class="trade-grade-value" id="grade-value-{{ loop.index }}">50%</div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
@@ -1078,6 +1134,23 @@
         const timelineData = {{ timeline_data | tojson }};
         const mostTradedPlayers = {{ most_traded_players | tojson }};
         const draftData = {{ draft_data | tojson }};
+
+        // Trade grade slider functionality
+        function updateTradeGrade(tradeId, value) {
+            const gradeValue = document.getElementById(`grade-value-${tradeId}`);
+            if (gradeValue) {
+                gradeValue.textContent = value + '%';
+                
+                // Color based on grade
+                if (value < 33) {
+                    gradeValue.style.color = '#ff6666';
+                } else if (value < 66) {
+                    gradeValue.style.color = '#ffcc66';
+                } else {
+                    gradeValue.style.color = '#66ff66';
+                }
+            }
+        }
 
         // Panel switching
         function showPanel(panelName) {
