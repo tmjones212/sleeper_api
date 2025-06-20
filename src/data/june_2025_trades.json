@@ -1,0 +1,210 @@
+{
+  "trades": [
+    {
+      "trade_id": "1240444175195840512",
+      "description": "Jaylen Waddle trade (June 16, 2025)",
+      "teams": ["Halteclere", "lamjohnson56"],
+      "date": "2025-06-16",
+      "details": {
+        "Halteclere_receives": {
+          "players": ["Jaylen Waddle (7526)"]
+        },
+        "lamjohnson56_receives": {
+          "draft_picks": ["Halteclere's 2028 Round 1 pick"]
+        }
+      },
+      "raw_transaction": {
+        "status": "complete",
+        "type": "trade",
+        "metadata": null,
+        "created": 1750107447006,
+        "settings": null,
+        "leg": 1,
+        "draft_picks": [
+          {
+            "round": 1,
+            "season": "2028",
+            "league_id": null,
+            "roster_id": 4,
+            "owner_id": 8,
+            "previous_owner_id": 4
+          }
+        ],
+        "creator": "822491698306334720",
+        "transaction_id": "1240444175195840512",
+        "adds": {
+          "7526": 4
+        },
+        "consenter_ids": [4, 8],
+        "drops": {
+          "7526": 8
+        },
+        "roster_ids": [4, 8],
+        "status_updated": 1750108681699,
+        "waiver_budget": [],
+        "week": 1
+      }
+    },
+    {
+      "trade_id": "1239349165234860032",
+      "description": "Will Levis/Mac Jones trade (June 13, 2025)",
+      "teams": ["BaoDown", "lamjohnson56"],
+      "date": "2025-06-13",
+      "details": {
+        "BaoDown_receives": {
+          "players": ["Mac Jones (7527)"]
+        },
+        "lamjohnson56_receives": {
+          "players": ["Will Levis (9999)"]
+        }
+      },
+      "raw_transaction": {
+        "status": "complete",
+        "type": "trade",
+        "metadata": {
+          "notes": "Your trade was processed successfully!"
+        },
+        "created": 1749846376288,
+        "settings": null,
+        "leg": 1,
+        "draft_picks": [],
+        "creator": "822491698306334720",
+        "transaction_id": "1239349165234860032",
+        "adds": {
+          "7527": 2,
+          "9999": 8
+        },
+        "consenter_ids": [2, 8],
+        "drops": {
+          "7527": 8,
+          "9999": 2
+        },
+        "roster_ids": [2, 8],
+        "status_updated": 1750054409800,
+        "waiver_budget": [],
+        "week": 1
+      }
+    },
+    {
+      "trade_id": "1238981678349701120",
+      "description": "DJ Moore trade (June 12, 2025)",
+      "teams": ["ItsAShow", "Teehuss"],
+      "date": "2025-06-12",
+      "details": {
+        "Teehuss_receives": {
+          "players": ["DJ Moore (4983)"]
+        },
+        "ItsAShow_receives": {
+          "draft_picks": [
+            "MGMT's 2026 Round 2 pick",
+            "ItsAShow's 2026 Round 2 pick"
+          ]
+        }
+      },
+      "raw_transaction": {
+        "status": "complete",
+        "type": "trade",
+        "metadata": null,
+        "created": 1749758760587,
+        "settings": null,
+        "leg": 1,
+        "draft_picks": [
+          {
+            "round": 2,
+            "season": "2026",
+            "league_id": null,
+            "roster_id": 3,
+            "owner_id": 6,
+            "previous_owner_id": 7
+          },
+          {
+            "round": 2,
+            "season": "2026",
+            "league_id": null,
+            "roster_id": 6,
+            "owner_id": 6,
+            "previous_owner_id": 7
+          }
+        ],
+        "creator": "823601698038743040",
+        "transaction_id": "1238981678349701120",
+        "adds": {
+          "4983": 7
+        },
+        "consenter_ids": [6, 7],
+        "drops": {
+          "4983": 6
+        },
+        "roster_ids": [6, 7],
+        "status_updated": 1749759549696,
+        "waiver_budget": [],
+        "week": 1
+      }
+    }
+  ],
+  "all_june_2025_trades_summary": [
+    {
+      "date": "2025-06-11",
+      "trade_id": "1238711583505399808",
+      "teams": "ItsAShow <-> lamjohnson56",
+      "players": "Josh Reynolds (12520) <-> Justin Jefferson (96)",
+      "picks": "2026 Round 4 pick: lamjohnson56 -> ItsAShow"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1238885894799237120",
+      "teams": "Halteclere <-> ItsAShow",
+      "players": "Marvin Harrison Jr. (11628) to Halteclere",
+      "picks": "4 picks to ItsAShow: 2026 R1, 2027 R1, 2027 R2, 2028 R2"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1238938176916045824",
+      "teams": "BaoDown <-> Teehuss",
+      "players": "Amon-Ra St. Brown (4035) to Teehuss",
+      "picks": "2 picks to BaoDown: 2027 R2, 2028 R2"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1238964899762159616",
+      "teams": "Teehuss <-> lamjohnson56",
+      "players": "Travis Etienne (7543) + Joshua Palmer (7670) to lamjohnson56, Will Levis (9999) to Teehuss",
+      "picks": "2 2026 R3 picks to Teehuss"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1238970896165642240",
+      "teams": "BaoDown <-> Teehuss",
+      "players": "A.J. Terrell (2028) to Teehuss, Will Levis (9999) to BaoDown",
+      "picks": "None"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1238981678349701120",
+      "teams": "ItsAShow <-> Teehuss",
+      "players": "DJ Moore (4983) to Teehuss",
+      "picks": "2 2026 R2 picks to ItsAShow"
+    },
+    {
+      "date": "2025-06-12",
+      "trade_id": "1239055469763379200",
+      "teams": "ItsAShow <-> lamjohnson56",
+      "players": "Calvin Austin III (11557) to ItsAShow",
+      "picks": "2026 R4 to ItsAShow, 2027 R3 to lamjohnson56"
+    },
+    {
+      "date": "2025-06-13",
+      "trade_id": "1239349165234860032",
+      "teams": "BaoDown <-> lamjohnson56",
+      "players": "Mac Jones (7527) to BaoDown, Will Levis (9999) to lamjohnson56",
+      "picks": "None"
+    },
+    {
+      "date": "2025-06-16",
+      "trade_id": "1240444175195840512",
+      "teams": "Halteclere <-> lamjohnson56",
+      "players": "Jaylen Waddle (7526) to Halteclere",
+      "picks": "Halteclere's 2028 R1 pick to lamjohnson56"
+    }
+  ]
+}
