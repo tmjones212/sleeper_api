@@ -16127,7 +16127,39 @@
             
             const teamStats = {};
             
-            // First, get the actual trade counts from the Most Active Traders section
+            // Always count ALL teams from trade items
+            const tradeItems = document.querySelectorAll('.trade-item');
+            const teamTradeCount = {};
+            
+            tradeItems.forEach(item => {
+                const teamHeaders = item.querySelectorAll('.team-side h4');
+                const teams = Array.from(teamHeaders).map(h => h.textContent.trim()).filter(t => t);
+                
+                // Count this trade for each team involved
+                teams.forEach(teamName => {
+                    if (!teamTradeCount[teamName]) {
+                        teamTradeCount[teamName] = 0;
+                    }
+                    teamTradeCount[teamName]++;
+                });
+            });
+            
+            // Create team stats from the counts
+            Object.entries(teamTradeCount).forEach(([teamName, count]) => {
+                teamStats[teamName] = {
+                    totalTrades: count,
+                    bigWins: 0,
+                    slightWins: 0,
+                    evenTrades: 0,
+                    slightLosses: 0,
+                    bigLosses: 0,
+                    totalScore: 0,
+                    averageScore: 50,
+                    winRate: 0
+                };
+            });
+            
+            // Try to get more accurate counts from the Most Active Traders section if available
             const statsGridItems = document.querySelectorAll('.stats-grid .team-side');
             statsGridItems.forEach(item => {
                 const nameElement = item.querySelector('h4');
@@ -16137,55 +16169,12 @@
                     const teamName = nameElement.textContent.trim();
                     const tradeCount = parseInt(tradeCountElement.textContent);
                     
-                    if (!isNaN(tradeCount)) {
-                        teamStats[teamName] = {
-                            totalTrades: tradeCount,
-                            bigWins: 0,
-                            slightWins: 0,
-                            evenTrades: 0,
-                            slightLosses: 0,
-                            bigLosses: 0,
-                            totalScore: 0,
-                            averageScore: 50,
-                            winRate: 0
-                        };
+                    if (!isNaN(tradeCount) && teamStats[teamName]) {
+                        // Update with the more accurate count from overview
+                        teamStats[teamName].totalTrades = tradeCount;
                     }
                 }
             });
-            
-            // If we couldn't get stats from the overview, fall back to counting from trade items
-            if (Object.keys(teamStats).length === 0) {
-                const tradeItems = document.querySelectorAll('.trade-item');
-                const teamTradeCount = {};
-                
-                tradeItems.forEach(item => {
-                    const teamHeaders = item.querySelectorAll('.team-side h4');
-                    const teams = Array.from(teamHeaders).map(h => h.textContent.trim()).filter(t => t);
-                    
-                    // Count this trade for each team involved
-                    teams.forEach(teamName => {
-                        if (!teamTradeCount[teamName]) {
-                            teamTradeCount[teamName] = 0;
-                        }
-                        teamTradeCount[teamName]++;
-                    });
-                });
-                
-                // Create team stats from the counts
-                Object.entries(teamTradeCount).forEach(([teamName, count]) => {
-                    teamStats[teamName] = {
-                        totalTrades: count,
-                        bigWins: 0,
-                        slightWins: 0,
-                        evenTrades: 0,
-                        slightLosses: 0,
-                        bigLosses: 0,
-                        totalScore: 0,
-                        averageScore: 50,
-                        winRate: 0
-                    };
-                });
-            }
 
             // Process each graded trade
             Object.entries(grades).forEach(([tradeIndex, gradeData]) => {
