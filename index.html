@@ -9462,6 +9462,8 @@
 </div>
 </div>
 </div>
+</div>
+</div>
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
 <div class="panel-header">
@@ -10625,6 +10627,11 @@
         // Initialize default chart on page load
         document.addEventListener('DOMContentLoaded', function() {
             initMonthlyChart();
+            
+            // Initialize matchups
+            if (typeof showMatchupYear === 'function') {
+                showMatchupYear();
+            }
             
             // Initialize draft board if data is available
             if (draftData && draftData.current_year && draftData.drafts_by_year[draftData.current_year]) {
