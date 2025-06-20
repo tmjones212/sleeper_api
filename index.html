@@ -14382,6 +14382,13 @@
                 initMonthlyChart();
             } else if (panelName === 'matchups') {
                 // Initialize matchups if needed
+                console.log('🎯 Matchups panel activated');
+                const matchupsPanel = document.getElementById('matchups-panel');
+                if (matchupsPanel) {
+                    console.log('✅ Found matchups panel:', matchupsPanel);
+                    console.log('Panel classes:', matchupsPanel.classList.toString());
+                    console.log('Panel display style:', window.getComputedStyle(matchupsPanel).display);
+                }
                 if (typeof showMatchupYear === 'function') {
                     showMatchupYear();
                 }
@@ -16632,6 +16639,18 @@
                 container.style.display = 'block';
                 container.style.visibility = 'visible';
                 console.log('✅ Made matchupsContainer visible');
+                console.log('Container innerHTML length:', container.innerHTML.length);
+                console.log('Container offsetHeight:', container.offsetHeight);
+                console.log('Container parent:', container.parentElement?.id || container.parentElement?.className);
+                
+                // Check if we're in the right panel
+                const matchupsPanel = document.getElementById('matchups-panel');
+                const isInMatchupsPanel = matchupsPanel && matchupsPanel.contains(container);
+                console.log('Is container in matchups panel?', isInMatchupsPanel);
+                
+                if (!isInMatchupsPanel) {
+                    console.error('❌ matchupsContainer is NOT inside matchups-panel!');
+                }
             }
             
             console.log(`✅ Showing matchups for year: ${selectedYear}`);
