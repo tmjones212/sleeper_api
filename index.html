@@ -14380,6 +14380,16 @@
                 initNetworkGraph();
             } else if (panelName === 'overview') {
                 initMonthlyChart();
+            } else if (panelName === 'matchups') {
+                // Initialize matchups if needed
+                if (typeof showMatchupYear === 'function') {
+                    showMatchupYear();
+                }
+            } else if (panelName === 'draft') {
+                // Initialize draft results if needed
+                if (typeof initDraftResults === 'function') {
+                    initDraftResults();
+                }
             }
         }
 
@@ -16568,6 +16578,24 @@
             
             // Generate trading summary
             generateTradingSummary();
+            
+            // Initialize matchups
+            if (typeof showMatchupYear === 'function') {
+                console.log('📊 Initializing matchups...');
+                showMatchupYear();
+            }
+            
+            // Initialize draft results
+            if (typeof showDraftYear === 'function') {
+                console.log('🏈 Initializing draft results...');
+                showDraftYear();
+            }
+            
+            // Load matchup breakdowns
+            if (typeof loadMatchupBreakdowns === 'function') {
+                console.log('📋 Loading matchup breakdowns...');
+                loadMatchupBreakdowns();
+            }
         });
 
     </script>
