@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Visualization Dashboard</title>
+    <title>Eazy Pickens</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -835,8 +835,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏈 Trade Visualization Dashboard</h1>
-            <p>Fantasy Football Analytics | Multi-Year League Data</p>
+            <h1>🏈 Eazy Pickens</h1>
         </div>
 
         <div class="controls">
@@ -850,6 +849,7 @@
                     <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
                     <button class="tab-button" onclick="showPanel('matchups')">⚔️ Matchups</button>
                     <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
+                    <button class="tab-button" onclick="showPanel('records')">🏆 League Records</button>
                 </div>
             </div>
         </div>
@@ -16053,6 +16053,34 @@
                 </div>
             </div>
         </div>
+        
+        <!-- League Records Panel -->
+        <div class="visualization-panel" id="records-panel">
+            <div class="panel-header">
+                <h2>🏆 League Records</h2>
+                <p>Historical achievements and record performances</p>
+            </div>
+            <div class="panel-content">
+                <h3 style="margin-bottom: 20px; color: #e0e0e0;">📊 Top 10 Highest Scoring Weeks</h3>
+                <div style="overflow-x: auto;">
+                    <table id="highest-scoring-weeks" style="width: 100%; border-collapse: collapse; color: #e0e0e0;">
+                        <thead>
+                            <tr style="background: #404040; border-bottom: 2px solid #0066cc;">
+                                <th style="padding: 12px; text-align: left;">Rank</th>
+                                <th style="padding: 12px; text-align: left;">Year</th>
+                                <th style="padding: 12px; text-align: left;">Week</th>
+                                <th style="padding: 12px; text-align: left;">Team</th>
+                                <th style="padding: 12px; text-align: right;">Points</th>
+                                <th style="padding: 12px; text-align: left;">Opponent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="records-tbody">
+                            <!-- Records will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Trade Details Modal -->
@@ -16091,6 +16119,8 @@
                 initNetworkGraph();
             } else if (panelName === 'overview') {
                 initMonthlyChart();
+            } else if (panelName === 'records') {
+                initLeagueRecords();
             }
         }
 
@@ -17578,6 +17608,80 @@
                 addMatchupClickHandlers();
             }
         }, 2000);
+
+        // League Records Functions
+        function initLeagueRecords() {
+            console.log('Initializing league records...');
+            
+            // Collect all matchup scores from all years
+            const allScores = [];
+            
+            // Parse matchup data from the page
+            const yearMatchups = document.querySelectorAll('.year-matchups');
+            yearMatchups.forEach(yearDiv => {
+                const year = yearDiv.dataset.year;
+                const weekCards = yearDiv.querySelectorAll('.week-card');
+                
+                weekCards.forEach(weekCard => {
+                    const weekHeader = weekCard.querySelector('h4');
+                    if (!weekHeader) return;
+                    
+                    const weekMatch = weekHeader.textContent.match(/Week (\d+)/);
+                    if (!weekMatch) return;
+                    
+                    const week = parseInt(weekMatch[1]);
+                    
+                    const matchupCards = weekCard.querySelectorAll('.matchup-card');
+                    matchupCards.forEach(matchupCard => {
+                        const teams = matchupCard.querySelectorAll('.team');
+                        teams.forEach(teamDiv => {
+                            const teamName = teamDiv.querySelector('div:first-child').textContent.trim();
+                            const scoreText = teamDiv.querySelector('div:nth-child(2)').textContent;
+                            const score = parseFloat(scoreText);
+                            
+                            // Find opponent
+                            const otherTeam = Array.from(teams).find(t => t !== teamDiv);
+                            const opponentName = otherTeam ? otherTeam.querySelector('div:first-child').textContent.trim() : 'Unknown';
+                            
+                            allScores.push({
+                                year: year,
+                                week: week,
+                                team: teamName,
+                                points: score,
+                                opponent: opponentName
+                            });
+                        });
+                    });
+                });
+            });
+            
+            // Sort by points descending and take top 10
+            allScores.sort((a, b) => b.points - a.points);
+            const top10 = allScores.slice(0, 10);
+            
+            // Populate the table
+            const tbody = document.getElementById('records-tbody');
+            tbody.innerHTML = '';
+            
+            top10.forEach((record, index) => {
+                const row = document.createElement('tr');
+                row.style.cssText = 'border-bottom: 1px solid #606060;';
+                if (index % 2 === 0) {
+                    row.style.background = '#353535';
+                }
+                
+                row.innerHTML = `
+                    <td style="padding: 12px; font-weight: bold; color: #66ccff;">${index + 1}</td>
+                    <td style="padding: 12px;">${record.year}</td>
+                    <td style="padding: 12px;">${record.week}</td>
+                    <td style="padding: 12px; font-weight: bold;">${record.team}</td>
+                    <td style="padding: 12px; text-align: right; font-weight: bold; color: #4CAF50; font-size: 1.1em;">${record.points.toFixed(2)}</td>
+                    <td style="padding: 12px;">${record.opponent}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
 
         // Trade History Functions
 

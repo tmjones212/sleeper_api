@@ -120,7 +120,7 @@ def test_trade_visualization_offline():
         
         # Check if template contains expected elements
         expected_elements = [
-            'Trade Visualization Dashboard',
+            'Eazy Pickens',
             'trade-network',
             'timeline-container',
             'Chart.js',
