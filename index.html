@@ -329,10 +329,39 @@
             font-weight: 600;
             font-size: 0.9rem;
             border-right: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+
+        .trading-summary-table th:hover {
+            background-color: rgba(255,255,255,0.1);
         }
 
         .trading-summary-table th:last-child {
             border-right: none;
+        }
+
+        .trading-summary-table th.sort-asc::after,
+        .trading-summary-table th.sort-desc::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+
+        .trading-summary-table th.sort-asc::after {
+            border-bottom: 5px solid white;
+        }
+
+        .trading-summary-table th.sort-desc::after {
+            border-top: 5px solid white;
         }
 
         .trading-summary-table tbody tr {
@@ -16033,6 +16062,11 @@
             }
         }
 
+        // Global variables for sorting
+        window.tradingSummaryData = null;
+        window.currentSortColumn = 'averageScore';
+        window.currentSortDirection = 'desc';
+
         function generateTradingSummary() {
             console.log('🏗️ generateTradingSummary called');
             console.log('🏗️ window.leagueAverageRatings:', window.leagueAverageRatings);
@@ -16061,30 +16095,61 @@
                 return;
             }
 
-            // Sort teams by overall score (descending)
-            const sortedTeams = Object.entries(teamStats).sort((a, b) => b[1].averageScore - a[1].averageScore);
+            // Store data globally for sorting
+            window.tradingSummaryData = teamStats;
+            
+            // Render the table with current sort
+            renderTradingSummaryTable();
+        }
+
+        function renderTradingSummaryTable() {
+            const summaryContainer = document.getElementById('trading-summary-container');
+            if (!summaryContainer || !window.tradingSummaryData) return;
+
+            // Sort teams based on current sort settings
+            const sortedTeams = Object.entries(window.tradingSummaryData).sort((a, b) => {
+                let aVal = a[1][window.currentSortColumn];
+                let bVal = b[1][window.currentSortColumn];
+                
+                // Handle team name sorting
+                if (window.currentSortColumn === 'teamName') {
+                    aVal = a[0];
+                    bVal = b[0];
+                }
+                
+                // Handle numeric vs string comparison
+                if (typeof aVal === 'string' && typeof bVal === 'string') {
+                    return window.currentSortDirection === 'asc' ? 
+                        aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                
+                return window.currentSortDirection === 'asc' ? 
+                    (aVal - bVal) : (bVal - aVal);
+            });
 
             // Count total ratings
-            const totalRatings = Object.values(window.leagueAverageRatings).reduce((sum, ratings) => sum + ratings.length, 0);
-            const totalTrades = Object.keys(window.leagueAverageRatings).length;
+            const totalRatings = window.leagueAverageRatings ? 
+                Object.values(window.leagueAverageRatings).reduce((sum, ratings) => sum + ratings.length, 0) : 0;
+            const totalTrades = window.leagueAverageRatings ? 
+                Object.keys(window.leagueAverageRatings).length : 0;
 
             let html = `
                 <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #0066cc; border-radius: 10px; color: white;">
                     <h4 style="margin: 0 0 5px 0;">🏆 League Consensus Summary</h4>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">${totalRatings} total ratings across ${totalTrades} trades by all league members</p>
                 </div>
-                <table class="trading-summary-table">
+                <table class="trading-summary-table" id="trading-summary-table">
                     <thead>
                         <tr>
-                            <th>Team</th>
-                            <th>Rating</th>
-                            <th>Total Trades</th>
-                            <th>Big Wins</th>
-                            <th>Slight Wins</th>
-                            <th>Even</th>
-                            <th>Slight Losses</th>
-                            <th>Big Losses</th>
-                            <th>Win Rate</th>
+                            <th onclick="sortTradingTable('teamName')" class="${window.currentSortColumn === 'teamName' ? 'sort-' + window.currentSortDirection : ''}">Team</th>
+                            <th onclick="sortTradingTable('averageScore')" class="${window.currentSortColumn === 'averageScore' ? 'sort-' + window.currentSortDirection : ''}">Rating</th>
+                            <th onclick="sortTradingTable('totalTrades')" class="${window.currentSortColumn === 'totalTrades' ? 'sort-' + window.currentSortDirection : ''}">Total Trades</th>
+                            <th onclick="sortTradingTable('bigWins')" class="${window.currentSortColumn === 'bigWins' ? 'sort-' + window.currentSortDirection : ''}">Big Wins</th>
+                            <th onclick="sortTradingTable('slightWins')" class="${window.currentSortColumn === 'slightWins' ? 'sort-' + window.currentSortDirection : ''}">Slight Wins</th>
+                            <th onclick="sortTradingTable('evenTrades')" class="${window.currentSortColumn === 'evenTrades' ? 'sort-' + window.currentSortDirection : ''}">Even</th>
+                            <th onclick="sortTradingTable('slightLosses')" class="${window.currentSortColumn === 'slightLosses' ? 'sort-' + window.currentSortDirection : ''}">Slight Losses</th>
+                            <th onclick="sortTradingTable('bigLosses')" class="${window.currentSortColumn === 'bigLosses' ? 'sort-' + window.currentSortDirection : ''}">Big Losses</th>
+                            <th onclick="sortTradingTable('winRate')" class="${window.currentSortColumn === 'winRate' ? 'sort-' + window.currentSortDirection : ''}">Win Rate</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -16110,6 +16175,19 @@
             
             html += '</tbody></table>';
             summaryContainer.innerHTML = html;
+        }
+
+        function sortTradingTable(column) {
+            // If clicking the same column, toggle direction
+            if (window.currentSortColumn === column) {
+                window.currentSortDirection = window.currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // New column, default to descending for numeric columns, ascending for team name
+                window.currentSortColumn = column;
+                window.currentSortDirection = column === 'teamName' ? 'asc' : 'desc';
+            }
+            
+            renderTradingSummaryTable();
         }
 
         function calculateTeamTradingStats() {
