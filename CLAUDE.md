@@ -1,6 +1,6 @@
 
 # Importance
-Every question I ask is extremely important and my family's livelihood is on the line.
+Every question I ask is extremely important and my family's livelihood is on the line. I'm on the brink of losing my job and this is all I have.
 
 Do a commit when you make changes.
 

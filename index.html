@@ -105,9 +105,10 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 30px;
-            overflow: hidden;
+            overflow: visible;
             display: none;
             border: 1px solid #404040;
+            min-height: 200px;
         }
 
         .visualization-panel.active {
@@ -992,6 +993,20 @@
             if (targetPanel) {
                 targetPanel.classList.add('active');
                 console.log('Activated panel:', panelName + '-panel');
+                console.log('Panel display style:', window.getComputedStyle(targetPanel).display);
+                console.log('Panel visibility:', window.getComputedStyle(targetPanel).visibility);
+                
+                // If showing matchups panel, ensure year filter is applied
+                if (panelName === 'matchups' && window.showMatchupYear) {
+                    console.log('Calling showMatchupYear for matchups panel');
+                    setTimeout(() => window.showMatchupYear(), 100);
+                }
+                
+                // If showing draft panel, ensure year is shown
+                if (panelName === 'draft' && window.showDraftYear) {
+                    console.log('Calling showDraftYear for draft panel');
+                    setTimeout(() => window.showDraftYear(), 100);
+                }
             } else {
                 console.error('Panel not found:', panelName + '-panel');
             }
@@ -1007,16 +1022,26 @@
         
         // Define these functions early so they're available when needed
         window.showMatchupYear = function() {
+            console.log('showMatchupYear called');
             const selectedYear = document.getElementById('matchupYearSelect').value;
+            console.log('Selected year:', selectedYear);
             const yearMatchups = document.querySelectorAll('.year-matchups');
+            console.log('Found year-matchups divs:', yearMatchups.length);
             
             yearMatchups.forEach(yearDiv => {
+                const yearValue = yearDiv.getAttribute('data-year');
+                console.log('Processing year div:', yearValue);
+                console.log('  Current display:', yearDiv.style.display);
+                console.log('  Has content:', yearDiv.innerHTML.length > 100 ? 'YES' : 'NO');
                 if (selectedYear === 'all') {
                     yearDiv.style.display = 'block';
+                    console.log('  Setting', yearValue, 'to block (all years)');
                 } else {
-                    const yearValue = yearDiv.getAttribute('data-year');
                     yearDiv.style.display = yearValue === selectedYear ? 'block' : 'none';
+                    console.log('  Setting', yearValue, 'to', yearValue === selectedYear ? 'block' : 'none');
                 }
+                console.log('  Final display:', yearDiv.style.display);
+                console.log('  Computed display:', window.getComputedStyle(yearDiv).display);
             });
             
             // Reapply head-to-head filter if active
@@ -1026,11 +1051,15 @@
         };
         
         window.showDraftYear = function() {
+            console.log('showDraftYear called');
             const selectedYear = document.getElementById('draftYearSelect').value;
+            console.log('Selected draft year:', selectedYear);
             const draftResults = document.getElementById('draftResults');
+            console.log('Draft results element found:', !!draftResults);
             
             // Check if draftData exists
             if (typeof draftData === 'undefined') {
+                console.log('draftData is undefined');
                 draftResults.innerHTML = `
                     <div style="text-align: center; color: #b0b0b0; padding: 40px;">
                         <h3>⏳ Loading Draft Data...</h3>
@@ -1039,6 +1068,7 @@
                 `;
                 return;
             }
+            console.log('draftData exists, years available:', Object.keys(draftData.drafts_by_year));
             
             if (!draftData.drafts_by_year[selectedYear] || draftData.drafts_by_year[selectedYear].length === 0) {
                 draftResults.innerHTML = `
@@ -6791,7 +6821,7 @@
 </table>
 </div>
 <!-- Matchups by Year/Week -->
-<div id="matchupsContainer">
+<div id="matchupsContainer" style="display: block; visibility: visible;">
 <div class="year-matchups" data-year="2025" style="margin: 20px 0;">
 <h3 style="color: #e0e0e0; margin-bottom: 15px;">📅 2025 Season</h3>
 <div class="weeks-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
@@ -11943,15 +11973,15 @@
             generateTradingSummary();
             
             // Initialize matchups
-            if (typeof showMatchupYear === 'function') {
+            if (typeof window.showMatchupYear === 'function') {
                 console.log('📊 Initializing matchups...');
-                showMatchupYear();
+                window.showMatchupYear();
             }
             
             // Initialize draft results
-            if (typeof showDraftYear === 'function') {
+            if (typeof window.showDraftYear === 'function') {
                 console.log('🏈 Initializing draft results...');
-                showDraftYear();
+                window.showDraftYear();
             }
             
             // Load matchup breakdowns
