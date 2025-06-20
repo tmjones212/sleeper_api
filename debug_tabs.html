@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Tabs</title>
+</head>
+<body>
+    <h1>Debug Tab Display</h1>
+    <button onclick="debugTabs()">Debug Tabs</button>
+    <pre id="output"></pre>
+    
+    <script>
+        function debugTabs() {
+            const output = document.getElementById('output');
+            let result = '';
+            
+            // Check if we're in parent window
+            if (window.parent && window.parent !== window) {
+                const parentDoc = window.parent.document;
+                
+                // Check panels
+                const panels = parentDoc.querySelectorAll('.visualization-panel');
+                result += `Found ${panels.length} panels:\n`;
+                panels.forEach(panel => {
+                    const display = window.getComputedStyle(panel).display;
+                    const hasActive = panel.classList.contains('active');
+                    result += `- ${panel.id}: display=${display}, active=${hasActive}\n`;
+                });
+                
+                // Check showPanel function
+                result += `\nshowPanel exists: ${typeof window.parent.showPanel}\n`;
+                result += `showMatchupYear exists: ${typeof window.parent.showMatchupYear}\n`;
+                result += `showDraftYear exists: ${typeof window.parent.showDraftYear}\n`;
+                
+                // Try to show matchups
+                result += '\nTrying to show matchups panel...\n';
+                if (typeof window.parent.showPanel === 'function') {
+                    window.parent.showPanel('matchups');
+                    
+                    // Check again after calling
+                    setTimeout(() => {
+                        const matchupsPanel = parentDoc.getElementById('matchups-panel');
+                        if (matchupsPanel) {
+                            const display = window.getComputedStyle(matchupsPanel).display;
+                            const hasActive = matchupsPanel.classList.contains('active');
+                            result += `After showPanel: display=${display}, active=${hasActive}\n`;
+                            
+                            // Check content
+                            const yearMatchups = matchupsPanel.querySelectorAll('.year-matchups');
+                            result += `Found ${yearMatchups.length} year sections\n`;
+                            yearMatchups.forEach(year => {
+                                const display = window.getComputedStyle(year).display;
+                                result += `- ${year.dataset.year}: display=${display}\n`;
+                            });
+                        }
+                        output.textContent = result;
+                    }, 500);
+                }
+            } else {
+                result = 'Not in iframe - open this in parent page console';
+                output.textContent = result;
+            }
+        }
+    </script>
+</body>
+</html>
