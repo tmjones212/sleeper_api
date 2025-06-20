@@ -1,118 +1,38 @@
-<!DOCTYPE html>
+<\!DOCTYPE html>
 <html>
 <head>
-    <title>Test Tabs</title>
-    <style>
-        body {
-            background: #1a1a1a;
-            color: #e0e0e0;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .test-result {
-            margin: 10px 0;
-            padding: 10px;
-            background: #2d2d2d;
-            border-radius: 5px;
-        }
-        .pass {
-            color: #4CAF50;
-        }
-        .fail {
-            color: #f44336;
-        }
-    </style>
+    <title>Tab Test Instructions</title>
 </head>
 <body>
-    <h1>Tab Display Test</h1>
-    <div id="results"></div>
+    <h1>Testing Tab Functionality</h1>
+    <p>Open the main index.html in a browser, then open developer console (F12) and run this test:</p>
+    <pre style="background: #f0f0f0; padding: 20px; border-radius: 5px;">
+// Copy and paste this into the console:
+function testTabs() {
+    console.log('=== TESTING TAB FUNCTIONALITY ===');
     
-    <script>
-        function testTabs() {
-            const results = [];
-            
-            // Test 1: Check if panels exist
-            const panels = ['overview', 'network', 'matrix', 'timeline', 'players', 'matchups', 'draft'];
-            panels.forEach(panelName => {
-                const panel = parent.document.getElementById(panelName + '-panel');
-                if (panel) {
-                    results.push({
-                        test: `Panel ${panelName} exists`,
-                        pass: true,
-                        details: `Found panel with id="${panelName}-panel"`
-                    });
-                } else {
-                    results.push({
-                        test: `Panel ${panelName} exists`,
-                        pass: false,
-                        details: `Panel not found`
-                    });
-                }
-            });
-            
-            // Test 2: Check showPanel function
-            if (typeof parent.showPanel === 'function') {
-                results.push({
-                    test: 'showPanel function exists',
-                    pass: true,
-                    details: 'Function is defined'
-                });
-            } else {
-                results.push({
-                    test: 'showPanel function exists',
-                    pass: false,
-                    details: 'Function not found'
-                });
-            }
-            
-            // Test 3: Check matchups content
-            const matchupsPanel = parent.document.getElementById('matchups-panel');
-            if (matchupsPanel) {
-                const yearMatchups = matchupsPanel.querySelectorAll('.year-matchups');
-                const hasContent = Array.from(yearMatchups).some(div => {
-                    const container = div.querySelector('.weeks-container');
-                    return container && container.children.length > 0;
-                });
-                
-                results.push({
-                    test: 'Matchups panel has content',
-                    pass: hasContent,
-                    details: `Found ${yearMatchups.length} year containers, content: ${hasContent}`
-                });
-            }
-            
-            // Test 4: Check draft content
-            const draftPanel = parent.document.getElementById('draft-panel');
-            if (draftPanel) {
-                const draftResults = draftPanel.querySelector('#draftResults');
-                const hasContent = draftResults && draftResults.innerHTML.trim().length > 0;
-                
-                results.push({
-                    test: 'Draft panel has content container',
-                    pass: !!draftResults,
-                    details: `Draft results container ${draftResults ? 'found' : 'not found'}`
-                });
-            }
-            
-            // Display results
-            const resultsDiv = document.getElementById('results');
-            results.forEach(result => {
-                const div = document.createElement('div');
-                div.className = `test-result ${result.pass ? 'pass' : 'fail'}`;
-                div.innerHTML = `
-                    <strong>${result.pass ? '✓' : '✗'} ${result.test}</strong><br>
-                    <small>${result.details}</small>
-                `;
-                resultsDiv.appendChild(div);
-            });
-        }
-        
-        // Run tests when loaded in iframe
-        if (window.parent !== window) {
-            testTabs();
-        } else {
-            document.getElementById('results').innerHTML = '<p>Please open index.html and run this test from the browser console using:</p><pre>const iframe = document.createElement("iframe"); iframe.src = "test_tabs.html"; iframe.style.width = "100%"; iframe.style.height = "400px"; document.body.appendChild(iframe);</pre>';
-        }
-    </script>
+    // Test if matchups content is visible
+    showPanel('matchups');
+    const mc = document.getElementById('matchupsContainer');
+    const yearDivs = document.querySelectorAll('.year-matchups');
+    
+    console.log('matchupsContainer exists:', \!\!mc);
+    console.log('matchupsContainer visible:', window.getComputedStyle(mc).display);
+    console.log('Year divs found:', yearDivs.length);
+    
+    yearDivs.forEach(div => {
+        const year = div.getAttribute('data-year');
+        const display = window.getComputedStyle(div).display;
+        const hasContent = div.querySelector('.matchup-card') \!== null;
+        console.log(`Year ${year}: display=${display}, has content=${hasContent}`);
+    });
+    
+    // Force show 2024
+    window.showMatchupYear();
+}
+
+testTabs();
+    </pre>
 </body>
 </html>
+EOF < /dev/null

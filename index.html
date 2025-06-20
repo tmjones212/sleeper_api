@@ -112,7 +112,9 @@
         }
 
         .visualization-panel.active {
-            display: block;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .panel-header {
@@ -129,6 +131,11 @@
 
         .panel-content {
             padding: 30px;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative;
+            z-index: 1;
         }
 
         .stats-grid {
@@ -875,10 +882,19 @@
 
         .year-matchups {
             display: block;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .year-matchups[style*="display: none"] {
             display: none !important;
+        }
+        
+        #matchupsContainer {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: 100px;
         }
         
         /* Draft board styles */
@@ -6252,7 +6268,7 @@
 <div class="search-container">
 <input class="search-input" id="playerSearch" placeholder="Enter player name..." type="text">
 <button class="search-button" onclick="searchPlayerJourney()">Track Journey</button>
-</input></div>
+</div>
 <div class="player-journey-container" id="playerJourneyResult"></div>
 </div>
 </div>
@@ -6289,7 +6305,7 @@
 <div style="margin: 20px 0;">
 <h3 style="color: #e0e0e0; margin-bottom: 15px;">🥊 Head-to-Head Records (All-Time)</h3>
 <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 0.9rem;">Click on any record to filter matchups below</p>
-<div style="background: #2d2d2d; padding: 20px; border-radius: 10px; overflow-x: auto;">
+<div style="background: #2d2d2d; padding: 20px; border-radius: 10px; overflow-x: auto; max-height: 500px; overflow-y: auto;">
 <table style="width: 100%; color: #e0e0e0; border-collapse: collapse;">
 <thead>
 <tr style="background: #404040;">
@@ -6821,7 +6837,7 @@
 </table>
 </div>
 <!-- Matchups by Year/Week -->
-<div id="matchupsContainer" style="display: block; visibility: visible;">
+<div id="matchupsContainer" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 10;">
 <div class="year-matchups" data-year="2025" style="margin: 20px 0;">
 <h3 style="color: #e0e0e0; margin-bottom: 15px;">📅 2025 Season</h3>
 <div class="weeks-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
@@ -9827,7 +9843,6 @@
 </div>
 </div>
 </div>
-</div>
 <!-- Trade Details Modal -->
 <div class="trade-modal" id="tradeModal">
 <div class="trade-modal-content">
@@ -10846,8 +10861,18 @@
             }
             
             // Initialize draft board if data is available
-            if (typeof window.showDraftYear === 'function' && typeof draftData !== 'undefined' && draftData && draftData.current_year && draftData.drafts_by_year[draftData.current_year]) {
-                window.showDraftYear();
+            if (typeof window.showDraftYear === 'function') {
+                // Try immediately
+                if (typeof draftData !== 'undefined') {
+                    window.showDraftYear();
+                } else {
+                    // If not ready, try again after a delay
+                    setTimeout(() => {
+                        if (typeof draftData !== 'undefined') {
+                            window.showDraftYear();
+                        }
+                    }, 1000);
+                }
             }
         });
 
@@ -11981,7 +12006,17 @@
             // Initialize draft results
             if (typeof window.showDraftYear === 'function') {
                 console.log('🏈 Initializing draft results...');
-                window.showDraftYear();
+                // Try immediately
+                if (typeof draftData !== 'undefined') {
+                    window.showDraftYear();
+                } else {
+                    // If not ready, try again after a delay
+                    setTimeout(() => {
+                        if (typeof draftData !== 'undefined') {
+                            window.showDraftYear();
+                        }
+                    }, 1500);
+                }
             }
             
             // Load matchup breakdowns
