@@ -8,6 +8,11 @@ from trade_visualization_service import LeagueVisualizationService
 app = Flask(__name__, template_folder='../templates')
 CORS(app)  # This allows your static site to call this API
 
+@app.route('/')
+def index():
+    """Render the main dashboard index page."""
+    return render_template('index.html')
+
 @app.route('/api/team-values/<league_id>')
 def get_team_values(league_id):
     client = SleeperAPI()
