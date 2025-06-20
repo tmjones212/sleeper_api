@@ -37,7 +37,7 @@ from trade_utils import print_manager_trade_history, print_player_trade_counts, 
 league_id = "1181025001438806016" # 2025
 # league_id = "1048308938824937472" # 2024
 # league_id = "916445745966915584" # 2023
-
+# 
 client = SleeperAPI(league_id)
 league = client.league_service.get_league(league_id)
 players = client.player_service.get_players()
