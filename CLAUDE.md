@@ -89,7 +89,7 @@ This would show `'s 2028 Round 1 pick` if `original_owner` was None/empty.
 ```html
 {% if pick.pick_number and pick.player_name %}
     Pick #{{ pick.pick_number }} ({{ pick.original_owner }}'s {{ pick.season }} R{{ pick.round }}) - {{ pick.player_name }}
-{% elif pick.original_owner %}
+{% elsif pick.original_owner %}
     {{ pick.original_owner }}'s {{ pick.season }} Round {{ pick.round }} pick
 {% else %}
     {{ pick.season }} Round {{ pick.round }} pick
