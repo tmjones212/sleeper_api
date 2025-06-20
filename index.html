@@ -16598,6 +16598,146 @@
             }
         });
 
+        // Show matchups for selected year
+        function showMatchupYear() {
+            console.log('📊 showMatchupYear called');
+            const yearSelect = document.getElementById('matchupYearSelect');
+            const selectedYear = yearSelect ? yearSelect.value : '2024';
+            
+            // The matchup content is already in the HTML, we just need to filter it
+            const allMatchups = document.querySelectorAll('.matchup-week');
+            if (allMatchups.length === 0) {
+                console.log('⚠️ No matchup weeks found in DOM');
+                return;
+            }
+            
+            allMatchups.forEach(matchup => {
+                const matchupYear = matchup.getAttribute('data-year');
+                if (selectedYear === 'all' || matchupYear === selectedYear) {
+                    matchup.style.display = 'block';
+                } else {
+                    matchup.style.display = 'none';
+                }
+            });
+            
+            console.log(`✅ Showing matchups for year: ${selectedYear}`);
+        }
+
+        // Show draft results for selected year
+        function showDraftYear() {
+            console.log('🏈 showDraftYear called');
+            const yearSelect = document.getElementById('draftYearSelect');
+            const selectedYear = yearSelect ? yearSelect.value : '2025';
+            const draftResults = document.getElementById('draftResults');
+            
+            if (!draftResults) {
+                console.log('⚠️ Draft results container not found');
+                return;
+            }
+            
+            // Extract draft data from networkData
+            const draftPicks = [];
+            
+            // Iterate through all trades to find draft picks for the selected year
+            if (typeof networkData !== 'undefined' && networkData.edges) {
+                Object.values(networkData.edges).forEach(edge => {
+                    edge.trades.forEach(trade => {
+                        if (trade.details && trade.details.teams) {
+                            trade.details.teams.forEach(team => {
+                                // Check gives
+                                if (team.gives && team.gives.draft_picks) {
+                                    team.gives.draft_picks.forEach(pick => {
+                                        if (pick.season === selectedYear) {
+                                            draftPicks.push({
+                                                ...pick,
+                                                traded_from: team.team,
+                                                traded_to: pick.to_team
+                                            });
+                                        }
+                                    });
+                                }
+                                // Check receives
+                                if (team.receives && team.receives.draft_picks) {
+                                    team.receives.draft_picks.forEach(pick => {
+                                        if (pick.season === selectedYear) {
+                                            // Skip duplicates
+                                            const exists = draftPicks.some(p => 
+                                                p.pick_number === pick.pick_number && 
+                                                p.round === pick.round && 
+                                                p.season === pick.season
+                                            );
+                                            if (!exists) {
+                                                draftPicks.push({
+                                                    ...pick,
+                                                    traded_from: pick.from_team,
+                                                    traded_to: team.team
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Sort picks by round and pick number
+            draftPicks.sort((a, b) => {
+                if (a.round !== b.round) return a.round - b.round;
+                return (a.pick_number || 0) - (b.pick_number || 0);
+            });
+            
+            // Generate HTML
+            let html = '<div class="draft-board">';
+            
+            if (draftPicks.length === 0) {
+                html += `<p style="text-align: center; color: #b0b0b0; padding: 40px;">No draft data available for ${selectedYear}</p>`;
+            } else {
+                // Group by round
+                const rounds = {};
+                draftPicks.forEach(pick => {
+                    if (!rounds[pick.round]) rounds[pick.round] = [];
+                    rounds[pick.round].push(pick);
+                });
+                
+                Object.entries(rounds).forEach(([round, picks]) => {
+                    html += `<div class="draft-round" style="margin-bottom: 30px;">`;
+                    html += `<h3 style="color: #66ccff; margin-bottom: 15px;">Round ${round}</h3>`;
+                    html += '<div class="draft-picks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">';
+                    
+                    picks.forEach(pick => {
+                        html += `<div class="draft-pick-card" style="background: #2d2d2d; padding: 15px; border-radius: 8px; border: 1px solid #404040;">`;
+                        if (pick.pick_number) {
+                            html += `<div style="font-size: 0.9rem; color: #b0b0b0; margin-bottom: 5px;">Pick #${pick.pick_number}</div>`;
+                        }
+                        if (pick.player_name) {
+                            html += `<div style="font-weight: bold; color: #e0e0e0; margin-bottom: 5px;">${pick.player_name}</div>`;
+                            if (pick.position) {
+                                html += `<div style="font-size: 0.9rem; color: #999;">${pick.position}</div>`;
+                            }
+                        } else {
+                            html += `<div style="color: #999; font-style: italic;">Future Pick</div>`;
+                        }
+                        if (pick.original_owner) {
+                            html += `<div style="font-size: 0.85rem; color: #66ccff; margin-top: 8px;">Originally: ${pick.original_owner}</div>`;
+                        }
+                        if (pick.traded_to) {
+                            html += `<div style="font-size: 0.85rem; color: #ffaa00; margin-top: 5px;">Traded to: ${pick.traded_to}</div>`;
+                        }
+                        html += '</div>';
+                    });
+                    
+                    html += '</div></div>';
+                });
+            }
+            
+            html += '</div>';
+            draftResults.innerHTML = html;
+            
+            console.log(`✅ Showing ${draftPicks.length} draft picks for year: ${selectedYear}`);
+        }
+
     </script>
 </div></body>
 </html>
