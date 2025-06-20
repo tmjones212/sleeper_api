@@ -308,59 +308,61 @@
             font-size: 0.9rem;
         }
 
-        .trading-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
+        .trading-summary-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 20px;
-        }
-
-        .team-summary-card {
-            background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
+            background: #2d2d2d;
             border-radius: 10px;
-            padding: 15px;
-            border: 1px solid #606060;
+            overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
         }
 
-        .team-summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        .trading-summary-table thead {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
         }
 
-        .team-name-header {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #66ccff;
-            border-bottom: 2px solid #66ccff;
-            padding-bottom: 5px;
-        }
-
-        .trade-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
+        .trading-summary-table th {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
             font-size: 0.9rem;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
-        .stat-label {
-            color: #b0b0b0;
+        .trading-summary-table th:last-child {
+            border-right: none;
         }
 
-        .stat-value {
-            font-weight: bold;
+        .trading-summary-table tbody tr {
+            border-bottom: 1px solid #404040;
+            transition: background-color 0.2s ease;
+        }
+
+        .trading-summary-table tbody tr:hover {
+            background-color: #3a3a3a;
+        }
+
+        .trading-summary-table td {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.9rem;
             color: #e0e0e0;
         }
 
-        .overall-grade {
-            text-align: center;
-            margin-top: 12px;
-            padding: 8px;
-            border-radius: 6px;
+        .trading-summary-table td:first-child {
+            text-align: left;
             font-weight: bold;
-            font-size: 1rem;
+            color: #66ccff;
+        }
+
+        .overall-grade {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
         }
 
         .grade-excellent { background: #44ff44; color: #000; }
@@ -368,6 +370,23 @@
         .grade-average { background: #999999; color: #fff; }
         .grade-poor { background: #ffaa00; color: #000; }
         .grade-terrible { background: #ff4444; color: #fff; }
+
+        /* Responsive table adjustments */
+        @media (max-width: 768px) {
+            .trading-summary-table {
+                font-size: 0.8rem;
+            }
+            
+            .trading-summary-table th,
+            .trading-summary-table td {
+                padding: 8px 4px;
+            }
+            
+            .overall-grade {
+                font-size: 0.75rem;
+                padding: 2px 8px;
+            }
+        }
 
         .trade-item {
             background: #404040;
@@ -16054,49 +16073,42 @@
                     <h4 style="margin: 0 0 5px 0;">🏆 League Consensus Summary</h4>
                     <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">${totalRatings} total ratings across ${totalTrades} trades by all league members</p>
                 </div>
-                <div class="trading-summary-grid">`;
+                <table class="trading-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Rating</th>
+                            <th>Total Trades</th>
+                            <th>Big Wins</th>
+                            <th>Slight Wins</th>
+                            <th>Even</th>
+                            <th>Slight Losses</th>
+                            <th>Big Losses</th>
+                            <th>Win Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
             
             sortedTeams.forEach(([teamName, stats]) => {
                 const gradeClass = getGradeClass(stats.averageScore);
                 const gradeText = getGradeText(stats.averageScore);
                 
                 html += `
-                    <div class="team-summary-card">
-                        <div class="team-name-header">${teamName}</div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Total Trades:</span>
-                            <span class="stat-value">${stats.totalTrades}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Big Wins:</span>
-                            <span class="stat-value" style="color: #44ff44;">${stats.bigWins}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Slight Wins:</span>
-                            <span class="stat-value" style="color: #66bb6a;">${stats.slightWins}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Even Trades:</span>
-                            <span class="stat-value" style="color: #999999;">${stats.evenTrades}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Slight Losses:</span>
-                            <span class="stat-value" style="color: #ffaa00;">${stats.slightLosses}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Big Losses:</span>
-                            <span class="stat-value" style="color: #ff4444;">${stats.bigLosses}</span>
-                        </div>
-                        <div class="trade-stats">
-                            <span class="stat-label">Win Rate:</span>
-                            <span class="stat-value">${stats.winRate}%</span>
-                        </div>
-                        <div class="overall-grade ${gradeClass}">${gradeText}</div>
-                    </div>
+                    <tr>
+                        <td>${teamName}</td>
+                        <td><span class="overall-grade ${gradeClass}">${gradeText}</span></td>
+                        <td>${stats.totalTrades}</td>
+                        <td style="color: #44ff44; font-weight: bold;">${stats.bigWins}</td>
+                        <td style="color: #66bb6a;">${stats.slightWins}</td>
+                        <td style="color: #999999;">${stats.evenTrades}</td>
+                        <td style="color: #ffaa00;">${stats.slightLosses}</td>
+                        <td style="color: #ff4444; font-weight: bold;">${stats.bigLosses}</td>
+                        <td><strong>${stats.winRate}%</strong></td>
+                    </tr>
                 `;
             });
             
-            html += '</div>';
+            html += '</tbody></table>';
             summaryContainer.innerHTML = html;
         }
 
@@ -16115,13 +16127,22 @@
             
             const teamStats = {};
 
-            // Initialize stats for all teams
+            // Initialize stats for all teams and count ALL trades
             const tradeItems = document.querySelectorAll('.trade-item');
+            const teamTradeCount = {}; // Track actual trade count per team
+            
             tradeItems.forEach(item => {
                 const teamHeaders = item.querySelectorAll('.team-side h4');
-                teamHeaders.forEach(header => {
-                    const teamName = header.textContent.trim();
-                    if (teamName && !teamStats[teamName]) {
+                const teams = Array.from(teamHeaders).map(h => h.textContent.trim()).filter(t => t);
+                
+                // Count this trade for both teams
+                teams.forEach(teamName => {
+                    if (!teamTradeCount[teamName]) {
+                        teamTradeCount[teamName] = 0;
+                    }
+                    teamTradeCount[teamName]++;
+                    
+                    if (!teamStats[teamName]) {
                         teamStats[teamName] = {
                             totalTrades: 0,
                             bigWins: 0,
@@ -16135,6 +16156,13 @@
                         };
                     }
                 });
+            });
+            
+            // Set the actual total trades for each team
+            Object.entries(teamTradeCount).forEach(([teamName, count]) => {
+                if (teamStats[teamName]) {
+                    teamStats[teamName].totalTrades = count;
+                }
             });
 
             // Process each graded trade
@@ -16162,7 +16190,7 @@
                 [leftTeam, rightTeam].forEach(teamName => {
                     if (!teamStats[teamName]) return;
                     
-                    teamStats[teamName].totalTrades++;
+                    // Don't increment totalTrades here - we already counted all trades above
                     
                     // Determine the result for this team
                     let teamScore;
@@ -16185,9 +16213,13 @@
 
             // Calculate averages and win rates
             Object.values(teamStats).forEach(stats => {
-                if (stats.totalTrades > 0) {
-                    stats.averageScore = stats.totalScore / stats.totalTrades;
-                    stats.winRate = Math.round(((stats.bigWins + stats.slightWins) / stats.totalTrades) * 100);
+                // Calculate graded trades count for this team
+                const gradedTrades = stats.bigWins + stats.slightWins + stats.evenTrades + 
+                                   stats.slightLosses + stats.bigLosses;
+                
+                if (gradedTrades > 0) {
+                    stats.averageScore = stats.totalScore / gradedTrades;
+                    stats.winRate = Math.round(((stats.bigWins + stats.slightWins) / gradedTrades) * 100);
                 }
             });
 
