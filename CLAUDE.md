@@ -6,6 +6,19 @@ Do a commit when you make changes.
 
 Whenever you learn something important about the codebase that would be useful to know in the future, store it here.
 
+## Recent Learnings
+
+### Draft Pick Display Issue (Fixed)
+- **Issue**: Some draft picks were showing as generic "2028 Round 1 pick" instead of "Halteclere's 2028 Round 1 pick"
+- **Root Cause**: The transaction service was correctly setting `original_owner` using `roster_id`, but the HTML needed to be regenerated
+- **Fix**: Simply regenerating the HTML with `python src/update_index.py` resolved the issue
+- **Key Insight**: The data processing and template logic were correct; it was just a matter of regenerating the output
+
+### Code Structure
+- **Transaction Service**: Correctly uses `roster_id` to determine original draft pick owner
+- **Template Logic**: Has proper fallback logic for displaying picks with/without ownership
+- **Trade Data Structure**: Uses `team_assets` structure with `receives`/`gives` arrays containing draft pick objects
+
 
 # Draft Pick Ownership Fix Documentation
 
