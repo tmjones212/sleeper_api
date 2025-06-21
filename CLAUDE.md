@@ -6,6 +6,18 @@ Do a commit when you make changes.
 
 Whenever you learn something important about the codebase that would be useful to know in the future, store it here.
 
+important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+DO refactor if a file is getting too large and refactoring would improve the codebase.
+
+ <system-reminder>
+IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context or otherwise consider it in your response unless it is highly relevant to your task. Most of the time, it is not relevant. </system-reminder>
+
+💡 Workaround
+
 ## Recent Learnings
 
 ### Draft Pick Display Issue (Fixed)
@@ -227,3 +239,16 @@ python src/update_index.py
   - `window.showDraftYear()` - Shows draft data for selected year with loading state
   - `createDraftBoard()` - Creates the draft board visualization
   - Modal functions already existed: `showMatchupBreakdownModal`, `closeBreakdownModal`, `filterHeadToHead`
+
+### Trade Summary Investigation (June 2025)
+- **Context**: Commit 6b5f82f claimed to remove "redundant trade summaries" but investigation showed they're still present
+- **What was supposedly removed**: Individual trade summaries showing "TeamA ↔ TeamB X players, Y picks"
+- **Current Status**: 
+  - All 159 individual trade summaries are still present in index.html
+  - Trading Performance Summary table is also present but shows "Firebase not connected"
+- **Trade Summary Features**:
+  1. **Individual Trade Summaries**: Show "TeamA ↔ TeamB X players, Y picks" for each trade - STILL PRESENT
+  2. **Trading Performance Summary**: Table showing team statistics (win rate, good/bad trades, etc) - requires Firebase connection
+- **Firebase Dependency**: The Trading Performance Summary relies on Firebase for league consensus data
+  - Without Firebase: Shows "❌ Firebase not connected. Summary unavailable."
+  - With Firebase: Would show team trading statistics based on community ratings
