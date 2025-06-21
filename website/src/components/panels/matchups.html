@@ -1,18 +1,45 @@
 <div class="visualization-panel" id="matchups-panel">
     <div class="panel-header">
-        <h2>⚔️ Head-to-Head Matchups</h2>
-        <p>Historical matchup results between teams</p>
+        <h2>⚔️ League Matchups</h2>
+        <p>View matchup history across all years (2025, 2024, 2023, 2022)</p>
+        <!-- Player Breakdown Info -->
+        <div style="margin: 20px 0; text-align: center;">
+            <p style="font-size: 1.1rem; color: #667eea; font-weight: bold;">
+                🎯 Click any matchup below to see detailed player breakdowns!
+            </p>
+            <p style="margin-top: 5px; font-size: 0.9rem; color: #b0b0b0;">
+                View individual player points, roster positions, and bench performance
+            </p>
+        </div>
     </div>
     <div class="panel-content">
-        <div class="matchup-controls" style="margin-bottom: 20px;">
-            <label for="matchup-year-select" style="margin-right: 10px;">Select Year:</label>
-            <select id="matchup-year-select" onchange="showMatchupYear()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px;">
-                {{MATCHUP_YEAR_OPTIONS}}
+        <div class="search-container">
+            <label for="matchupYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
+            <select class="search-input" id="matchupYearSelect" onchange="window.showMatchupYear()" style="width: 200px;">
+                <option value="all">All Years</option>
+                <option value="2024" selected>2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
             </select>
+            <div id="headToHeadFilter" style="display: none; margin-left: 20px; padding: 8px 15px; background: #0066cc; border-radius: 20px; color: white; font-size: 0.9rem;">
+                <span id="filterText"></span>
+                <button onclick="clearHeadToHeadFilter()" style="background: none; border: none; color: white; margin-left: 10px; cursor: pointer; font-size: 1rem;">×</button>
+            </div>
         </div>
         
+        <!-- Head-to-Head Records Section -->
+        <div style="margin: 20px 0;">
+            <h3 style="color: #e0e0e0; margin-bottom: 15px;">🥊 Head-to-Head Records (All-Time)</h3>
+            <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 0.9rem;">Click on any record to filter matchups below</p>
+            <div style="background: #2d2d2d; padding: 20px; border-radius: 10px; overflow-x: auto;">
+                <!-- Head-to-Head table will be populated here -->
+                <div id="headToHeadTable"></div>
+            </div>
+        </div>
+        
+        <!-- Matchups Container -->
         <div id="matchupsContainer">
-            {{MATCHUP_DATA}}
+            <!-- Matchup data will be populated here -->
         </div>
     </div>
 </div>

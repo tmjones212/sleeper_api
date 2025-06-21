@@ -254,3 +254,11 @@ python src/update_index.py
 - **Firebase Dependency**: The Trading Performance Summary relies on Firebase for league consensus data
   - Without Firebase: Shows "❌ Firebase not connected. Summary unavailable."
   - With Firebase: Would show team trading statistics based on community ratings
+
+### Website Modular Architecture (June 2025)
+- **Important**: When working on website updates, use the modular version in the `website/` folder, NOT the monolithic index.html in the root
+- **Current Status**: The modular architecture exists but components were never extracted from the original HTML
+- **Issue**: The website/index.html is only 56 lines and missing most content - it's just a skeleton
+- **Fix Needed**: Components need to be extracted from the main index.html into the modular structure
+- **Path Issues**: The website version incorrectly references files with `../` (parent directory) paths
+- **Build Process**: `python3 build/site_generator.py` runs but only generates 9.9KB file (should be ~1.4MB)

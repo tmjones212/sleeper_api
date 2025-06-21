@@ -5,7 +5,156 @@
     </div>
     <div class="panel-content">
         <div style="overflow-x: auto;">
-            {{TRADE_MATRIX_TABLE}}
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #0066cc; color: white;">
+                        <th style="padding: 10px; border: 1px solid #606060;">Team</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">BaoDown</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">EBao</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">Halteclere</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">ShadyCommish88</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">androooooo</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">caviar89</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">connerstafford11</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">emanueljd3</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">lamjohnson56</th>
+                        <th style="padding: 10px; border: 1px solid #606060; writing-mode: vertical-lr; text-orientation: mixed;">tmjones212</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">BaoDown</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1.0);">10</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'androooooo')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'lamjohnson56')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('BaoDown', 'tmjones212')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">EBao</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);">20</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'androooooo')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'caviar89')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'connerstafford11')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.7);">7</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'lamjohnson56')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('EBao', 'tmjones212')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">Halteclere</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);">5</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'caviar89')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'connerstafford11')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'lamjohnson56')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('Halteclere', 'tmjones212')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">ShadyCommish88</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1.0);">10</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);">20</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);">5</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'androooooo')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.7);">7</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'caviar89')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.9);">9</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'connerstafford11')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);">6</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);">18</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'lamjohnson56')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('ShadyCommish88', 'tmjones212')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">androooooo</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('androooooo', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('androooooo', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('androooooo', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.7);">7</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('androooooo', 'caviar89')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('androooooo', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">caviar89</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('caviar89', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('caviar89', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('caviar89', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.9);">9</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('caviar89', 'androooooo')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('caviar89', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">connerstafford11</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('connerstafford11', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('connerstafford11', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('connerstafford11', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.6);">6</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">emanueljd3</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.7);">7</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 1);">18</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'androooooo')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'caviar89')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'lamjohnson56')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);">5</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('emanueljd3', 'tmjones212')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">lamjohnson56</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('lamjohnson56', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('lamjohnson56', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('lamjohnson56', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('lamjohnson56', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('lamjohnson56', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.5);">5</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #606060; background: #404040; font-weight: bold; color: #e0e0e0;">tmjones212</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('tmjones212', 'BaoDown')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('tmjones212', 'EBao')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.1);">1</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('tmjones212', 'Halteclere')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.3);">3</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('tmjones212', 'ShadyCommish88')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.4);">4</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="clickable-cell" onclick="showTeamTrades('tmjones212', 'emanueljd3')" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: rgba(0, 102, 204, 0.2);">2</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">0</td>
+                        <td class="" onclick="" style="padding: 10px; border: 1px solid #606060; text-align: center; color: #e0e0e0; background: #2d2d2d;">-</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        <p><strong>Note:</strong> Numbers show trade count between teams. Darker blue = more trades.</p>
     </div>
 </div>

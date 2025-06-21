@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{{PAGE_TITLE}}</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="matchup_breakdowns.js?v=3"></script>
+    <script src="league_mapping.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Styles -->
+    {{STYLES}}
+    
+    <!-- Early Scripts -->
+    {{EARLY_SCRIPTS}}
+</head>
+<body>
+    <div class="container">
+        <!-- Header Component -->
+        {{HEADER_COMPONENT}}
+        
+        <!-- Controls Component -->
+        {{CONTROLS_COMPONENT}}
+        
+        <!-- Panels Container -->
+        <div class="panels-container" style="position: relative; width: 100%; min-height: 600px; display: block;">
+            <!-- Overview Panel -->
+            <div class="visualization-panel active" id="overview-panel">
+    <div class="panel-header">
+        <h2>📊 Trade Overview</h2>
+        <p>League trading statistics and most active participants</p>
+    </div>
+    <div class="panel-content">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>159</h3>
+                <p>Total Trades</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{TOTAL_PLAYERS_TRADED}}</h3>
+                <p>Players Traded</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{TOTAL_PICKS_TRADED}}</h3>
+                <p>Draft Picks Traded</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ACTIVE_TEAMS}}</h3>
+                <p>Active Teams</p>
+            </div>
+        </div>
+        
+        <h3 style="margin-bottom: 20px; color: #e0e0e0;">📈 Most Active Traders</h3>
+        <div class="stats-grid">
+            {{MOST_ACTIVE_TRADERS}}
+        </div>
+        
+        <h3 style="margin: 30px 0 20px; color: #e0e0e0;">🔄 Most Traded Players</h3>
+        <div class="most-traded-list">
+            {{MOST_TRADED_PLAYERS}}
+        </div>
+        
+        <h3 style="margin: 30px 0 20px; color: #e0e0e0;">📊 Trading Activity by Month</h3>
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+</div>
+            
+            <!-- Network Panel -->
+            <div class="visualization-panel" id="network-panel">
+    <div class="panel-header">
+        <h2>🕸️ Trade Network</h2>
+        <p>Interactive network showing trade relationships between teams</p>
+    </div>
+    <div class="panel-content">
+        <div class="network-panel-layout">
+            <div class="network-graph" id="trade-network"></div>
+            <div class="trade-details-sidebar" id="trade-details-sidebar">
+                <h3>Trade Details</h3>
+                <p style="color: #666; font-style: italic;">Click on network connections or team pairs to see detailed trade information.</p>
+                <div id="trade-details-content"></div>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <h3>Network Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>{{TOTAL_TEAMS}}</h3>
+                    <p>Teams</p>
+                </div>
+                <div class="stat-card">
+                    <h3>{{TRADE_RELATIONSHIPS}}</h3>
+                    <p>Trade Relationships</p>
+                </div>
+            </div>
+            <p><strong>Instructions:</strong> 
+                • Drag nodes to rearrange the network<br/>
+                • Click on team nodes for statistics<br/>
+                • Click or double-click on connections (lines) between teams for trade details<br/>
+                • Check browser console if clicks aren't working and report any errors
+            </p>
+        </div>
+    </div>
+</div>
+            
+            <!-- Matrix Panel -->
+            <div class="visualization-panel" id="matrix-panel">
+    <div class="panel-header">
+        <h2>📋 Team-to-Team Trade Matrix</h2>
+        <p>Shows how many times each team has traded with every other team</p>
+    </div>
+    <div class="panel-content">
+        <div style="overflow-x: auto;">
+            {{TRADE_MATRIX_TABLE}}
+        </div>
+    </div>
+</div>
+            
+            <!-- Timeline Panel -->
+            <div class="visualization-panel" id="timeline-panel">
+    <div class="panel-header">
+        <h2>📅 Trade History Timeline</h2>
+        <p>Complete chronological history of all trades</p>
+    </div>
+    <div class="panel-content">
+        <!-- Trading Performance Summary -->
+        <div class="trade-summary-section">
+            <h3 style="color: #e0e0e0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <span>📊 Trading Performance Summary</span>
+                <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
+            </h3>
+            <div id="trading-summary-container" style="margin-bottom: 20px;">
+                <!-- Trading summary will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Trade Filter -->
+        <div class="trade-filter-container">
+            <label for="team-filter" style="color: #e0e0e0; margin-right: 10px;">Filter by Team:</label>
+            <select id="team-filter" onchange="filterTradesByTeam()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px; margin-right: 10px;">
+                <option value="">All Teams</option>
+                {{TEAM_OPTIONS}}
+            </select>
+            <button onclick="resetTradeFilter()" style="background: #606060; color: #e0e0e0; border: 1px solid #808080; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reset</button>
+        </div>
+        
+        <!-- Timeline Container -->
+        <div class="timeline-container">
+            <!-- Trade items will be generated here -->
+        </div>
+    </div>
+</div>
+            
+            <!-- Players Panel -->
+            <div class="visualization-panel" id="players-panel">
+    <div class="panel-header">
+        <h2>👤 Player Journey Tracker</h2>
+        <p>Track any player's journey through teams</p>
+    </div>
+    <div class="panel-content">
+        <div class="search-container">
+            <input type="text" id="player-search" class="search-input" placeholder="Enter player name..." onkeypress="if(event.key==='Enter') searchPlayerJourney()">
+            <button class="search-button" onclick="searchPlayerJourney()">Search</button>
+        </div>
+        
+        <div id="player-suggestions" style="margin: 10px auto; max-width: 600px; text-align: center;"></div>
+        
+        <div id="player-journey-results" class="player-journey-container">
+            <!-- Player journey results will appear here -->
+        </div>
+    </div>
+</div>
+            
+            <!-- Matchups Panel -->
+            <div class="visualization-panel" id="matchups-panel">
+    <div class="panel-header">
+        <h2>⚔️ Head-to-Head Matchups</h2>
+        <p>Historical matchup results between teams</p>
+    </div>
+    <div class="panel-content">
+        <div class="matchup-controls" style="margin-bottom: 20px;">
+            <label for="matchup-year-select" style="margin-right: 10px;">Select Year:</label>
+            <select id="matchup-year-select" onchange="showMatchupYear()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px;">
+                {{MATCHUP_YEAR_OPTIONS}}
+            </select>
+        </div>
+        
+        <div id="matchupsContainer">
+            {{MATCHUP_DATA}}
+        </div>
+    </div>
+</div>
+            
+            <!-- Draft Panel -->
+            <div class="visualization-panel" id="draft-panel">
+    <div class="panel-header">
+        <h2>🏈 Draft Results</h2>
+        <p>Complete draft history and results</p>
+    </div>
+    <div class="panel-content">
+        <div class="draft-controls" style="margin-bottom: 20px;">
+            <label for="draft-year-select" style="margin-right: 10px;">Select Draft Year:</label>
+            <select id="draft-year-select" onchange="showDraftYear()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px;">
+                {{DRAFT_YEAR_OPTIONS}}
+            </select>
+        </div>
+        
+        <div id="draft-results">
+            {{DRAFT_DATA}}
+        </div>
+    </div>
+</div>
+        </div>
+        
+        <!-- Modals -->
+        <!-- Trade Details Modal -->
+<div class="trade-modal" id="tradeModal">
+    <div class="trade-modal-content">
+        <span class="trade-modal-close">×</span>
+        <div id="tradeModalContent"></div>
+    </div>
+</div>
+
+<!-- Matchup Breakdown Modal -->
+<div id="breakdownModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+    <div style="background-color: #2d2d2d; margin: 5% auto; padding: 30px; border-radius: 15px; width: 80%; max-width: 900px; max-height: 80%; overflow-y: auto; position: relative; color: #e0e0e0;">
+        <span onclick="closeBreakdownModal()" style="position: absolute; top: 15px; right: 25px; font-size: 28px; font-weight: bold; cursor: pointer; color: #b0b0b0;">&times;</span>
+        <h2 id="modalTitle" style="margin-bottom: 20px; color: #66ccff;">Matchup Breakdown</h2>
+        <div id="modalContent"></div>
+    </div>
+</div>
+        
+        <!-- Scripts -->
+        {{SCRIPTS}}
+    </div>
+</body>
+</html>

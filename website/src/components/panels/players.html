@@ -1,18 +1,14 @@
 <div class="visualization-panel" id="players-panel">
     <div class="panel-header">
         <h2>👤 Player Journey Tracker</h2>
-        <p>Track any player's journey through teams</p>
+        <p>Track how individual players have moved between teams</p>
     </div>
     <div class="panel-content">
         <div class="search-container">
-            <input type="text" id="player-search" class="search-input" placeholder="Enter player name..." onkeypress="if(event.key==='Enter') searchPlayerJourney()">
-            <button class="search-button" onclick="searchPlayerJourney()">Search</button>
+            <input type="text" class="search-input" id="playerSearch" placeholder="Enter player name...">
+            <button class="search-button" onclick="searchPlayerJourney()">Track Journey</button>
         </div>
         
-        <div id="player-suggestions" style="margin: 10px auto; max-width: 600px; text-align: center;"></div>
-        
-        <div id="player-journey-results" class="player-journey-container">
-            <!-- Player journey results will appear here -->
-        </div>
+        <div class="player-journey-container" id="playerJourneyResult"></div>
     </div>
 </div>
