@@ -11,6 +11,56 @@ import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any
+from html.parser import HTMLParser
+
+class TradeExtractor(HTMLParser):
+    """Extract trade items from HTML"""
+    def __init__(self):
+        super().__init__()
+        self.in_trade_item = False
+        self.in_timeline = False
+        self.trade_items = []
+        self.current_trade = []
+        self.depth = 0
+        
+    def handle_starttag(self, tag, attrs):
+        attrs_dict = dict(attrs)
+        
+        if tag == 'div' and attrs_dict.get('class') == 'timeline-container':
+            self.in_timeline = True
+            
+        if self.in_timeline and tag == 'div' and attrs_dict.get('class') == 'trade-item':
+            self.in_trade_item = True
+            self.depth = 0
+            self.current_trade = ['<div class="trade-item">']
+            
+        elif self.in_trade_item:
+            self.depth += 1 if tag == 'div' else 0
+            attr_str = ' '.join([f'{k}="{v}"' for k, v in attrs])
+            if attr_str:
+                self.current_trade.append(f'<{tag} {attr_str}>')
+            else:
+                self.current_trade.append(f'<{tag}>')
+                
+    def handle_endtag(self, tag):
+        if self.in_trade_item:
+            self.current_trade.append(f'</{tag}>')
+            if tag == 'div':
+                if self.depth == 0:
+                    self.in_trade_item = False
+                    self.trade_items.append(''.join(self.current_trade))
+                    self.current_trade = []
+                else:
+                    self.depth -= 1
+                    
+        if tag == 'div' and self.in_timeline and not self.in_trade_item:
+            # Check if we're ending the timeline container
+            if self.depth == 0:
+                self.in_timeline = False
+                
+    def handle_data(self, data):
+        if self.in_trade_item:
+            self.current_trade.append(data)
 
 class SiteGenerator:
     def __init__(self, base_path: str = None):
@@ -23,12 +73,16 @@ class SiteGenerator:
         self.js_path = self.src_path / 'js'
         self.styles_path = self.src_path / 'styles'
         
+        # Path to original index.html (one level up from website/)
+        self.original_index_path = self.base_path.parent / 'index.html'
+        
         # Ensure dist directory exists
         self.dist_path.mkdir(exist_ok=True)
         
         # Component cache
         self.components = {}
         self.data = {}
+        self.trade_items = []
         
     def load_component(self, component_path: str) -> str:
         """Load a component file and cache it"""
@@ -68,6 +122,85 @@ class SiteGenerator:
             content = content.replace(f"{{{{{placeholder}}}}}", str(value))
         return content
         
+    def get_team_names_from_trades(self, trade_items: List[str]) -> List[str]:
+        """Extract unique team names from trade items"""
+        team_names = set()
+        
+        for trade in trade_items:
+            # Extract team names from trade summaries
+            summary_match = re.search(r'<strong>([^<]+) ↔ ([^<]+)</strong>', trade)
+            if summary_match:
+                team_names.add(summary_match.group(1).strip())
+                team_names.add(summary_match.group(2).strip())
+                
+        return sorted(list(team_names))
+        
+    def extract_trades_from_original(self):
+        """Extract trade items from original index.html"""
+        if not self.original_index_path.exists():
+            print(f"Warning: Original index.html not found at {self.original_index_path}")
+            return []
+            
+        with open(self.original_index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+        # Extract trade items using regex
+        trade_pattern = r'<div class="trade-item">.*?</div></div></div>'
+        self.trade_items = re.findall(trade_pattern, content, re.DOTALL)
+        
+        print(f"Extracted {len(self.trade_items)} trade items from original index.html")
+        return self.trade_items
+        
+    def extract_javascript_data(self):
+        """Extract JavaScript data variables from original index.html"""
+        if not self.original_index_path.exists():
+            return {}
+            
+        with open(self.original_index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+        # Extract key JavaScript data
+        js_data = {}
+        
+        # Extract networkData
+        network_match = re.search(r'const networkData = ({.*?});\s*(?:const|var|let|\n)', content, re.DOTALL)
+        if network_match:
+            js_data['networkData'] = network_match.group(1)
+            
+        # Extract draftData  
+        draft_match = re.search(r'const draftData = ({.*?});\s*(?:const|var|let|\n)', content, re.DOTALL)
+        if draft_match:
+            js_data['draftData'] = draft_match.group(1)
+            
+        # Extract any other important data variables
+        timeline_match = re.search(r'const timelineData = ({.*?});\s*(?:const|var|let|\n)', content, re.DOTALL)
+        if timeline_match:
+            js_data['timelineData'] = timeline_match.group(1)
+            
+        print(f"Extracted {len(js_data)} JavaScript data blocks")
+        return js_data
+        
+    def extract_inline_scripts(self):
+        """Extract inline scripts from original index.html"""
+        if not self.original_index_path.exists():
+            return []
+            
+        with open(self.original_index_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+        # Extract all inline scripts except data definitions
+        scripts = []
+        script_pattern = r'<script[^>]*>\s*(?!const (?:networkData|draftData|timelineData))(.*?)</script>'
+        matches = re.findall(script_pattern, content, re.DOTALL)
+        
+        for script in matches:
+            script = script.strip()
+            if script and not script.startswith('const networkData') and not script.startswith('const draftData'):
+                scripts.append(script)
+                
+        print(f"Extracted {len(scripts)} inline script blocks")
+        return scripts
+    
     def combine_css(self) -> str:
         """Combine all CSS files in order"""
         css_files = [
@@ -81,21 +214,52 @@ class SiteGenerator:
         ]
         
         combined_css = []
+        
+        # First, try to extract CSS from original index.html
+        if self.original_index_path.exists():
+            with open(self.original_index_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                
+            # Extract all <style> blocks
+            style_pattern = r'<style[^>]*>(.*?)</style>'
+            style_matches = re.findall(style_pattern, content, re.DOTALL)
+            
+            if style_matches:
+                combined_css.append("/* Extracted from original index.html */")
+                for style in style_matches:
+                    combined_css.append(style.strip())
+        
+        # Then add modular CSS files if they exist
         for css_file in css_files:
             css_path = self.styles_path / 'css' / css_file
             if css_path.exists():
                 with open(css_path, 'r', encoding='utf-8') as f:
-                    combined_css.append(f"/* {css_file} */\n{f.read()}")
-            else:
-                print(f"Warning: CSS file {css_file} not found")
+                    css_content = f.read().strip()
+                    if css_content:
+                        combined_css.append(f"\n/* {css_file} */\n{css_content}")
                 
         return '\n\n'.join(combined_css)
         
     def combine_js(self) -> str:
-        """Combine JavaScript modules into single script"""
-        js_modules = []
+        """Combine JavaScript modules and data into single script"""
+        js_parts = []
         
-        # Load modules in dependency order
+        # First add the JavaScript data
+        js_data = self.extract_javascript_data()
+        if js_data:
+            js_parts.append("// Data variables extracted from original")
+            for var_name, var_data in js_data.items():
+                js_parts.append(f"const {var_name} = {var_data};")
+            js_parts.append("")
+            
+        # Extract and add inline scripts from original
+        inline_scripts = self.extract_inline_scripts()
+        if inline_scripts:
+            js_parts.append("// Inline scripts from original")
+            js_parts.extend(inline_scripts)
+            js_parts.append("")
+        
+        # Load modules in dependency order if they exist
         module_order = [
             'modules/utils.js',
             'modules/firebase.js',
@@ -111,19 +275,22 @@ class SiteGenerator:
             'main.js'
         ]
         
+        modules_found = False
         for js_file in module_order:
             js_path = self.js_path / js_file
             if js_path.exists():
+                if not modules_found:
+                    js_parts.append("// Modular JavaScript files")
+                    modules_found = True
+                    
                 with open(js_path, 'r', encoding='utf-8') as f:
                     # Remove export/import statements for combined file
                     content = f.read()
                     content = re.sub(r'^export\s+', '', content, flags=re.MULTILINE)
                     content = re.sub(r'^import\s+.*?;?\s*$', '', content, flags=re.MULTILINE)
-                    js_modules.append(f"// {js_file}\n{content}")
-            else:
-                print(f"Warning: JS file {js_file} not found")
+                    js_parts.append(f"// {js_file}\n{content}")
                 
-        return '\n\n'.join(js_modules)
+        return '\n\n'.join(js_parts)
         
     def generate_trade_items(self, trades_data: List[Dict]) -> str:
         """Generate HTML for all trade items"""
@@ -163,11 +330,24 @@ class SiteGenerator:
         """Build the complete site"""
         print("Starting site generation...")
         
+        # Extract trade items from original
+        trade_items = self.extract_trades_from_original()
+        
+        # Generate trade history HTML
+        trade_history_html = '\n'.join(trade_items) if trade_items else '<!-- No trades found -->'
+        
+        # Calculate stats from trades
+        total_trades = len(trade_items)
+        
         # Load base template
         base_html = self.load_component('base.html')
         
+        # Get team names for filter dropdown
+        team_names = self.get_team_names_from_trades(trade_items)
+        team_options = '\n'.join([f'<option value="{team}">{team}</option>' for team in team_names])
+        
         # Load all panel components
-        panels = {
+        panels_raw = {
             'OVERVIEW_PANEL': self.load_component('panels/overview.html'),
             'NETWORK_PANEL': self.load_component('panels/network.html'),
             'MATRIX_PANEL': self.load_component('panels/matrix.html'),
@@ -177,6 +357,15 @@ class SiteGenerator:
             'DRAFT_PANEL': self.load_component('panels/draft.html')
         }
         
+        # Process timeline panel to inject trade history
+        timeline_replacements = {
+            'TRADE_HISTORY': trade_history_html,
+            'TEAM_OPTIONS': team_options
+        }
+        panels_raw['TIMELINE_PANEL'] = self.replace_placeholders(panels_raw['TIMELINE_PANEL'], timeline_replacements)
+        
+        panels = panels_raw
+        
         # Load shared components
         shared = {
             'HEADER': self.load_component('header.html'),
@@ -184,32 +373,48 @@ class SiteGenerator:
             'MODALS': self.load_component('shared/modals.html')
         }
         
-        # Load trade data (placeholder - integrate with your existing data)
-        # trades_data = self.load_data('trades.json')
-        
         # Combine all CSS
         combined_css = self.combine_css()
         
         # Combine all JavaScript
         combined_js = self.combine_js()
         
-        # Create replacements dictionary
+        # Create replacements dictionary matching base.html template
         replacements = {
-            'SITE_TITLE': 'Eazy Pickens',
-            'COMBINED_CSS': f'<style>\n{combined_css}\n</style>',
-            'COMBINED_JS': f'<script>\n{combined_js}\n</script>',
-            'BUILD_TIME': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            **panels,
-            **shared,
-            # Add data placeholders
-            'TOTAL_TRADES': '159',  # Replace with actual data
-            'TOTAL_PLAYERS': '234',  # Replace with actual data
-            'TOTAL_PICKS': '87',    # Replace with actual data
-            'TRADE_HISTORY': '<!-- Trade items will be generated here -->'
+            'PAGE_TITLE': 'Eazy Pickens',
+            'STYLES': f'<style>\n{combined_css}\n</style>',
+            'EARLY_SCRIPTS': '',  # Add any scripts that need to load early
+            'SCRIPTS': f'<script>\n{combined_js}\n</script>',
+            'HEADER_COMPONENT': shared.get('HEADER', ''),
+            'CONTROLS_COMPONENT': shared.get('CONTROLS', ''),
+            'OVERVIEW_PANEL': panels.get('OVERVIEW_PANEL', ''),
+            'NETWORK_PANEL': panels.get('NETWORK_PANEL', ''),
+            'MATRIX_PANEL': panels.get('MATRIX_PANEL', ''),
+            'TIMELINE_PANEL': panels.get('TIMELINE_PANEL', ''),
+            'PLAYERS_PANEL': panels.get('PLAYERS_PANEL', ''),
+            'MATCHUPS_PANEL': panels.get('MATCHUPS_PANEL', ''),
+            'DRAFT_PANEL': panels.get('DRAFT_PANEL', ''),
+            'MODALS': shared.get('MODALS', ''),
+            # These will be used within the panels
+            'TOTAL_TRADES': str(total_trades),
+            'TOTAL_PLAYERS': '234',  # These would need to be calculated from the data
+            'TOTAL_PICKS': '87',    # These would need to be calculated from the data
+            'TRADE_HISTORY': trade_history_html
         }
         
         # Replace all placeholders
         final_html = self.replace_placeholders(base_html, replacements)
+        
+        # Add external script references if they exist in original
+        if self.original_index_path.exists():
+            with open(self.original_index_path, 'r', encoding='utf-8') as f:
+                original_content = f.read()
+                
+            # Extract external script references
+            external_scripts = re.findall(r'<script[^>]*src="[^"]+"[^>]*></script>', original_content)
+            if external_scripts:
+                # Insert before closing body tag
+                final_html = final_html.replace('</body>', '\n'.join(external_scripts) + '\n</body>')
         
         # Write to dist
         output_path = self.dist_path / 'index.html'
