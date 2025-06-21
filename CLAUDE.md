@@ -20,6 +20,8 @@ IMPORTANT: this context may or may not be relevant to your tasks. You should not
 
 ## Recent Learnings
 
+DO NOT CHANGE THE FIREBASE CODE or the trade summary by team code IN index.html unless specifically asked to. For some reason we're constantly losing it when you make changes.
+
 ### Draft Pick Display Issue (Fixed)
 - **Issue**: Some draft picks were showing as generic "2028 Round 1 pick" instead of "Halteclere's 2028 Round 1 pick"
 - **Root Cause**: The transaction service was correctly setting `original_owner` using `roster_id`, but the HTML needed to be regenerated

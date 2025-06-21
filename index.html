@@ -11364,7 +11364,12 @@
             const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
             
             // Get team names from the trade item
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
+            const sliderElement = document.getElementById(`trade-grade-${tradeIndex}`);
+            if (!sliderElement) {
+                console.error(`Slider not found for trade index: ${tradeIndex}`);
+                return;
+            }
+            const tradeItem = sliderElement.closest('.trade-item');
             const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
             const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
             const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
@@ -11442,6 +11447,25 @@
         window.tradingSummaryData = null;
         window.currentSortColumn = 'averageScore';
         window.currentSortDirection = 'desc';
+        
+        // Create a mapping between string IDs and numeric indices
+        function getTradeIndexMapping() {
+            const mapping = {};
+            const reverseMapping = {};
+            const tradeItems = document.querySelectorAll('.trade-item');
+            
+            tradeItems.forEach((item, numericIndex) => {
+                const slider = item.querySelector('.trade-grade-slider');
+                if (slider) {
+                    const sliderId = slider.id;
+                    const stringIndex = sliderId.replace('trade-grade-', '');
+                    mapping[stringIndex] = numericIndex;
+                    reverseMapping[numericIndex] = stringIndex;
+                }
+            });
+            
+            return { mapping, reverseMapping };
+        }
 
         function generateTradingSummary() {
             console.log('🏗️ generateTradingSummary called');
@@ -11756,12 +11780,17 @@
                 
                 const tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
                 
-                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}`);
+                // Get numeric index for this trade
+                const { mapping } = getTradeIndexMapping();
+                const numericIndex = typeof tradeIndex === 'string' ? mapping[tradeIndex] : tradeIndex;
+                
+                console.log(`💾 Saving to Firebase: Trade ${tradeIndex} (numeric: ${numericIndex}), User: ${userName}, Rating: ${gradeValue}`);
                 
                 db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
                     rating: gradeValue,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    tradeIndex: tradeIndex,
+                    tradeIndex: numericIndex, // Store numeric index for compatibility
+                    stringIndex: tradeIndex, // Also store string index
                     userName: userName
                 }).then(() => {
                     console.log('✅ Rating saved to Firebase successfully');
@@ -11798,10 +11827,34 @@
         }
 
         function updateTradeGradeDisplay(tradeIndex, averageValue, numRatings) {
-            const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
+            let resultElement = document.getElementById(`trade-result-${tradeIndex}`);
+            
+            // If not found, try with string index from reverse mapping
+            if (!resultElement) {
+                const { reverseMapping } = getTradeIndexMapping();
+                const stringIndex = reverseMapping[tradeIndex];
+                if (stringIndex) {
+                    resultElement = document.getElementById(`trade-result-${stringIndex}`);
+                }
+            }
             
             // Get team names
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
+            let tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
+            
+            // If not found with the given index, try reverse mapping
+            if (!tradeItem) {
+                const { reverseMapping } = getTradeIndexMapping();
+                const stringIndex = reverseMapping[tradeIndex];
+                if (stringIndex) {
+                    tradeItem = document.querySelector(`#trade-grade-${stringIndex}`)?.closest('.trade-item');
+                }
+            }
+            
+            if (!tradeItem) {
+                console.error(`Trade item not found for index: ${tradeIndex}`);
+                return;
+            }
+            
             const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
             const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
             const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
@@ -11859,6 +11912,7 @@
                     ratingsSnapshot.forEach(ratingDoc => {
                         const data = ratingDoc.data();
                         const tradeIndex = data.tradeIndex;
+                        const stringIndex = data.stringIndex;  // New field we're storing
                         const userName = data.userName;
                         const rating = data.rating;
                         
@@ -11873,7 +11927,9 @@
                             
                             // Collect this user's ratings for sliders
                             if (userName === currentUser) {
-                                userRatings[tradeIndex] = rating;
+                                // If we have a stringIndex, use that for the slider
+                                const indexToUse = stringIndex || tradeIndex;
+                                userRatings[indexToUse] = rating;
                             }
                         } else {
                             console.log(`❌ Rating missing tradeIndex:`, data);
@@ -11883,9 +11939,21 @@
                     console.log('📈 All ratings for summary:', allRatings);
                     console.log('👤 Current user ratings for sliders:', userRatings);
 
+                    // Get index mappings
+                    const { reverseMapping } = getTradeIndexMapping();
+                    
                     // Update individual sliders with THIS USER's ratings only (without saving)
                     Object.entries(userRatings).forEach(([tradeIndex, rating]) => {
-                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                        // Try numeric index first
+                        let slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                        
+                        // If not found, try using reverse mapping to get string index
+                        if (!slider && reverseMapping[tradeIndex]) {
+                            const stringIndex = reverseMapping[tradeIndex];
+                            slider = document.getElementById(`trade-grade-${stringIndex}`);
+                            if (slider && !silent) console.log(`🔄 Found slider using string index: ${stringIndex}`);
+                        }
+                        
                         if (slider) {
                             if (!silent) console.log(`🎯 Setting slider ${tradeIndex} to user's rating: ${rating}`);
                             slider.value = rating;
