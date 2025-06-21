@@ -109,6 +109,8 @@
             display: none;
             border: 1px solid #404040;
             min-height: 200px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .visualization-panel.active {
@@ -145,6 +147,8 @@
             visibility: visible !important;
             opacity: 1 !important;
             position: relative;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .stats-grid {
@@ -1032,6 +1036,8 @@
 </div>
 </div>
 </div>
+<!-- Panels Container -->
+<div class="panels-container" style="position: relative; width: 100%; min-height: 600px;">
 <!-- Overview Panel -->
 <div class="visualization-panel active" id="overview-panel">
 <div class="panel-header">
@@ -14475,6 +14481,8 @@
 </div>
 </div>
 </div>
+</div>
+<!-- End of panels-container -->
 <!-- Trade Details Modal -->
 <div class="trade-modal" id="tradeModal">
 <div class="trade-modal-content">
