@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Test</title>
+    <style>
+        .panel { 
+            display: none; 
+            padding: 20px; 
+            background: #f0f0f0; 
+            margin: 10px;
+            border: 1px solid #000;
+        }
+        .panel.active { 
+            display: block; 
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+        }
+        button.active {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minimal Panel Test</h1>
+    
+    <div>
+        <button class="tab-button active" onclick="showPanel('overview')">Overview</button>
+        <button class="tab-button" onclick="showPanel('network')">Network</button>
+    </div>
+    
+    <div class="visualization-panel panel active" id="overview-panel">
+        <h2>Overview Panel</h2>
+        <p>This is the overview</p>
+    </div>
+    
+    <div class="visualization-panel panel" id="network-panel">
+        <h2>Network Panel</h2>
+        <p>This is the network</p>
+    </div>
+    
+    <script>
+    function showPanel(panelName) {
+        console.log('showPanel called:', panelName);
+        
+        // Get all panels
+        var panels = document.querySelectorAll('.visualization-panel');
+        console.log('Found panels:', panels.length);
+        
+        // Hide all
+        for (var i = 0; i < panels.length; i++) {
+            panels[i].classList.remove('active');
+        }
+        
+        // Show target
+        var target = document.getElementById(panelName + '-panel');
+        if (target) {
+            target.classList.add('active');
+            console.log('Activated:', target.id);
+        } else {
+            console.error('Panel not found:', panelName + '-panel');
+        }
+        
+        // Update buttons
+        var buttons = document.querySelectorAll('.tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+            if (buttons[i].onclick && buttons[i].onclick.toString().indexOf(panelName) > -1) {
+                buttons[i].classList.add('active');
+            }
+        }
+    }
+    
+    // Test on load
+    window.onload = function() {
+        console.log('Page loaded');
+        console.log('showPanel type:', typeof showPanel);
+        console.log('Panels:', document.querySelectorAll('.visualization-panel'));
+        console.log('Buttons:', document.querySelectorAll('.tab-button'));
+    };
+    </script>
+</body>
+</html>

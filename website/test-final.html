@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Test</title>
+    <script>
+    // Log when script loads
+    console.log('Head script loaded');
+    
+    function showPanel(panelName) {
+        console.log('showPanel called with:', panelName);
+        alert('showPanel called with: ' + panelName);
+    }
+    </script>
+</head>
+<body>
+    <h1>Test Buttons</h1>
+    <button onclick="showPanel('test1')">Test 1</button>
+    <button onclick="console.log('Direct console log')">Console Test</button>
+    <button onclick="alert('Direct alert')">Alert Test</button>
+    
+    <script>
+    console.log('Body script loaded');
+    console.log('showPanel exists:', typeof showPanel);
+    </script>
+</body>
+</html>

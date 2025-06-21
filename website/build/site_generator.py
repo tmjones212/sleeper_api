@@ -252,51 +252,7 @@ class SiteGenerator:
                 js_parts.append(f"const {var_name} = {var_data};")
             js_parts.append("")
             
-        # Add the critical showPanel function first
-        js_parts.append("// Critical panel switching function - must be available globally")
-        js_parts.append("""
-function showPanel(panelName) {
-    console.log('Switching to panel:', panelName);
-    
-    // Hide all panels
-    document.querySelectorAll('.visualization-panel').forEach(panel => {
-        panel.classList.remove('active');
-    });
-    
-    // Remove active class from all buttons
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('active');
-    });
-    
-    // Show selected panel
-    const targetPanel = document.getElementById(panelName + '-panel');
-    if (targetPanel) {
-        targetPanel.classList.add('active');
-    }
-    
-    // Find and activate the corresponding button
-    document.querySelectorAll('.tab-button').forEach(button => {
-        if (button.textContent.toLowerCase().includes(panelName)) {
-            button.classList.add('active');
-        }
-    });
-    
-    // Initialize visualizations if needed
-    if (panelName === 'network' && typeof initNetworkGraph === 'function') {
-        initNetworkGraph();
-    } else if (panelName === 'overview' && typeof initMonthlyChart === 'function') {
-        initMonthlyChart();
-    } else if (panelName === 'matchups' && typeof showMatchupYear === 'function') {
-        showMatchupYear();
-    } else if (panelName === 'draft' && typeof showDraftYear === 'function') {
-        showDraftYear();
-    }
-}
-
-// Make it available globally
-window.showPanel = showPanel;
-        """)
-        js_parts.append("")
+        # Don't add showPanel here - it's in EARLY_SCRIPTS now
         
         # Extract and add inline scripts from original
         inline_scripts = self.extract_inline_scripts()
@@ -438,11 +394,77 @@ window.showPanel = showPanel;
         # Combine all JavaScript
         combined_js = self.combine_js()
         
+        # Extract just the showPanel function to put early
+        early_show_panel = """
+<script>
+// Define showPanel early so buttons work immediately
+function showPanel(panelName) {
+    try {
+        console.log('showPanel called with:', panelName);
+        
+        // Check if DOM is ready
+        if (document.readyState === 'loading') {
+            console.log('DOM not ready, waiting...');
+            document.addEventListener('DOMContentLoaded', function() {
+                showPanel(panelName);
+            });
+            return;
+        }
+        
+        // Get all panels
+        const panels = document.querySelectorAll('.visualization-panel');
+        console.log('Found panels:', panels.length);
+        
+        if (panels.length === 0) {
+            console.error('No panels found! Looking for .visualization-panel');
+            return;
+        }
+        
+        // Hide all panels
+        panels.forEach(panel => {
+            panel.classList.remove('active');
+            console.log('Hiding panel:', panel.id);
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Show selected panel
+        const targetPanel = document.getElementById(panelName + '-panel');
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+            console.log('Activated panel:', targetPanel.id);
+        } else {
+            console.error('Panel not found:', panelName + '-panel');
+            console.log('Available panels:', Array.from(document.querySelectorAll('[id$="-panel"]')).map(p => p.id));
+        }
+        
+        // Find and activate the corresponding button
+        document.querySelectorAll('.tab-button').forEach(button => {
+            if (button.textContent.toLowerCase().includes(panelName)) {
+                button.classList.add('active');
+            }
+        });
+    } catch (error) {
+        console.error('Error in showPanel:', error);
+    }
+}
+
+// Make it globally available
+window.showPanel = showPanel;
+
+// Debug on load
+console.log('showPanel function loaded');
+</script>
+        """
+        
         # Create replacements dictionary matching base.html template
         replacements = {
             'PAGE_TITLE': 'Eazy Pickens',
             'STYLES': f'<style>\n{combined_css}\n</style>',
-            'EARLY_SCRIPTS': '',  # Add any scripts that need to load early
+            'EARLY_SCRIPTS': early_show_panel,  # Add showPanel early
             'SCRIPTS': '',  # Will be added after external scripts
             'HEADER_COMPONENT': shared.get('HEADER', ''),
             'CONTROLS_COMPONENT': shared.get('CONTROLS', ''),

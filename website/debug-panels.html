@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Panels</title>
+    <style>
+        .visualization-panel {
+            display: none;
+            padding: 20px;
+            background: #f0f0f0;
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+        .visualization-panel.active {
+            display: block;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Panel Test</h1>
+    
+    <div>
+        <button class="tab-button active" onclick="testShowPanel('overview')">Overview</button>
+        <button class="tab-button" onclick="testShowPanel('network')">Network</button>
+        <button class="tab-button" onclick="testShowPanel('matrix')">Matrix</button>
+    </div>
+    
+    <div class="visualization-panel active" id="overview-panel">
+        <h2>Overview Panel</h2>
+        <p>This is the overview content</p>
+    </div>
+    
+    <div class="visualization-panel" id="network-panel">
+        <h2>Network Panel</h2>
+        <p>This is the network content</p>
+    </div>
+    
+    <div class="visualization-panel" id="matrix-panel">
+        <h2>Matrix Panel</h2>
+        <p>This is the matrix content</p>
+    </div>
+    
+    <script>
+    function testShowPanel(panelName) {
+        console.log('testShowPanel called with:', panelName);
+        
+        // Hide all panels
+        const panels = document.querySelectorAll('.visualization-panel');
+        console.log('Found panels:', panels.length);
+        panels.forEach(panel => {
+            panel.classList.remove('active');
+            console.log('Hiding panel:', panel.id);
+        });
+        
+        // Show selected panel
+        const targetPanel = document.getElementById(panelName + '-panel');
+        console.log('Looking for panel:', panelName + '-panel');
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+            console.log('Activated panel:', targetPanel.id);
+        } else {
+            console.error('Panel not found!');
+        }
+        
+        // Update buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Find and activate button
+        document.querySelectorAll('.tab-button').forEach(button => {
+            if (button.onclick && button.onclick.toString().includes(panelName)) {
+                button.classList.add('active');
+            }
+        });
+    }
+    
+    // Test
+    console.log('Debug page loaded');
+    console.log('Panels found:', document.querySelectorAll('.visualization-panel').length);
+    console.log('Buttons found:', document.querySelectorAll('.tab-button').length);
+    </script>
+</body>
+</html>
