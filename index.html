@@ -112,7 +112,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 30px;
-            overflow: visible;
+            overflow: hidden;
             display: none;
             border: 1px solid #404040;
             min-height: 200px;
@@ -943,42 +943,44 @@
                 targetPanel.classList.add('active');
                 console.log('Activated panel:', panelName + '-panel');
                 console.log('Panel classList:', targetPanel.classList.toString());
-                console.log('Panel computed style:', {
-                    display: window.getComputedStyle(targetPanel).display,
-                    visibility: window.getComputedStyle(targetPanel).visibility,
-                    opacity: window.getComputedStyle(targetPanel).opacity,
+                const computedStyle = window.getComputedStyle(targetPanel);
+                const panelStyle = {
+                    display: computedStyle.display,
+                    visibility: computedStyle.visibility,
+                    opacity: computedStyle.opacity,
+                    position: computedStyle.position,
                     width: targetPanel.clientWidth,
-                    height: targetPanel.clientHeight
-                });
+                    height: targetPanel.clientHeight,
+                    offsetWidth: targetPanel.offsetWidth,
+                    offsetHeight: targetPanel.offsetHeight,
+                    overflow: computedStyle.overflow
+                };
+                console.log('Panel computed style:', JSON.stringify(panelStyle, null, 2));
+                console.log('Panel innerHTML length:', targetPanel.innerHTML.length);
+                console.log('Panel has children:', targetPanel.children.length);
                 
                 // Check panel-content
                 const panelContent = targetPanel.querySelector('.panel-content');
                 if (panelContent) {
-                    console.log('Panel content dimensions:', {
-                        width: panelContent.clientWidth,
-                        height: panelContent.clientHeight
-                    });
+                    console.log('Panel content width:', panelContent.clientWidth);
+                    console.log('Panel content height:', panelContent.clientHeight);
                 }
                 
                 // Check panels-container
                 const panelsContainer = document.querySelector('.panels-container');
                 if (panelsContainer) {
-                    console.log('Panels container dimensions:', {
-                        width: panelsContainer.clientWidth,
-                        height: panelsContainer.clientHeight,
-                        display: window.getComputedStyle(panelsContainer).display
-                    });
+                    console.log('Panels container width:', panelsContainer.clientWidth);
+                    console.log('Panels container height:', panelsContainer.clientHeight);
+                    console.log('Panels container display:', window.getComputedStyle(panelsContainer).display);
                 }
                 
                 // Check matchupsContainer specifically
                 if (panelName === 'matchups') {
                     const container = document.getElementById('matchupsContainer');
                     if (container) {
-                        console.log('matchupsContainer dimensions:', {
-                            width: container.clientWidth,
-                            height: container.clientHeight,
-                            display: window.getComputedStyle(container).display
-                        });
+                        console.log('matchupsContainer width:', container.clientWidth);
+                        console.log('matchupsContainer height:', container.clientHeight);
+                        console.log('matchupsContainer display:', window.getComputedStyle(container).display);
                     }
                 }
             } else {
@@ -14474,7 +14476,9 @@
 </div>
 </div>
 </div>
-<!-- Fixed: Added missing closing div to balance the structure -->
+</div>
+</div>
+<!-- Fixed: Added 2 missing closing divs for matchups panel -->
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
 <div class="panel-header">
