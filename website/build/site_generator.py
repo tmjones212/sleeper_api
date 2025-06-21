@@ -195,8 +195,11 @@ class SiteGenerator:
         
         for script in matches:
             script = script.strip()
-            if script and not script.startswith('const networkData') and not script.startswith('const draftData'):
-                scripts.append(script)
+            # Skip any script that defines our data variables
+            if script and not any(script.startswith(f'const {var}') for var in ['networkData', 'draftData', 'timelineData']):
+                # Also skip if it contains these definitions anywhere
+                if not any(f'const {var} =' in script for var in ['networkData', 'draftData', 'timelineData']):
+                    scripts.append(script)
                 
         print(f"Extracted {len(scripts)} inline script blocks")
         return scripts
@@ -455,8 +458,47 @@ function showPanel(panelName) {
 // Make it globally available
 window.showPanel = showPanel;
 
+// Add other missing global functions
+function updateTradeGrade(tradeIndex, value) {
+    console.log('updateTradeGrade called:', tradeIndex, value);
+    // This will be overridden by the full implementation later
+}
+
+function showMatchupYear(year) {
+    console.log('showMatchupYear called:', year);
+    const yearSelect = document.getElementById('matchupYearSelect');
+    if (yearSelect && !year) {
+        year = yearSelect.value;
+    }
+    
+    // Hide all year matchups
+    document.querySelectorAll('.year-matchups').forEach(div => {
+        div.style.display = 'none';
+    });
+    
+    // Show selected year
+    const targetYear = document.querySelector('.year-matchups[data-year="' + year + '"]');
+    if (targetYear) {
+        targetYear.style.display = 'block';
+    }
+}
+
+function showDraftYear(year) {
+    console.log('showDraftYear called:', year);
+    const yearSelect = document.getElementById('draftYearSelect');
+    if (yearSelect && !year) {
+        year = yearSelect.value;
+    }
+    
+    // Implementation will be loaded later
+}
+
+window.updateTradeGrade = updateTradeGrade;
+window.showMatchupYear = showMatchupYear;
+window.showDraftYear = showDraftYear;
+
 // Debug on load
-console.log('showPanel function loaded');
+console.log('Core functions loaded: showPanel, updateTradeGrade, showMatchupYear, showDraftYear');
 </script>
         """
         
