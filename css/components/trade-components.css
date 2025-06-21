@@ -1,0 +1,319 @@
+/* ========================================
+   TRADE COMPONENTS CSS
+   ======================================== */
+
+/* Trade Details Sidebar */
+.trade-details-sidebar {
+    flex: 1;
+    max-height: 600px;
+    overflow-y: auto;
+    border: 2px solid #606060;
+    border-radius: 10px;
+    padding: 20px;
+    background: #2d2d2d;
+}
+
+.trade-details-sidebar h3 {
+    margin-top: 0;
+    color: #66ccff;
+}
+
+/* Trade Detail Items */
+.trade-detail-item {
+    background: #404040;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 1px solid #606060;
+}
+
+.trade-detail-date {
+    font-weight: bold;
+    color: #66ccff;
+    margin-bottom: 10px;
+}
+
+.trade-detail-teams {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.trade-detail-team {
+    background: #606060;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 2px;
+    flex: 1;
+    min-width: 200px;
+    color: #e0e0e0;
+}
+
+/* Trade Items */
+.trade-item {
+    background: #404040;
+    border-left: 4px solid #66ccff;
+    margin: 15px 0;
+    padding: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid #606060;
+}
+
+.trade-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    background: #505050;
+}
+
+.trade-date {
+    font-weight: 600;
+    color: #66ccff;
+    margin-bottom: 10px;
+}
+
+.trade-teams {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+/* Team Sides */
+.team-side {
+    background: #606060;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 5px;
+    flex: 1;
+    min-width: 250px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    color: #e0e0e0;
+    border: 1px solid #808080;
+}
+
+.team-side h4 {
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #66ccff;
+    padding-bottom: 5px;
+}
+
+/* Trade Filter */
+.trade-filter-container {
+    background: #2d2d2d;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #606060;
+    margin-bottom: 0;
+}
+
+/* Trade Grading */
+.trade-grade-container {
+    margin-top: 15px;
+    padding: 10px;
+    background: #353535;
+    border-radius: 8px;
+    border: 1px solid #606060;
+}
+
+.trade-grade-slider {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #ff4444 0%, #ffaa00 25%, #999999 50%, #66bb6a 75%, #44ff44 100%);
+    border-radius: 4px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.trade-grade-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 2px solid #333;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.trade-grade-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 2px solid #333;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.trade-grade-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+}
+
+.trade-grade-result {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Trade Summary Table */
+.trading-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #2d2d2d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.trading-summary-table thead {
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    color: white;
+}
+
+.trading-summary-table th {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.trading-summary-table th:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.trading-summary-table th:last-child {
+    border-right: none;
+}
+
+.trading-summary-table th.sort-asc::after,
+.trading-summary-table th.sort-desc::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+.trading-summary-table th.sort-asc::after {
+    border-bottom: 5px solid white;
+}
+
+.trading-summary-table th.sort-desc::after {
+    border-top: 5px solid white;
+}
+
+.trading-summary-table tbody tr {
+    border-bottom: 1px solid #404040;
+    transition: background-color 0.2s ease;
+}
+
+.trading-summary-table tbody tr:hover {
+    background-color: #3a3a3a;
+}
+
+.trading-summary-table td {
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+}
+
+.trading-summary-table td:first-child {
+    text-align: left;
+    font-weight: bold;
+    color: #66ccff;
+}
+
+/* Asset Lists */
+.asset-list {
+    list-style: none;
+    padding: 0;
+}
+
+.asset-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #808080;
+}
+
+.asset-list li:last-child {
+    border-bottom: none;
+}
+
+.player-item {
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.pick-item {
+    color: #66ccff;
+    font-style: italic;
+}
+
+/* Trade Count */
+.trade-count {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Grading Classes */
+.overall-grade {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.grade-excellent { background: #44ff44; color: #000; }
+.grade-good { background: #66bb6a; color: #000; }
+.grade-average { background: #999999; color: #fff; }
+.grade-poor { background: #ffaa00; color: #000; }
+.grade-terrible { background: #ff4444; color: #fff; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .trade-teams {
+        flex-direction: column;
+    }
+
+    .team-side {
+        min-width: auto;
+    }
+
+    .trading-summary-table {
+        font-size: 0.8rem;
+    }
+    
+    .trading-summary-table th,
+    .trading-summary-table td {
+        padding: 8px 4px;
+    }
+    
+    .overall-grade {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+    }
+}

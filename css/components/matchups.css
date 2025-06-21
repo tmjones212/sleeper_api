@@ -1,0 +1,52 @@
+/* ========================================
+   MATCHUPS CSS
+   ======================================== */
+
+/* Matchup Result Styles */
+.team.winner {
+    background: rgba(76, 175, 80, 0.2);
+    border-left: 3px solid #4CAF50;
+}
+
+.team.loser {
+    background: rgba(244, 67, 54, 0.2);
+    border-left: 3px solid #f44336;
+}
+
+.team.tie {
+    background: rgba(255, 193, 7, 0.2);
+    border-left: 3px solid #FFC107;
+}
+
+/* Year Matchups */
+.year-matchups {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.year-matchups[style*="display: none"] {
+    display: none !important;
+}
+
+/* Initially hide all years except the selected one */
+.year-matchups:not([data-year="2024"]) {
+    display: none;
+}
+
+#matchupsContainer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 100px;
+}
+
+/* Matchups Panel Specific Overrides */
+#matchups-panel.active {
+    display: block !important;
+}
+
+#matchups-panel.active * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
