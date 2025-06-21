@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eazy Pickens</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- External Data Files (must load before modules) -->
+    <script src="../matchup_breakdowns.js?v=3"></script>
+    <script src="../league_mapping.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/styles/css/main.css">
+    
+    <!-- Main Application -->
+    <script type="module" src="src/js/main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Eazy Pickens</h1>
+            <p>Fantasy Football Analytics | Multi-Year League Data</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Visualization Type</label>
+                <div>
+                    <button class="tab-button active" onclick="showPanel('overview')">📊 Overview</button>
+                    <button class="tab-button" onclick="showPanel('network')">🕸️ Trade Network</button>
+                    <button class="tab-button" onclick="showPanel('matrix')">📋 Trade Matrix</button>
+                    <button class="tab-button" onclick="showPanel('timeline')">📅 Trade History</button>
+                    <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
+                    <button class="tab-button" onclick="showPanel('matchups')">⚔️ Matchups</button>
+                    <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panels will be dynamically loaded here -->
+        <div class="panels-container" id="panels-container">
+            <!-- Panels content will be inserted by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Modals will be dynamically created -->
+</body>
+</html>
