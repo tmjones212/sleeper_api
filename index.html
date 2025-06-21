@@ -32,6 +32,13 @@
             margin: 0 auto;
             padding: 20px;
         }
+        
+        .panels-container {
+            width: 100%;
+            min-height: 600px;
+            position: relative;
+            display: block;
+        }
 
         .header {
             text-align: center;
@@ -953,6 +960,16 @@
                     });
                 }
                 
+                // Check panels-container
+                const panelsContainer = document.querySelector('.panels-container');
+                if (panelsContainer) {
+                    console.log('Panels container dimensions:', {
+                        width: panelsContainer.clientWidth,
+                        height: panelsContainer.clientHeight,
+                        display: window.getComputedStyle(panelsContainer).display
+                    });
+                }
+                
                 // Check matchupsContainer specifically
                 if (panelName === 'matchups') {
                     const container = document.getElementById('matchupsContainer');
@@ -1035,9 +1052,8 @@
 <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
 </div>
 </div>
-</div>
 <!-- Panels Container -->
-<div class="panels-container" style="position: relative; width: 100%; min-height: 600px;">
+<div class="panels-container" style="position: relative; width: 100%; min-height: 600px; display: block;">
 <!-- Overview Panel -->
 <div class="visualization-panel active" id="overview-panel">
 <div class="panel-header">
@@ -14477,7 +14493,6 @@
 </div>
 <div id="draftResults">
 <!-- Initial draft board will be populated by JavaScript on page load -->
-</div>
 </div>
 </div>
 </div>
