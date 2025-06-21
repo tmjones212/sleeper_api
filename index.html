@@ -973,6 +973,11 @@
         }
     </style>
     <script>
+        // Trade grade update function - defined early so sliders can use it
+        window.updateTradeGrade = function(tradeIndex, value) {
+            console.log('🎚️ updateTradeGrade stub called, will be replaced later:', { tradeIndex, value });
+        };
+        
         // Panel switching function - defined early so buttons can use it
         function showPanel(panelName) {
             console.log('Switching to panel:', panelName);
@@ -1004,10 +1009,6 @@
                 }
             });
             
-            // Initialize trade history when timeline panel is shown
-            if (panelName === 'timeline' && typeof window.initializeTradeHistoryIfNeeded === 'function') {
-                window.initializeTradeHistoryIfNeeded();
-            }
         }
         
         // Define these functions early so they're available when needed
@@ -11248,17 +11249,18 @@
         }, 2000);
 
         // Trade History Functions
-
-        // Initialize trade history when timeline panel is shown
-        let tradeHistoryInitialized = false;
         
-        window.initializeTradeHistoryIfNeeded = function() {
-            if (!tradeHistoryInitialized) {
-                console.log('🚀 Initializing trade history for the first time...');
+        // Flag to prevent infinite loops during user input
+        let isUserChangingSlider = false;
+
+        // Initialize trade history on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOMContentLoaded - will initialize trade history...');
+            setTimeout(() => {
+                console.log('🚀 Initializing trade history after delay...');
                 initializeTradeHistory();
-                tradeHistoryInitialized = true;
-            }
-        };
+            }, 100); // Small delay to ensure DOM is ready
+        });
 
         function initializeTradeHistory() {
             populateTeamFilter();
@@ -11367,7 +11369,9 @@
             filterTradesByTeam();
         }
 
-        function updateTradeGrade(tradeIndex, value) {
+        window.updateTradeGrade = function(tradeIndex, value) {
+            console.log('🎚️ updateTradeGrade called:', { tradeIndex, value });
+            
             // Set flag to prevent real-time listener interference
             isUserChangingSlider = true;
             
@@ -11408,13 +11412,24 @@
             saveTradeGrade(tradeIndex, gradeValue);
             
             // Save to Firebase if available
-            const userName = getUserName();
-            if (userName) {
-                saveTradeGradeToFirebase(tradeIndex, gradeValue, userName);
+            try {
+                const userName = getUserName();
+                console.log('🔍 getUserName returned:', userName);
+                if (userName) {
+                    saveTradeGradeToFirebase(tradeIndex, gradeValue, userName);
+                } else {
+                    console.log('⚠️ No username, skipping Firebase save');
+                }
+            } catch (error) {
+                console.error('❌ Error getting username:', error);
             }
             
             // Refresh the trading summary
-            generateTradingSummary();
+            try {
+                generateTradingSummary();
+            } catch (error) {
+                console.error('❌ Error generating trading summary:', error);
+            }
             
             // Clear the flag after a short delay to allow Firebase write to complete
             setTimeout(() => {
@@ -11471,14 +11486,28 @@
             
             if (Object.keys(teamStats).length === 0) {
                 // Check if we have Firebase connection but no data yet
-                if (db && !window.leagueAverageRatings) {
-                    summaryContainer.innerHTML = '<p style="color: #667eea; text-align: center; padding: 20px;">📡 Loading league consensus data...</p>';
-                } else if (!db) {
-                    summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Firebase not connected. Summary unavailable.</p>';
+                if (window.db && !window.leagueAverageRatings) {
+                    summaryContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: #2a2a2a; border-radius: 10px; border: 1px solid #404040;">
+                            <p style="color: #667eea; margin-bottom: 10px;">📡 Loading league consensus data...</p>
+                            <p style="color: #888; font-size: 0.9rem;">If this persists, try moving a slider to trigger data sync</p>
+                        </div>`;
+                } else if (!window.db) {
+                    summaryContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: #2a2a2a; border-radius: 10px; border: 1px solid #404040;">
+                            <p style="color: #ff6b6b; margin-bottom: 10px;">❌ Firebase not connected</p>
+                            <p style="color: #888; font-size: 0.9rem;">Check console for errors. Firebase status: ${window.db}</p>
+                        </div>`;
                 } else {
-                    summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No league ratings available yet. Grade some trades to see team performance!</p>';
+                    summaryContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; background: #2a2a2a; border-radius: 10px; border: 1px solid #404040;">
+                            <p style="color: #b0b0b0; margin-bottom: 10px;">No league ratings available yet</p>
+                            <p style="color: #888; font-size: 0.9rem;">Grade some trades to see team performance!</p>
+                        </div>`;
                 }
                 console.log('🏗️ No team stats found, showing loading/no data message');
+                console.log('🏗️ window.db status:', window.db);
+                console.log('🏗️ window.leagueAverageRatings:', window.leagueAverageRatings);
                 return;
             }
 
@@ -11734,14 +11763,17 @@
 
         // Initialize Firebase (only if config is provided)
         let db = null;
+        window.db = null; // Make it global for debugging
         console.log('🔍 Initializing Firebase with config:', firebaseConfig);
         if (firebaseConfig.apiKey) {
             try {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
+                window.db = db; // Make it global
                 const statusEl = document.getElementById('firebase-status');
                 if (statusEl) statusEl.textContent = '🔗 Real-time sync enabled';
                 console.log('✅ Firebase initialized successfully, db =', db);
+                console.log('✅ window.db =', window.db);
             } catch (error) {
                 console.error('❌ Firebase initialization failed:', error);
                 const statusEl = document.getElementById('firebase-status');
@@ -11784,9 +11816,6 @@
                 console.error('❌ Error in saveTradeGradeToFirebase:', error);
             }
         }
-
-        // Flag to prevent infinite loops during user input
-        let isUserChangingSlider = false;
 
         function loadAverageRatings() {
             if (!db) {
