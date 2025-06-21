@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Working Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #e0e0e0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .controls { background: #2d2d2d; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .tab-button { 
+            background: #404040; 
+            color: #e0e0e0; 
+            border: 1px solid #606060; 
+            padding: 12px 24px; 
+            margin: 0 5px;
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600;
+        }
+        .tab-button:hover { background: #505050; }
+        .tab-button.active { background: #0066cc; color: white; }
+        
+        .visualization-panel {
+            display: none;
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 15px;
+            min-height: 400px;
+        }
+        .visualization-panel.active { display: block; }
+        
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 Eazy Pickens - Working Test</h1>
+        
+        <div class="controls">
+            <div>
+                <button class="tab-button active" onclick="switchPanel('overview')">📊 Overview</button>
+                <button class="tab-button" onclick="switchPanel('network')">🕸️ Trade Network</button>
+                <button class="tab-button" onclick="switchPanel('matrix')">📋 Trade Matrix</button>
+                <button class="tab-button" onclick="switchPanel('timeline')">📅 Trade History</button>
+                <button class="tab-button" onclick="switchPanel('players')">👤 Player Journey</button>
+                <button class="tab-button" onclick="switchPanel('matchups')">⚔️ Matchups</button>
+                <button class="tab-button" onclick="switchPanel('draft')">🏈 Draft Results</button>
+            </div>
+        </div>
+        
+        <div id="overview-panel" class="visualization-panel active">
+            <h2>📊 Trade Overview</h2>
+            <p>Overview content - THIS IS WORKING!</p>
+        </div>
+        
+        <div id="network-panel" class="visualization-panel">
+            <h2>🕸️ Trade Network</h2>
+            <p>Network content - THIS IS WORKING!</p>
+        </div>
+        
+        <div id="matrix-panel" class="visualization-panel">
+            <h2>📋 Trade Matrix</h2>
+            <p>Matrix content - THIS IS WORKING!</p>
+        </div>
+        
+        <div id="timeline-panel" class="visualization-panel">
+            <h2>📅 Trade History</h2>
+            <p>Timeline content - THIS IS WORKING!</p>
+        </div>
+        
+        <div id="players-panel" class="visualization-panel">
+            <h2>👤 Player Journey</h2>
+            <p>Players content - THIS IS WORKING!</p>
+        </div>
+        
+        <div id="matchups-panel" class="visualization-panel">
+            <h2>⚔️ Matchups</h2>
+            <p>Matchups content - THIS IS WORKING!</p>
+            <select onchange="console.log('Year changed to:', this.value)">
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+            </select>
+        </div>
+        
+        <div id="draft-panel" class="visualization-panel">
+            <h2>🏈 Draft Results</h2>
+            <p>Draft content - THIS IS WORKING!</p>
+        </div>
+    </div>
+    
+    <script>
+    function switchPanel(panelName) {
+        console.log('switchPanel called with:', panelName);
+        
+        // Hide all panels
+        var panels = document.querySelectorAll('.visualization-panel');
+        panels.forEach(function(panel) {
+            panel.classList.remove('active');
+        });
+        
+        // Remove active from all buttons  
+        var buttons = document.querySelectorAll('.tab-button');
+        buttons.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected panel
+        var targetPanel = document.getElementById(panelName + '-panel');
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+            console.log('Activated panel:', panelName);
+        }
+        
+        // Activate button
+        buttons.forEach(function(btn) {
+            if (btn.onclick && btn.onclick.toString().indexOf(panelName) > -1) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    console.log('Page loaded. switchPanel is:', typeof switchPanel);
+    </script>
+</body>
+</html>

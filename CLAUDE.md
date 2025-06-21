@@ -256,9 +256,12 @@ python src/update_index.py
   - With Firebase: Would show team trading statistics based on community ratings
 
 ### Website Modular Architecture (June 2025)
-- **Important**: When working on website updates, use the modular version in the `website/` folder, NOT the monolithic index.html in the root
-- **Current Status**: The modular architecture exists but components were never extracted from the original HTML
-- **Issue**: The website/index.html is only 56 lines and missing most content - it's just a skeleton
-- **Fix Needed**: Components need to be extracted from the main index.html into the modular structure
-- **Path Issues**: The website version incorrectly references files with `../` (parent directory) paths
-- **Build Process**: `python3 build/site_generator.py` runs but only generates 9.9KB file (should be ~1.4MB)
+- **Important**: The modular architecture in `website/` folder is complex and has issues
+- **Current Status**: The site generator creates multiple definitions of functions causing conflicts
+- **Known Issues**:
+  - Multiple showPanel definitions causing JavaScript errors
+  - Duplicate networkData declarations
+  - Complex script extraction logic that doesn't work properly
+  - File size varies wildly (966KB to 2.2MB) depending on duplicates
+- **Working Solution**: Use the main index.html file which works correctly
+- **For Future**: The modular architecture needs a complete rewrite, not patches
