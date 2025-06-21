@@ -1003,6 +1003,11 @@
                     button.classList.add('active');
                 }
             });
+            
+            // Initialize trade history when timeline panel is shown
+            if (panelName === 'timeline' && typeof window.initializeTradeHistoryIfNeeded === 'function') {
+                window.initializeTradeHistoryIfNeeded();
+            }
         }
         
         // Define these functions early so they're available when needed
@@ -11244,10 +11249,16 @@
 
         // Trade History Functions
 
-        // Initialize trade history on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            initializeTradeHistory();
-        });
+        // Initialize trade history when timeline panel is shown
+        let tradeHistoryInitialized = false;
+        
+        window.initializeTradeHistoryIfNeeded = function() {
+            if (!tradeHistoryInitialized) {
+                console.log('🚀 Initializing trade history for the first time...');
+                initializeTradeHistory();
+                tradeHistoryInitialized = true;
+            }
+        };
 
         function initializeTradeHistory() {
             populateTeamFilter();
@@ -11926,22 +11937,9 @@
             }
         }
 
-        // Initialize everything when DOM is loaded
+        // Initialize non-trade-history things when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 DOM loaded, initializing app...');
-            
-            // Load trade grades from localStorage
-            loadTradeGrades();
-            
-            // Load average ratings from Firebase
-            if (db) {
-                loadAverageRatings();
-            } else {
-                console.log('⚠️ Firebase not initialized yet, skipping average ratings load');
-            }
-            
-            // Generate trading summary
-            generateTradingSummary();
             
             // Initialize matchups
             if (typeof showMatchupYear === 'function') {
