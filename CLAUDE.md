@@ -6,6 +6,10 @@ Do a commit when you make changes.
 
 Whenever you learn something important about the codebase that would be useful to know in the future, store it here.
 
+I'm always going to hit yes on do you want to proceed and so don't ask me (or yes on hte "dont ask again" question, I will always pick that)
+
+when you give me a response i want to see some emojis so i know you are paying attention to the instructions.
+
 ## Recent Learnings
 
 ### Draft Pick Display Issue (Fixed)
