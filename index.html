@@ -10770,7 +10770,7 @@
 <div class="search-container">
 <input class="search-input" id="playerSearch" placeholder="Enter player name..." type="text">
 <button class="search-button" onclick="searchPlayerJourney()">Track Journey</button>
-</input></div>
+</div>
 <div class="player-journey-container" id="playerJourneyResult"></div>
 </div>
 </div>
@@ -14322,7 +14322,6 @@
 </div>
 </div>
 </div>
-</div>
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
 <div class="panel-header">
@@ -14392,9 +14391,9 @@
                 // Initialize matchups if needed
                 console.log('🎯 Matchups panel activated');
                 setTimeout(() => {
-                    if (typeof showMatchupYear === 'function') {
+                    if (typeof window.showMatchupYear === 'function') {
                         console.log('Calling showMatchupYear...');
-                        showMatchupYear();
+                        window.showMatchupYear();
                     } else {
                         console.error('ERROR: showMatchupYear function not found!');
                         console.log('Available functions:', Object.keys(window).filter(k => k.includes('show')));
