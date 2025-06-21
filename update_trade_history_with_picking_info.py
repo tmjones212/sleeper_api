@@ -37,10 +37,14 @@ def update_trade_history_html(html_content, league_id):
                                     # This pick has been used
                                     key1 = f"Pick #{asset['pick_number']}"
                                     key2 = f"{asset.get('original_owner', '')}'s {asset['season']} R{asset['round']}"
+                                    
+                                    # Determine who received the pick in this trade
+                                    receiving_team = team_name if direction == 'receives' else None
+                                    
                                     pick_details[key1] = {
                                         'player_name': asset.get('player_name'),
-                                        'picking_team': asset.get('picking_team'),
-                                        'to_team': asset.get('to_team'),
+                                        'picking_team': asset.get('picking_team'),  # Who actually made the pick
+                                        'receiving_team': receiving_team,  # Who got the pick in this trade
                                         'original_owner': asset.get('original_owner')
                                     }
                                     pick_details[key2] = pick_details[key1]
@@ -57,12 +61,12 @@ def update_trade_history_html(html_content, league_id):
             if pick_num in pick_details:
                 details = pick_details[pick_num]
                 picking_team = details.get('picking_team')
-                to_team = details.get('to_team')
+                receiving_team = details.get('receiving_team')
                 
                 # Check if the receiving team actually made the pick
-                if picking_team and to_team and picking_team != to_team:
+                if picking_team and receiving_team and picking_team != receiving_team:
                     # The pick was traded again before being used
-                    enhanced_content = pick_content + f' <span style="color: #ff9800; font-size: 0.9em;">(picked by {picking_team})</span>'
+                    enhanced_content = pick_content + f' <span style="color: #ff9800; font-size: 0.9em;">(actually picked by {picking_team})</span>'
                     return full_match.replace(pick_content, enhanced_content)
         
         return full_match
@@ -74,8 +78,14 @@ def update_trade_history_html(html_content, league_id):
     updated_html = re.sub(pattern, enhance_pick, html_content)
     
     # Count how many picks were enhanced
-    enhanced_count = len(re.findall(r'\(picked by', updated_html))
+    enhanced_count = len(re.findall(r'\(actually picked by', updated_html))
     print(f"Enhanced {enhanced_count} draft picks with actual picking team info")
+    
+    # Debug: Show all picks we found details for
+    print(f"\nFound details for {len(pick_details)} draft picks:")
+    for key, details in list(pick_details.items())[:5]:  # Show first 5
+        if 'Pick #' in key:
+            print(f"  {key}: {details['player_name']} - receiving_team: {details.get('receiving_team')}, picking_team: {details.get('picking_team')}")
     
     return updated_html
 
