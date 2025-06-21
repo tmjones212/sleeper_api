@@ -6448,6 +6448,53 @@ const timelineData = {"busiest_periods": [], "monthly_breakdown": {"2022-07": 1,
 
 
 
+// Critical panel switching function - must be available globally
+
+
+function showPanel(panelName) {
+    console.log('Switching to panel:', panelName);
+    
+    // Hide all panels
+    document.querySelectorAll('.visualization-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected panel
+    const targetPanel = document.getElementById(panelName + '-panel');
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+    
+    // Find and activate the corresponding button
+    document.querySelectorAll('.tab-button').forEach(button => {
+        if (button.textContent.toLowerCase().includes(panelName)) {
+            button.classList.add('active');
+        }
+    });
+    
+    // Initialize visualizations if needed
+    if (panelName === 'network' && typeof initNetworkGraph === 'function') {
+        initNetworkGraph();
+    } else if (panelName === 'overview' && typeof initMonthlyChart === 'function') {
+        initMonthlyChart();
+    } else if (panelName === 'matchups' && typeof showMatchupYear === 'function') {
+        showMatchupYear();
+    } else if (panelName === 'draft' && typeof showDraftYear === 'function') {
+        showDraftYear();
+    }
+}
+
+// Make it available globally
+window.showPanel = showPanel;
+        
+
+
+
 // Inline scripts from original
 
 // Panel switching function - defined early so buttons can use it

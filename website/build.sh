@@ -43,8 +43,13 @@ check_dependencies() {
 build_site() {
     echo -e "${BLUE}Building website...${NC}"
     
+    # Copy required data files to dist
+    echo "  Copying data files..."
+    [ -f "$WEBSITE_DIR/../matchup_breakdowns.js" ] && cp "$WEBSITE_DIR/../matchup_breakdowns.js" "$DIST_DIR/"
+    [ -f "$WEBSITE_DIR/../league_mapping.js" ] && cp "$WEBSITE_DIR/../league_mapping.js" "$DIST_DIR/"
+    
     cd "$WEBSITE_DIR"
-    python3 build/site_generator.py --build
+    python3 build/site_generator.py
     
     echo -e "${GREEN}✓ Build complete!${NC}"
     echo "  Output: $DIST_DIR/index.html"

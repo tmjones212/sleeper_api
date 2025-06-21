@@ -252,6 +252,52 @@ class SiteGenerator:
                 js_parts.append(f"const {var_name} = {var_data};")
             js_parts.append("")
             
+        # Add the critical showPanel function first
+        js_parts.append("// Critical panel switching function - must be available globally")
+        js_parts.append("""
+function showPanel(panelName) {
+    console.log('Switching to panel:', panelName);
+    
+    // Hide all panels
+    document.querySelectorAll('.visualization-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected panel
+    const targetPanel = document.getElementById(panelName + '-panel');
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+    
+    // Find and activate the corresponding button
+    document.querySelectorAll('.tab-button').forEach(button => {
+        if (button.textContent.toLowerCase().includes(panelName)) {
+            button.classList.add('active');
+        }
+    });
+    
+    // Initialize visualizations if needed
+    if (panelName === 'network' && typeof initNetworkGraph === 'function') {
+        initNetworkGraph();
+    } else if (panelName === 'overview' && typeof initMonthlyChart === 'function') {
+        initMonthlyChart();
+    } else if (panelName === 'matchups' && typeof showMatchupYear === 'function') {
+        showMatchupYear();
+    } else if (panelName === 'draft' && typeof showDraftYear === 'function') {
+        showDraftYear();
+    }
+}
+
+// Make it available globally
+window.showPanel = showPanel;
+        """)
+        js_parts.append("")
+        
         # Extract and add inline scripts from original
         inline_scripts = self.extract_inline_scripts()
         if inline_scripts:
