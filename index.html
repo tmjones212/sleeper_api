@@ -931,6 +931,35 @@
             if (targetPanel) {
                 targetPanel.classList.add('active');
                 console.log('Activated panel:', panelName + '-panel');
+                console.log('Panel classList:', targetPanel.classList.toString());
+                console.log('Panel computed style:', {
+                    display: window.getComputedStyle(targetPanel).display,
+                    visibility: window.getComputedStyle(targetPanel).visibility,
+                    opacity: window.getComputedStyle(targetPanel).opacity,
+                    width: targetPanel.clientWidth,
+                    height: targetPanel.clientHeight
+                });
+                
+                // Check panel-content
+                const panelContent = targetPanel.querySelector('.panel-content');
+                if (panelContent) {
+                    console.log('Panel content dimensions:', {
+                        width: panelContent.clientWidth,
+                        height: panelContent.clientHeight
+                    });
+                }
+                
+                // Check matchupsContainer specifically
+                if (panelName === 'matchups') {
+                    const container = document.getElementById('matchupsContainer');
+                    if (container) {
+                        console.log('matchupsContainer dimensions:', {
+                            width: container.clientWidth,
+                            height: container.clientHeight,
+                            display: window.getComputedStyle(container).display
+                        });
+                    }
+                }
             } else {
                 console.error('Panel not found:', panelName + '-panel');
             }
@@ -14421,9 +14450,9 @@
 </div>
 </div>
 </div>
-<!-- Now properly closes: team, matchup-card, week-card, weeks-container, year-matchups, matchupsContainer, panel-content, matchups-panel -->
 </div>
 </div>
+<!-- Fixed: Added missing closing div to balance the structure -->
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
 <div class="panel-header">
