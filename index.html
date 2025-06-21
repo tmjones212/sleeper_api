@@ -112,7 +112,19 @@
         }
 
         .visualization-panel.active {
-            display: block;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Ensure matchups panel content is visible */
+        #matchups-panel.active {
+            display: block !important;
+        }
+        
+        #matchups-panel.active * {
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .panel-header {
@@ -878,11 +890,18 @@
         }
 
         .year-matchups {
-            display: block;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .year-matchups[style*="display: none"] {
             display: none !important;
+        }
+        
+        /* Initially hide all years except the selected one */
+        .year-matchups:not([data-year="2024"]) {
+            display: none;
         }
         
         #matchupsContainer {
@@ -931,15 +950,24 @@
             } else if (panelName === 'matchups') {
                 // Initialize matchups if needed
                 console.log('🎯 Matchups panel activated');
-                setTimeout(() => {
-                    if (typeof window.showMatchupYear === 'function') {
-                        console.log('Calling showMatchupYear...');
-                        window.showMatchupYear();
-                    } else {
-                        console.error('ERROR: showMatchupYear function not found!');
-                        console.log('Available functions:', Object.keys(window).filter(k => k.includes('show')));
-                    }
-                }, 100);
+                // Call immediately without timeout
+                if (typeof window.showMatchupYear === 'function') {
+                    console.log('Calling showMatchupYear...');
+                    window.showMatchupYear();
+                } else {
+                    console.error('ERROR: showMatchupYear function not found!');
+                    // Try to define it inline if not found
+                    window.showMatchupYear = function() {
+                        console.log('Using inline showMatchupYear');
+                        const yearMatchups = document.querySelectorAll('.year-matchups');
+                        yearMatchups.forEach(yearDiv => {
+                            if (yearDiv.getAttribute('data-year') === '2024') {
+                                yearDiv.style.display = 'block';
+                            }
+                        });
+                    };
+                    window.showMatchupYear();
+                }
             } else if (panelName === 'draft') {
                 // Initialize draft results if needed
                 console.log('🏈 Draft panel activated');
@@ -15292,6 +15320,9 @@
             const yearMatchups = document.querySelectorAll('.year-matchups');
             
             console.log(`Showing matchups for year: ${selectedYear}`);
+            console.log('Found year divs:', yearMatchups.length);
+            console.log('matchupsContainer display:', document.getElementById('matchupsContainer').style.display);
+            console.log('matchups-panel classList:', document.getElementById('matchups-panel').classList);
             let hasContent = false;
             
             yearMatchups.forEach(yearDiv => {
