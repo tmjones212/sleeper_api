@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{{PAGE_TITLE}}</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="matchup_breakdowns.js?v=3"></script>
+    <script src="league_mapping.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Styles -->
+    {{STYLES}}
+    
+    <!-- Early Scripts -->
+    {{EARLY_SCRIPTS}}
+</head>
+<body>
+    <div class="container">
+        <!-- Header Component -->
+        {{HEADER_COMPONENT}}
+        
+        <!-- Controls Component -->
+        {{CONTROLS_COMPONENT}}
+        
+        <!-- Panels Container -->
+        <div class="panels-container" style="position: relative; width: 100%; min-height: 600px; display: block;">
+            <!-- Overview Panel -->
+            {{OVERVIEW_PANEL}}
+            
+            <!-- Network Panel -->
+            {{NETWORK_PANEL}}
+            
+            <!-- Matrix Panel -->
+            {{MATRIX_PANEL}}
+            
+            <!-- Timeline Panel -->
+            {{TIMELINE_PANEL}}
+            
+            <!-- Players Panel -->
+            {{PLAYERS_PANEL}}
+            
+            <!-- Matchups Panel -->
+            {{MATCHUPS_PANEL}}
+            
+            <!-- Draft Panel -->
+            {{DRAFT_PANEL}}
+        </div>
+        
+        <!-- Modals -->
+        {{MODALS}}
+        
+        <!-- Scripts -->
+        {{SCRIPTS}}
+    </div>
+</body>
+</html>

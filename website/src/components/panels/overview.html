@@ -1,0 +1,41 @@
+<div class="visualization-panel active" id="overview-panel">
+    <div class="panel-header">
+        <h2>📊 Trade Overview</h2>
+        <p>League trading statistics and most active participants</p>
+    </div>
+    <div class="panel-content">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>{{TOTAL_TRADES}}</h3>
+                <p>Total Trades</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{TOTAL_PLAYERS_TRADED}}</h3>
+                <p>Players Traded</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{TOTAL_PICKS_TRADED}}</h3>
+                <p>Draft Picks Traded</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ACTIVE_TEAMS}}</h3>
+                <p>Active Teams</p>
+            </div>
+        </div>
+        
+        <h3 style="margin-bottom: 20px; color: #e0e0e0;">📈 Most Active Traders</h3>
+        <div class="stats-grid">
+            {{MOST_ACTIVE_TRADERS}}
+        </div>
+        
+        <h3 style="margin: 30px 0 20px; color: #e0e0e0;">🔄 Most Traded Players</h3>
+        <div class="most-traded-list">
+            {{MOST_TRADED_PLAYERS}}
+        </div>
+        
+        <h3 style="margin: 30px 0 20px; color: #e0e0e0;">📊 Trading Activity by Month</h3>
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+</div>

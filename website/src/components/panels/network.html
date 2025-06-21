@@ -1,0 +1,35 @@
+<div class="visualization-panel" id="network-panel">
+    <div class="panel-header">
+        <h2>🕸️ Trade Network</h2>
+        <p>Interactive network showing trade relationships between teams</p>
+    </div>
+    <div class="panel-content">
+        <div class="network-panel-layout">
+            <div class="network-graph" id="trade-network"></div>
+            <div class="trade-details-sidebar" id="trade-details-sidebar">
+                <h3>Trade Details</h3>
+                <p style="color: #666; font-style: italic;">Click on network connections or team pairs to see detailed trade information.</p>
+                <div id="trade-details-content"></div>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <h3>Network Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>{{TOTAL_TEAMS}}</h3>
+                    <p>Teams</p>
+                </div>
+                <div class="stat-card">
+                    <h3>{{TRADE_RELATIONSHIPS}}</h3>
+                    <p>Trade Relationships</p>
+                </div>
+            </div>
+            <p><strong>Instructions:</strong> 
+                • Drag nodes to rearrange the network<br/>
+                • Click on team nodes for statistics<br/>
+                • Click or double-click on connections (lines) between teams for trade details<br/>
+                • Check browser console if clicks aren't working and report any errors
+            </p>
+        </div>
+    </div>
+</div>

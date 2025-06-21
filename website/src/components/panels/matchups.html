@@ -1,0 +1,18 @@
+<div class="visualization-panel" id="matchups-panel">
+    <div class="panel-header">
+        <h2>⚔️ Head-to-Head Matchups</h2>
+        <p>Historical matchup results between teams</p>
+    </div>
+    <div class="panel-content">
+        <div class="matchup-controls" style="margin-bottom: 20px;">
+            <label for="matchup-year-select" style="margin-right: 10px;">Select Year:</label>
+            <select id="matchup-year-select" onchange="showMatchupYear()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px;">
+                {{MATCHUP_YEAR_OPTIONS}}
+            </select>
+        </div>
+        
+        <div id="matchupsContainer">
+            {{MATCHUP_DATA}}
+        </div>
+    </div>
+</div>

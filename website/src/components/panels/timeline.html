@@ -1,0 +1,33 @@
+<div class="visualization-panel" id="timeline-panel">
+    <div class="panel-header">
+        <h2>📅 Trade History Timeline</h2>
+        <p>Complete chronological history of all trades</p>
+    </div>
+    <div class="panel-content">
+        <!-- Trading Performance Summary -->
+        <div class="trade-summary-section">
+            <h3 style="color: #e0e0e0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <span>📊 Trading Performance Summary</span>
+                <button onclick="refreshTradingSummary()" style="background: #0066cc; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Refresh</button>
+            </h3>
+            <div id="trading-summary-container" style="margin-bottom: 20px;">
+                <!-- Trading summary will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Trade Filter -->
+        <div class="trade-filter-container">
+            <label for="team-filter" style="color: #e0e0e0; margin-right: 10px;">Filter by Team:</label>
+            <select id="team-filter" onchange="filterTradesByTeam()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px; margin-right: 10px;">
+                <option value="">All Teams</option>
+                {{TEAM_OPTIONS}}
+            </select>
+            <button onclick="resetTradeFilter()" style="background: #606060; color: #e0e0e0; border: 1px solid #808080; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reset</button>
+        </div>
+        
+        <!-- Timeline Container -->
+        <div class="timeline-container">
+            {{TRADE_HISTORY}}
+        </div>
+    </div>
+</div>

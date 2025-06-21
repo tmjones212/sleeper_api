@@ -1,0 +1,135 @@
+.draft-board-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.draft-board {
+    display: grid;
+    gap: 1px;
+    background: #606060;
+    border: 2px solid #606060;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.draft-pick-cell {
+    background: #2d2d2d;
+    padding: 12px;
+    min-height: 120px;
+    position: relative;
+    border: 1px solid #404040;
+    transition: all 0.2s ease;
+}
+
+.draft-pick-cell:hover {
+    background: #404040;
+    transform: scale(1.02);
+    z-index: 10;
+    border-color: #66ccff;
+}
+
+.draft-pick-cell.traded {
+    background: rgba(255, 204, 102, 0.1);
+    border-color: #ffcc66;
+}
+
+.draft-pick-cell.traded:hover {
+    background: rgba(255, 204, 102, 0.2);
+}
+
+.pick-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pick-number {
+    background: #66ccff;
+    color: #1a1a1a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-name {
+    color: #e0e0e0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.player-position {
+    background: #404040;
+    color: #66ccff;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.actual-picker {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #66ccff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.actual-picker.traded {
+    color: #ffcc66;
+}
+
+.round-header {
+    background: #0066cc;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-header {
+    background: #404040;
+    color: #e0e0e0;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    border-bottom: 2px solid #606060;
+}
+
+.player-image {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #606060;
+}
+
+@media (max-width: 768px) {
+    .draft-pick-cell {
+        min-height: 100px;
+        padding: 8px;
+    }
+    
+    .team-header {
+        writing-mode: horizontal-tb;
+        text-orientation: unset;
+        padding: 8px;
+    }
+}

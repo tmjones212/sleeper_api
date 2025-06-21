@@ -1,0 +1,117 @@
+.clickable-cell {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clickable-cell:hover {
+    background-color: rgba(0, 102, 204, 0.5) !important;
+}
+
+.trading-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #2d2d2d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.trading-summary-table thead {
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    color: white;
+}
+
+.trading-summary-table th {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.trading-summary-table th:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.trading-summary-table th:last-child {
+    border-right: none;
+}
+
+.trading-summary-table th.sort-asc::after,
+.trading-summary-table th.sort-desc::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+.trading-summary-table th.sort-asc::after {
+    border-bottom: 5px solid white;
+}
+
+.trading-summary-table th.sort-desc::after {
+    border-top: 5px solid white;
+}
+
+.trading-summary-table tbody tr {
+    border-bottom: 1px solid #404040;
+    transition: background-color 0.2s ease;
+}
+
+.trading-summary-table tbody tr:hover {
+    background-color: #3a3a3a;
+}
+
+.trading-summary-table td {
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #e0e0e0;
+}
+
+.trading-summary-table td:first-child {
+    text-align: left;
+    font-weight: bold;
+    color: #66ccff;
+}
+
+.overall-grade {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.grade-excellent { background: #44ff44; color: #000; }
+.grade-good { background: #66bb6a; color: #000; }
+.grade-average { background: #999999; color: #fff; }
+.grade-poor { background: #ffaa00; color: #000; }
+.grade-terrible { background: #ff4444; color: #fff; }
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+    .trading-summary-table {
+        font-size: 0.8rem;
+    }
+    
+    .trading-summary-table th,
+    .trading-summary-table td {
+        padding: 8px 4px;
+    }
+    
+    .overall-grade {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+    }
+}

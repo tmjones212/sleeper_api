@@ -1,0 +1,18 @@
+<div class="visualization-panel" id="draft-panel">
+    <div class="panel-header">
+        <h2>🏈 Draft Results</h2>
+        <p>Complete draft history and results</p>
+    </div>
+    <div class="panel-content">
+        <div class="draft-controls" style="margin-bottom: 20px;">
+            <label for="draft-year-select" style="margin-right: 10px;">Select Draft Year:</label>
+            <select id="draft-year-select" onchange="showDraftYear()" style="background: #404040; color: #e0e0e0; border: 1px solid #606060; padding: 8px; border-radius: 5px;">
+                {{DRAFT_YEAR_OPTIONS}}
+            </select>
+        </div>
+        
+        <div id="draft-results">
+            {{DRAFT_DATA}}
+        </div>
+    </div>
+</div>

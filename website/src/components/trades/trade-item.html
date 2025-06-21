@@ -1,0 +1,26 @@
+<div class="trade-item">
+    <div class="trade-date">{{TRADE_DATE}}</div>
+    <div class="trade-summary">
+        <strong>{{TEAM1}} ↔ {{TEAM2}}</strong>
+        <span style="color: #666; margin-left: 20px;">
+            {{PLAYERS_COUNT}} players, {{PICKS_COUNT}} picks
+        </span>
+    </div>
+    <div class="trade-teams">
+        <div class="team-side">
+            <h4>{{TEAM1}}</h4>
+            <div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+            <ul class="asset-list">
+                {{TEAM1_RECEIVES}}
+            </ul>
+        </div>
+        <div class="team-side">
+            <h4>{{TEAM2}}</h4>
+            <div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+            <ul class="asset-list">
+                {{TEAM2_RECEIVES}}
+            </ul>
+        </div>
+    </div>
+    {{TRADE_GRADE_SECTION}}
+</div>

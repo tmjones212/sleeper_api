@@ -1,0 +1,18 @@
+<div class="trade-grade-container">
+    <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+    <input class="trade-grade-slider" 
+           id="trade-grade-{{TRADE_ID}}" 
+           max="100" 
+           min="0" 
+           onchange="updateTradeGrade('{{TRADE_ID}}', this.value)" 
+           type="range" 
+           value="50"/>
+    <div class="trade-grade-labels">
+        <span>{{TEAM1}} Won</span>
+        <span>Even</span>
+        <span>{{TEAM2}} Won</span>
+    </div>
+    <div class="trade-grade-result" id="trade-result-{{TRADE_ID}}">
+        <span style="color: #999999;">Move slider to grade</span>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+.player-journey-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.journey-network-container {
+    height: 500px;
+    border: 2px solid #606060;
+    border-radius: 10px;
+    margin: 20px 0;
+    background: #1a1a1a;
+}
+
+.journey-info-panel {
+    background: #2d2d2d;
+    border: 1px solid #606060;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.journey-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #404040;
+    padding: 8px 12px;
+    border-radius: 15px;
+    border: 1px solid #606060;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.journey-step {
+    position: relative;
+    margin: 20px 0;
+    padding: 20px;
+    background: #404040;
+    border-radius: 10px;
+    margin-left: 30px;
+    border: 1px solid #606060;
+}
+
+.journey-step::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -30px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    background: #0066cc;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.team-transfer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    gap: 20px;
+}
+
+.team-badge {
+    background: #0066cc;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.transfer-arrow {
+    font-size: 1.5rem;
+    color: #66ccff;
+}
+
+.most-traded-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.search-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.search-input {
+    padding: 12px 20px;
+    border: 2px solid #606060;
+    border-radius: 25px;
+    width: 300px;
+    font-size: 1rem;
+    outline: none;
+    background: #404040;
+    color: #e0e0e0;
+}
+
+.search-input:focus {
+    box-shadow: 0 0 10px rgba(0, 102, 204, 0.3);
+    border-color: #0066cc;
+}
+
+.search-button {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin: 20px 0;
+}
