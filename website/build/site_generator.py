@@ -422,6 +422,19 @@ window.showPanel = showPanel;
         # Combine all CSS
         combined_css = self.combine_css()
         
+        # Add critical CSS fix for panels
+        panel_fix = """
+        /* Critical panel display fix */
+        .visualization-panel {
+            display: none !important;
+        }
+        
+        .visualization-panel.active {
+            display: block !important;
+        }
+        """
+        combined_css = combined_css + "\n" + panel_fix
+        
         # Combine all JavaScript
         combined_js = self.combine_js()
         
@@ -430,7 +443,7 @@ window.showPanel = showPanel;
             'PAGE_TITLE': 'Eazy Pickens',
             'STYLES': f'<style>\n{combined_css}\n</style>',
             'EARLY_SCRIPTS': '',  # Add any scripts that need to load early
-            'SCRIPTS': f'<script>\n{combined_js}\n</script>',
+            'SCRIPTS': '',  # Will be added after external scripts
             'HEADER_COMPONENT': shared.get('HEADER', ''),
             'CONTROLS_COMPONENT': shared.get('CONTROLS', ''),
             'OVERVIEW_PANEL': panels.get('OVERVIEW_PANEL', ''),
@@ -459,8 +472,9 @@ window.showPanel = showPanel;
             # Extract external script references
             external_scripts = re.findall(r'<script[^>]*src="[^"]+"[^>]*></script>', original_content)
             if external_scripts:
-                # Insert before closing body tag
-                final_html = final_html.replace('</body>', '\n'.join(external_scripts) + '\n</body>')
+                # Insert external scripts and then our combined JS before closing body tag
+                scripts_html = '\n'.join(external_scripts) + f'\n<script>\n{combined_js}\n</script>'
+                final_html = final_html.replace('</body>', scripts_html + '\n</body>')
         
         # Write to dist
         output_path = self.dist_path / 'index.html'

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Buttons</title>
+    <style>
+        .panel { display: none; padding: 20px; border: 1px solid #ccc; margin: 10px; }
+        .panel.active { display: block; }
+        button { margin: 5px; padding: 10px; }
+        button.active { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Test Panel Switching</h1>
+    
+    <div>
+        <button class="tab-button active" onclick="showPanel('panel1')">Panel 1</button>
+        <button class="tab-button" onclick="showPanel('panel2')">Panel 2</button>
+        <button class="tab-button" onclick="showPanel('panel3')">Panel 3</button>
+    </div>
+    
+    <div class="panel active" id="panel1-panel">
+        <h2>Panel 1 Content</h2>
+        <p>This is panel 1</p>
+    </div>
+    
+    <div class="panel" id="panel2-panel">
+        <h2>Panel 2 Content</h2>
+        <p>This is panel 2</p>
+    </div>
+    
+    <div class="panel" id="panel3-panel">
+        <h2>Panel 3 Content</h2>
+        <p>This is panel 3</p>
+    </div>
+    
+    <script>
+    function showPanel(panelName) {
+        console.log('Switching to panel:', panelName);
+        
+        // Hide all panels
+        document.querySelectorAll('.panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Show selected panel
+        const targetPanel = document.getElementById(panelName + '-panel');
+        if (targetPanel) {
+            targetPanel.classList.add('active');
+            console.log('Found and activated panel:', panelName);
+        } else {
+            console.error('Panel not found:', panelName + '-panel');
+        }
+        
+        // Find and activate the corresponding button
+        document.querySelectorAll('.tab-button').forEach(button => {
+            if (button.onclick && button.onclick.toString().includes(panelName)) {
+                button.classList.add('active');
+            }
+        });
+    }
+    
+    // Test on load
+    console.log('Test page loaded. showPanel function available:', typeof showPanel);
+    </script>
+</body>
+</html>

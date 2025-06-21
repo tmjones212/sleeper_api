@@ -20,6 +20,18 @@
     {{STYLES}}
     
     <!-- Early Scripts -->
+    <script>
+    // Define showPanel early so buttons work immediately
+    function showPanel(panelName) {
+        console.log('Early showPanel called for:', panelName);
+        // This will be overridden by the full version later, but ensures buttons work
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.showPanel && window.showPanel !== showPanel) {
+                window.showPanel(panelName);
+            }
+        });
+    }
+    </script>
     {{EARLY_SCRIPTS}}
 </head>
 <body>
