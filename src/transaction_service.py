@@ -485,7 +485,8 @@ class TransactionService:
                             'player_name': draft_pick['player_name'],
                             'player_id': draft_pick['player_id'],
                             'position': draft_pick['position'],
-                            'image_url': draft_pick.get('image_url')
+                            'image_url': draft_pick.get('image_url'),
+                            'picking_team': draft_pick.get('team')  # Who actually made the pick
                         }
                 
                 # Strategy 2: Match by round and pick number if we can calculate it
@@ -512,7 +513,8 @@ class TransactionService:
                                         'player_name': draft_pick['player_name'],
                                         'player_id': draft_pick['player_id'],
                                         'position': draft_pick['position'],
-                                        'image_url': draft_pick.get('image_url')
+                                        'image_url': draft_pick.get('image_url'),
+                                        'picking_team': draft_pick.get('team')  # Who actually made the pick
                                     }
                             break
                             
