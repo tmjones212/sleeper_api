@@ -301,3 +301,8 @@ website/
 2. Switch to `/website/dist/index.html`
 3. Apply the same changes there instead
 4. **NEVER** commit changes to the root index.html
+
+### IMPORTANT: Copy dist/index.html to Project Root
+- **ALWAYS** copy `/website/dist/index.html` to `/home/alaba/coolProjects/index.html` after making changes
+- This ensures the root index.html stays in sync with the modular website structure
+- Command: `cp /home/alaba/coolProjects/website/dist/index.html /home/alaba/coolProjects/index.html`
