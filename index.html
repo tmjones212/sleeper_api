@@ -117,7 +117,9 @@
             border: 1px solid #404040;
             min-height: 200px;
             width: 100%;
+            min-width: 100%;
             box-sizing: border-box;
+            position: relative;
         }
 
         .visualization-panel.active {
@@ -926,16 +928,24 @@
             overflow: visible !important;
             min-height: 600px !important;
             height: auto !important;
+            width: 100% !important;
+            position: relative !important;
         }
         
         #matchups-panel.active {
             display: block !important;
             overflow: visible !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         #matchups-panel .panel-content {
             min-height: 500px !important;
             overflow: visible !important;
+            width: 100% !important;
+            display: block !important;
             height: auto !important;
             display: block !important;
             width: 100% !important;
@@ -16926,6 +16936,60 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, tabs ready');
         });
+        
+        // Diagnostic function to check for duplicate panels
+        function checkDuplicatePanels() {
+            const allPanels = document.querySelectorAll('.visualization-panel');
+            const panelIds = {};
+            
+            console.log('=== Panel Diagnostic ===');
+            console.log('Total panels found:', allPanels.length);
+            
+            allPanels.forEach((panel, index) => {
+                const id = panel.id;
+                const classes = panel.className;
+                const rect = panel.getBoundingClientRect();
+                const computed = window.getComputedStyle(panel);
+                
+                console.log(`Panel ${index + 1}:`, {
+                    id: id,
+                    classes: classes,
+                    width: rect.width,
+                    height: rect.height,
+                    display: computed.display,
+                    visibility: computed.visibility,
+                    position: computed.position,
+                    parent: panel.parentElement?.className || 'none'
+                });
+                
+                if (panelIds[id]) {
+                    console.error(`DUPLICATE PANEL FOUND: ${id}`);
+                } else {
+                    panelIds[id] = true;
+                }
+            });
+            
+            // Check specifically for matchups panel
+            const matchupsPanels = document.querySelectorAll('#matchups-panel');
+            console.log('Matchups panels found:', matchupsPanels.length);
+            
+            if (matchupsPanels.length > 1) {
+                console.error('MULTIPLE MATCHUPS PANELS DETECTED!');
+                matchupsPanels.forEach((panel, i) => {
+                    console.log(`Matchups panel ${i + 1} parent:`, panel.parentElement);
+                });
+            }
+            
+            return panelIds;
+        }
+        
+        window.checkDuplicatePanels = checkDuplicatePanels;
+        
+        // Run diagnostic after page load
+        setTimeout(() => {
+            console.log('Running automatic panel diagnostic...');
+            checkDuplicatePanels();
+        }, 1000);
     </script>
 </div></body>
 </html>
