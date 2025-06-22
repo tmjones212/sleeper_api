@@ -265,3 +265,39 @@ python src/update_index.py
   - File size varies wildly (966KB to 2.2MB) depending on duplicates
 - **Working Solution**: Use the main index.html file which works correctly
 - **For Future**: The modular architecture needs a complete rewrite, not patches
+
+## CRITICAL: Website Update Instructions
+
+### NEVER TOUCH THE ROOT index.html FILE
+- **NEVER** edit `/home/alaba/coolProjects/index.html` directly
+- **NEVER** run `python src/update_index.py` or any script that modifies the root index.html
+- **NEVER** make changes to the root index.html for any reason
+
+### ALWAYS USE THE MODULAR WEBSITE STRUCTURE
+When asked to update the website:
+1. **ALWAYS** work with files in `/home/alaba/coolProjects/website/` folder
+2. **ALWAYS** update `/home/alaba/coolProjects/website/dist/index.html` for the final output
+3. **ALWAYS** follow the modular architecture:
+   - Components: `/website/src/components/`
+   - Panels: `/website/src/components/panels/`
+   - Styles: `/website/src/styles/`
+   - Scripts: `/website/src/js/`
+4. **ALWAYS** run build commands from the website directory when needed
+
+### File Structure Reference
+```
+website/
+├── dist/
+│   └── index.html  <-- THIS IS WHAT TO UPDATE
+├── src/
+│   ├── components/
+│   ├── js/
+│   └── styles/
+└── build.sh
+```
+
+### If You Catch Yourself Working on Root index.html
+1. **STOP IMMEDIATELY**
+2. Switch to `/website/dist/index.html`
+3. Apply the same changes there instead
+4. **NEVER** commit changes to the root index.html
