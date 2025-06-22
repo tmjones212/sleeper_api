@@ -10,9 +10,8 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="matchup_breakdowns.js?v=3"></script>
 <script src="league_mapping.js"></script>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
         * {
             margin: 0;
@@ -964,6 +963,27 @@
             min-height: 100px !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+        /* CRITICAL: Ensure trade summaries are ALWAYS visible */
+        .trade-summary {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            margin-bottom: 15px !important;
+            font-size: 1.1em !important;
+            color: #e0e0e0 !important;
+        }
+        
+        .trade-summary strong {
+            color: #ffffff !important;
+            font-weight: bold !important;
+            font-size: 1.2em !important;
+        }
+        
+        .trade-summary span {
+            color: #999 !important;
+            visibility: visible !important;
+            display: inline !important;
         }
     </style>
     <script>
@@ -11640,11 +11660,11 @@
             }
             
             if (Object.keys(teamStats).length === 0) {
-                // Check if we have Firebase connection but no data yet
-                if (db && !window.leagueAverageRatings) {
+                // Check if we have Supabase connection but no data yet
+                if (supabase && !window.leagueAverageRatings) {
                     summaryContainer.innerHTML = '<p style="color: #667eea; text-align: center; padding: 20px;">📡 Loading league consensus data...</p>';
-                } else if (!db) {
-                    summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Firebase not connected. Summary unavailable.</p>';
+                } else if (!supabase) {
+                    summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Database not connected. Summary unavailable.</p>';
                 } else {
                     summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No league ratings available yet. Grade some trades to see team performance!</p>';
                 }
@@ -12321,18 +12341,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 DOM loaded, initializing app...');
             
-            // Load trade grades from localStorage
+            // Load trade grades from localStorage first, then Supabase will override
             loadTradeGrades();
             
             // Also check for any Trade Matrix ratings that should update Trade History
             checkForCrossViewRatings();
-            
-            // Load average ratings from Firebase
-            if (db) {
-                loadAverageRatings();
-            } else {
-                console.log('⚠️ Firebase not initialized yet, skipping average ratings load');
-            }
             
             // Generate trading summary
             generateTradingSummary();
@@ -12356,12 +12369,351 @@
             }
         });
 
+        // Supabase configuration
+        const SUPABASE_URL = 'https://kuslrouglinnmiabblhp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1c2xyb3VnbGlubm1pYWJibGhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2Mjc1NDEsImV4cCI6MjA2NjIwMzU0MX0.-9ZW6BZFd89fmzFNYK0ZPoG1KMrQ15J163qEUFX8iA8';
+
+        // Initialize Supabase
+        let supabase = null;
+        console.log('🔍 Initializing Supabase...');
+        if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL') {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase initialized successfully');
+                
+                // Set up real-time subscription for ratings changes
+                const subscription = supabase
+                    .channel('ratings-changes')
+                    .on('postgres_changes', 
+                        { event: '*', schema: 'public', table: 'ratings' },
+                        (payload) => {
+                            console.log('Real-time update received:', payload);
+                            // Refresh ratings when changes occur
+                            loadTradeGrades();
+                        }
+                    )
+                    .subscribe();
+                    
+                // Load ratings from Supabase after initialization
+                console.log('Loading ratings from Supabase after init...');
+                loadRatingsFromSupabase();
+                
+                // Also load average ratings for trading summary
+                loadAverageRatings();
+                    
+            } catch (error) {
+                console.error('❌ Supabase initialization failed:', error);
+            }
+        }
+
+        // Trade grading functions
+        function updateTradeGrade(tradeIndex, value, team1, team2) {
+            const gradeValue = parseInt(value);
+            console.log(`📊 Trade ${tradeIndex} rated: ${gradeValue}`);
+            
+            // Save to localStorage
+            saveTradeGrade(tradeIndex, gradeValue);
+            
+            // Update display
+            updateTradeGradeDisplay(tradeIndex, gradeValue, 1);
+            
+            // Save to Supabase if user is identified
+            const userName = getUserName();
+            console.log('🔍 getUserName returned:', userName, 'for trade:', tradeIndex);
+            if (userName) {
+                console.log('✅ Calling saveTradeGradeToSupabase...');
+                saveTradeGradeToSupabase(tradeIndex, gradeValue, userName);
+            } else {
+                console.log('❌ No userName, skipping Supabase save');
+            }
+        }
+
+        function saveTradeGrade(tradeIndex, gradeValue) {
+            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+            grades[tradeIndex] = gradeValue;
+            localStorage.setItem('tradeGrades', JSON.stringify(grades));
+        }
+
+        function loadTradeGrades() {
+            // First load from localStorage
+            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+            Object.keys(grades).forEach(tradeIndex => {
+                const slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                if (slider) {
+                    slider.value = grades[tradeIndex];
+                    updateTradeGradeDisplay(tradeIndex, grades[tradeIndex], 1);
+                }
+            });
+            
+            // Then load from Supabase (if available)
+            if (supabase) {
+                loadRatingsFromSupabase();
+            }
+        }
+        
+        async function loadRatingsFromSupabase() {
+            const userName = localStorage.getItem('tradeRaterName');
+            if (!userName) {
+                console.log('No username stored, skipping Supabase load');
+                return;
+            }
+            
+            console.log('Loading ratings from Supabase for user:', userName);
+            
+            try {
+                // Get all ratings for this user
+                const { data: userRatings, error } = await supabase
+                    .from('ratings')
+                    .select('*')
+                    .eq('user_name', userName);
+                
+                if (error) {
+                    console.error('Error loading ratings from Supabase:', error);
+                    return;
+                }
+                
+                console.log(`Found ${userRatings ? userRatings.length : 0} ratings in Supabase`);
+                
+                if (userRatings && userRatings.length > 0) {
+                    userRatings.forEach(rating => {
+                        // Extract trade index from trade_id (e.g., "trade_waddle" -> "waddle")
+                        const tradeIndex = rating.trade_id.replace('trade_', '');
+                        
+                        // Convert 1-5 scale back to 0-100 for slider
+                        const sliderValue = ((rating.rating - 1) * 25) + 10; // 1->10, 2->35, 3->60, 4->85, 5->110(capped at 100)
+                        const finalValue = Math.min(sliderValue, 100);
+                        
+                        console.log(`Loading rating for ${tradeIndex}: ${rating.rating} (slider: ${finalValue})`);
+                        
+                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                        if (slider) {
+                            slider.value = finalValue;
+                            updateTradeGradeDisplay(tradeIndex, finalValue, 1);
+                            
+                            // Also update localStorage to keep in sync
+                            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+                            grades[tradeIndex] = finalValue;
+                            localStorage.setItem('tradeGrades', JSON.stringify(grades));
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error in loadRatingsFromSupabase:', error);
+            }
+        }
+
+        function updateTradeGradeDisplay(tradeIndex, gradeValue, numRatings) {
+            const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
+            if (!resultElement) return;
+            
+            const leftWin = gradeValue < 40;
+            const rightWin = gradeValue > 60;
+            const even = gradeValue >= 40 && gradeValue <= 60;
+            
+            if (leftWin) {
+                const margin = 40 - gradeValue;
+                resultElement.innerHTML = `<span style="color: #4CAF50;">Left team won by ${margin} points</span>`;
+            } else if (rightWin) {
+                const margin = gradeValue - 60;
+                resultElement.innerHTML = `<span style="color: #f44336;">Right team won by ${margin} points</span>`;
+            } else {
+                resultElement.innerHTML = `<span style="color: #888;">Even trade</span>`;
+            }
+            
+            if (numRatings > 1) {
+                resultElement.innerHTML += ` <small>(avg from ${numRatings} users)</small>`;
+            }
+        }
+
+        function getUserName() {
+            let userName = localStorage.getItem('tradeRaterName');
+            if (!userName) {
+                userName = prompt('Enter your name (this will be saved for future ratings):');
+                if (userName) {
+                    localStorage.setItem('tradeRaterName', userName);
+                }
+            }
+            return userName;
+        }
+
+        function saveTradeGradeToSupabase(tradeIndex, gradeValue, userName) {
+            console.log('🔍 saveTradeGradeToSupabase called with:', { tradeIndex, gradeValue, userName, supabaseExists: !!supabase });
+            if (!supabase) {
+                console.log('❌ Supabase not configured, using localStorage only');
+                return;
+            }
+
+            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
+            const tradeId = generateTradeId(tradeIndex, tradeItem);
+            
+            // Convert 0-100 scale to 1-5 scale for database
+            // 0-20 = 1, 21-40 = 2, 41-60 = 3, 61-80 = 4, 81-100 = 5
+            let dbRating;
+            if (gradeValue <= 20) dbRating = 1;
+            else if (gradeValue <= 40) dbRating = 2;
+            else if (gradeValue <= 60) dbRating = 3;
+            else if (gradeValue <= 80) dbRating = 4;
+            else dbRating = 5;
+            
+            console.log(`💾 Saving to Supabase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue} (DB: ${dbRating}), ID: ${tradeId}`);
+            
+            // Save to Supabase
+            (async () => {
+                try {
+                    // Ensure trade exists in trade_ratings table
+                    console.log('Attempting to upsert trade_ratings with:', {
+                        trade_id: tradeId,
+                        trade_index: tradeIndex
+                    });
+                    
+                    const { data: tradeData, error: upsertTradeError } = await supabase
+                        .from('trade_ratings')
+                        .upsert({ 
+                            trade_id: tradeId,
+                            trade_index: 0  // Using 0 as default since these are string-based trade IDs
+                        }, {
+                            onConflict: 'trade_id'
+                        });
+                    
+                    if (upsertTradeError) {
+                        console.error('Error upserting trade:', upsertTradeError);
+                    } else {
+                        console.log('Trade upserted successfully:', tradeData);
+                    }
+                    
+                    // Now save the rating (converted to 1-5 scale)
+                    console.log('Attempting to upsert rating with:', {
+                        trade_id: tradeId,
+                        user_name: userName,
+                        rating: dbRating,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    const { data: ratingData, error: ratingError } = await supabase
+                        .from('ratings')
+                        .upsert({
+                            trade_id: tradeId,
+                            user_name: userName,
+                            rating: dbRating,
+                            timestamp: new Date().toISOString()
+                        }, {
+                            onConflict: 'trade_id,user_name'
+                        });
+                    
+                    if (ratingError) {
+                        console.error('❌ Error saving to Supabase:', ratingError);
+                    } else {
+                        console.log('✅ Rating saved to Supabase successfully:', ratingData);
+                    }
+                } catch (error) {
+                    console.error('❌ Error in saveTradeGradeToSupabase:', error);
+                }
+            })();
+        }
+
+        function generateTradeId(tradeIndex, tradeItem) {
+            // Simple ID generation based on trade index
+            // You might want to make this more sophisticated
+            return `trade_${tradeIndex}`;
+        }
+
+        function checkForCrossViewRatings() {
+            // Placeholder for cross-view rating logic
+            console.log('Checking for cross-view ratings...');
+        }
+
+        async function loadAverageRatings() {
+            if (!supabase) {
+                console.log('Supabase not initialized, skipping average ratings load');
+                return;
+            }
+            
+            console.log('Loading average ratings from Supabase...');
+            
+            try {
+                // Get all ratings from all users
+                const { data: allRatings, error } = await supabase
+                    .from('ratings')
+                    .select('*');
+                
+                if (error) {
+                    console.error('Error loading average ratings:', error);
+                    return;
+                }
+                
+                // Group ratings by trade_id
+                const ratingsByTrade = {};
+                if (allRatings) {
+                    allRatings.forEach(rating => {
+                        const tradeIndex = rating.trade_id.replace('trade_', '');
+                        if (!ratingsByTrade[tradeIndex]) {
+                            ratingsByTrade[tradeIndex] = [];
+                        }
+                        // Convert 1-5 back to 0-100 scale
+                        const value = ((rating.rating - 1) * 25) + 10;
+                        ratingsByTrade[tradeIndex].push(Math.min(value, 100));
+                    });
+                }
+                
+                // Store for trading summary calculation
+                window.leagueAverageRatings = ratingsByTrade;
+                console.log('League average ratings loaded:', ratingsByTrade);
+                
+                // Regenerate trading summary with the new data
+                generateTradingSummary();
+                
+            } catch (error) {
+                console.error('Error in loadAverageRatings:', error);
+            }
+        }
+
+        // generateTradingSummary function already defined above
+
         // Duplicate functions removed - using the ones defined earlier
 
     
+        // Debug function to check trade summaries
+        function debugTradeSummaries() {
+            const summaries = document.querySelectorAll('.trade-summary');
+            console.log(`Found ${summaries.length} trade summaries`);
+            summaries.forEach((summary, index) => {
+                console.log(`Summary ${index}:`, {
+                    html: summary.innerHTML,
+                    display: window.getComputedStyle(summary).display,
+                    visibility: window.getComputedStyle(summary).visibility,
+                    opacity: window.getComputedStyle(summary).opacity
+                });
+            });
+        }
+        
+        // Force trade summaries to be visible
+        function forceTradeSummariesVisible() {
+            const summaries = document.querySelectorAll('.trade-summary');
+            console.log(`Forcing ${summaries.length} trade summaries to be visible`);
+            summaries.forEach(summary => {
+                summary.style.display = 'block';
+                summary.style.visibility = 'visible';
+                summary.style.opacity = '1';
+                summary.style.marginBottom = '15px';
+                
+                const strong = summary.querySelector('strong');
+                if (strong) {
+                    strong.style.color = '#ffffff';
+                    strong.style.fontSize = '1.2em';
+                    strong.style.fontWeight = 'bold';
+                }
+            });
+        }
+        
         // Ensure tabs initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, tabs ready');
+            
+            // Debug trade summaries after a short delay
+            setTimeout(() => {
+                debugTradeSummaries();
+                forceTradeSummariesVisible();
+            }, 100);
         });
     </script>
 </div></body>

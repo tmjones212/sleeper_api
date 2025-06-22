@@ -22,6 +22,17 @@ IMPORTANT: this context may or may not be relevant to your tasks. You should not
 
 DO NOT CHANGE THE FIREBASE CODE or the trade summary by team code IN index.html unless specifically asked to. For some reason we're constantly losing it when you make changes.
 
+## CRITICAL: Trade Summaries Must Be Preserved
+**NEVER REMOVE OR BREAK THE TRADE SUMMARIES** in any HTML file. These are the lines that show:
+- Format: `<strong>TeamA ↔ TeamB</strong>` 
+- Example: `<strong>BaoDown ↔ lamjohnson56</strong>`
+- Usually inside `<div class="trade-summary">` elements
+- They show "X players, Y picks" after the team names
+- These summaries are CRITICAL to the site's functionality
+- When editing HTML files, ALWAYS preserve these trade summary sections
+- If you accidentally remove them, they must be restored immediately
+- The trade summaries show trade partners and asset counts - DO NOT MODIFY THEM
+
 ### Draft Pick Display Issue (Fixed)
 - **Issue**: Some draft picks were showing as generic "2028 Round 1 pick" instead of "Halteclere's 2028 Round 1 pick"
 - **Root Cause**: The transaction service was correctly setting `original_owner` using `roster_id`, but the HTML needed to be regenerated
@@ -268,36 +279,23 @@ python src/update_index.py
 
 ## CRITICAL: Website Update Instructions
 
-### NEVER TOUCH THE ROOT index.html FILE
-- **NEVER** edit `/home/alaba/coolProjects/index.html` directly
-- **NEVER** run `python src/update_index.py` or any script that modifies the root index.html
-- **NEVER** make changes to the root index.html for any reason
+### CRITICAL UPDATE (June 2025): CORRECT FILE TO EDIT
+- **THE CORRECT FILE IS**: `/home/alaba/coolProjects/website/index.html`
+- **NOT**: `/home/alaba/coolProjects/website/dist/index.html` 
+- **NOT**: `/home/alaba/coolProjects/index.html` (root)
+- When the user says "website folder", they mean `/home/alaba/coolProjects/website/index.html`
 
-### ALWAYS USE THE MODULAR WEBSITE STRUCTURE
-When asked to update the website:
-1. **ALWAYS** work with files in `/home/alaba/coolProjects/website/` folder
-2. **ALWAYS** update `/home/alaba/coolProjects/website/dist/index.html` for the final output
-3. **ALWAYS** follow the modular architecture:
-   - Components: `/website/src/components/`
-   - Panels: `/website/src/components/panels/`
-   - Styles: `/website/src/styles/`
-   - Scripts: `/website/src/js/`
-4. **ALWAYS** run build commands from the website directory when needed
-
-### File Structure Reference
+### File Structure Clarification
 ```
-website/
-├── dist/
-│   └── index.html  <-- THIS IS WHAT TO UPDATE
-├── src/
-│   ├── components/
-│   ├── js/
-│   └── styles/
-└── build.sh
+/home/alaba/coolProjects/
+├── index.html              <-- DO NOT EDIT THIS (root)
+├── website/
+│   ├── index.html          <-- EDIT THIS ONE! 
+│   └── dist/
+│       └── index.html      <-- DO NOT EDIT THIS
 ```
 
-### If You Catch Yourself Working on Root index.html
-1. **STOP IMMEDIATELY**
-2. Switch to `/website/dist/index.html`
-3. Apply the same changes there instead
-4. **NEVER** commit changes to the root index.html
+### If You're Confused About Which File
+1. User says "website folder" = `/home/alaba/coolProjects/website/index.html`
+2. This is the MAIN file that should be edited
+3. Ignore the root index.html and website/dist/index.html

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trade Summaries Test</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-results {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .success { color: #66ff66; }
+        .error { color: #ff6666; }
+        .info { color: #6666ff; }
+    </style>
+</head>
+<body>
+    <h1>Trade Summaries Visibility Test</h1>
+    <div id="results" class="test-results"></div>
+    
+    <script>
+        function runTests() {
+            const results = document.getElementById('results');
+            let html = '<h2>Test Results:</h2>';
+            
+            // Test 1: Check if trade summaries exist
+            const tradeSummaries = window.parent.document.querySelectorAll('.trade-summary');
+            html += `<p class="${tradeSummaries.length > 0 ? 'success' : 'error'}">✓ Found ${tradeSummaries.length} trade summaries</p>`;
+            
+            // Test 2: Check timeline panel
+            const timelinePanel = window.parent.document.getElementById('timeline-panel');
+            if (timelinePanel) {
+                const isActive = timelinePanel.classList.contains('active');
+                const display = window.getComputedStyle(timelinePanel).display;
+                html += `<p class="info">Timeline Panel: ${isActive ? 'ACTIVE' : 'NOT ACTIVE'}, Display: ${display}</p>`;
+            } else {
+                html += '<p class="error">✗ Timeline panel not found</p>';
+            }
+            
+            // Test 3: Check first few trade summaries visibility
+            html += '<h3>First 5 Trade Summaries:</h3>';
+            for (let i = 0; i < Math.min(5, tradeSummaries.length); i++) {
+                const summary = tradeSummaries[i];
+                const styles = window.getComputedStyle(summary);
+                const text = summary.textContent.trim();
+                html += `<div style="margin-left: 20px; margin-bottom: 10px;">
+                    <p class="info">Summary ${i + 1}: "${text.substring(0, 50)}..."</p>
+                    <p style="margin-left: 20px;">Display: ${styles.display}, Visibility: ${styles.visibility}, Opacity: ${styles.opacity}</p>
+                </div>`;
+            }
+            
+            // Test 4: Check if panel switching works
+            html += '<h3>Panel Switching Test:</h3>';
+            html += '<button onclick="window.parent.showPanel(\'timeline\')" style="padding: 10px; margin: 5px;">Show Timeline Panel</button>';
+            html += '<button onclick="checkAfterSwitch()" style="padding: 10px; margin: 5px;">Check Visibility After Switch</button>';
+            
+            results.innerHTML = html;
+        }
+        
+        function checkAfterSwitch() {
+            setTimeout(() => {
+                const timelinePanel = window.parent.document.getElementById('timeline-panel');
+                const tradeSummaries = window.parent.document.querySelectorAll('.trade-summary');
+                let visibleCount = 0;
+                
+                tradeSummaries.forEach(summary => {
+                    const styles = window.getComputedStyle(summary);
+                    if (styles.display !== 'none' && styles.visibility !== 'hidden') {
+                        visibleCount++;
+                    }
+                });
+                
+                alert(`Timeline Panel Active: ${timelinePanel.classList.contains('active')}\nVisible Trade Summaries: ${visibleCount}/${tradeSummaries.length}`);
+            }, 500);
+        }
+        
+        // Run tests when loaded in iframe
+        if (window.parent !== window) {
+            runTests();
+        } else {
+            document.getElementById('results').innerHTML = '<p class="error">Please open this in the parent window context</p>';
+        }
+    </script>
+</body>
+</html>
