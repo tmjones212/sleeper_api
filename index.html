@@ -967,6 +967,36 @@
         }
     </style>
     <script>
+        // NUCLEAR OPTION: Force matchups to display
+        function forceMatchupsDisplay() {
+            console.log('FORCING MATCHUPS DISPLAY');
+            const panel = document.getElementById('matchups-panel');
+            const container = document.getElementById('matchupsContainer');
+            
+            if (panel && container) {
+                // Get the HTML content
+                const content = container.innerHTML;
+                
+                // Create a new container with forced styles
+                const newContainer = document.createElement('div');
+                newContainer.id = 'matchupsContainer';
+                newContainer.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 500px !important; width: 100% !important; background: #2d2d2d !important; padding: 20px !important; margin-top: 20px !important;';
+                newContainer.innerHTML = content;
+                
+                // Replace the old container
+                container.parentNode.replaceChild(newContainer, container);
+                
+                // Force all children to be visible
+                newContainer.querySelectorAll('*').forEach(el => {
+                    if (el.style) {
+                        el.style.visibility = 'visible';
+                        el.style.opacity = '1';
+                        el.style.display = el.style.display || 'block';
+                    }
+                });
+            }
+        }
+        
         // Panel switching function - defined early so buttons can use it
         function showPanel(panelName) {
             console.log('Switching to panel:', panelName);
@@ -1046,23 +1076,47 @@
             } else if (panelName === 'matchups') {
                 // Initialize matchups if needed
                 console.log('🎯 Matchups panel activated');
+                
+                // CRITICAL FIX: Force the panel to render
+                const matchupsPanel = document.getElementById('matchups-panel');
+                const panelContent = matchupsPanel ? matchupsPanel.querySelector('.panel-content') : null;
+                const matchupsContainer = document.getElementById('matchupsContainer');
+                
+                // Reset all display properties
+                if (matchupsPanel) {
+                    // Remove all inline styles first
+                    matchupsPanel.removeAttribute('style');
+                    // Then force specific styles
+                    matchupsPanel.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; min-height: 800px !important; width: 100% !important; height: auto !important;';
+                }
+                
+                if (panelContent) {
+                    panelContent.removeAttribute('style');
+                    panelContent.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; min-height: 600px !important; width: 100% !important; height: auto !important; padding: 30px !important;';
+                }
+                
+                if (matchupsContainer) {
+                    matchupsContainer.removeAttribute('style');
+                    matchupsContainer.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; min-height: 500px !important; width: 100% !important; height: auto !important;';
+                }
+                
+                // Force browser to recalculate
+                void matchupsPanel.offsetHeight;
+                
                 // Call immediately without timeout
                 if (typeof window.showMatchupYear === 'function') {
                     console.log('Calling showMatchupYear...');
-                    // Force layout recalculation
-                    const matchupsPanel = document.getElementById('matchups-panel');
-                    const matchupsContainer = document.getElementById('matchupsContainer');
-                    if (matchupsPanel) {
-                        matchupsPanel.style.display = 'block';
-                        matchupsPanel.style.height = 'auto';
-                        matchupsPanel.offsetHeight; // Force reflow
-                    }
-                    if (matchupsContainer) {
-                        matchupsContainer.style.display = 'block';
-                        matchupsContainer.style.height = 'auto';
-                        matchupsContainer.offsetHeight; // Force reflow
-                    }
                     window.showMatchupYear();
+                    
+                    // NUCLEAR OPTION: If still not visible, force it
+                    setTimeout(() => {
+                        const container = document.getElementById('matchupsContainer');
+                        if (container && container.offsetHeight === 0) {
+                            console.log('Container still has 0 height, using nuclear option');
+                            forceMatchupsDisplay();
+                            window.showMatchupYear();
+                        }
+                    }, 100);
                 } else {
                     console.error('ERROR: showMatchupYear function not found!');
                     // Try to define it inline if not found
