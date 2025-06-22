@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Matchups Debug</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: Arial, sans-serif; }
+        .result { margin: 20px; padding: 20px; background: #333; border-radius: 10px; }
+        .success { border: 2px solid green; }
+        .error { border: 2px solid red; }
+        iframe { width: 100%; height: 600px; border: 1px solid #666; }
+    </style>
+</head>
+<body>
+    <h1>Testing Matchups Panel</h1>
+    
+    <div class="result" id="result">
+        <h2>Test Results:</h2>
+        <div id="output"></div>
+    </div>
+    
+    <iframe id="testFrame" src="dist/index.html"></iframe>
+    
+    <script>
+        const output = document.getElementById('output');
+        const resultDiv = document.getElementById('result');
+        
+        function log(msg, isError = false) {
+            const p = document.createElement('p');
+            p.textContent = msg;
+            p.style.color = isError ? '#ff6666' : '#66ff66';
+            output.appendChild(p);
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                try {
+                    const iframe = document.getElementById('testFrame');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Find matchups button
+                    const matchupsBtn = Array.from(iframeDoc.querySelectorAll('.tab-button'))
+                        .find(btn => btn.textContent.includes('Matchups'));
+                    
+                    if (!matchupsBtn) {
+                        log('ERROR: Could not find Matchups button', true);
+                        resultDiv.classList.add('error');
+                        return;
+                    }
+                    
+                    log('✓ Found Matchups button');
+                    
+                    // Click it
+                    matchupsBtn.click();
+                    log('✓ Clicked Matchups button');
+                    
+                    setTimeout(() => {
+                        // Check if panel is visible
+                        const panel = iframeDoc.getElementById('matchups-panel');
+                        if (!panel) {
+                            log('ERROR: matchups-panel not found', true);
+                            resultDiv.classList.add('error');
+                            return;
+                        }
+                        
+                        const computedStyle = iframe.contentWindow.getComputedStyle(panel);
+                        const dimensions = {
+                            display: computedStyle.display,
+                            width: panel.offsetWidth,
+                            height: panel.offsetHeight,
+                            visible: computedStyle.display !== 'none' && panel.offsetHeight > 0
+                        };
+                        
+                        log(`Panel display: ${dimensions.display}`);
+                        log(`Panel dimensions: ${dimensions.width}x${dimensions.height}`);
+                        
+                        if (dimensions.height === 0) {
+                            log('ERROR: Panel has 0 height!', true);
+                            
+                            // Try to debug
+                            const container = iframeDoc.getElementById('matchupsContainer');
+                            if (container) {
+                                log(`Container dimensions: ${container.offsetWidth}x${container.offsetHeight}`);
+                                
+                                // Check parent chain
+                                let parent = container.parentElement;
+                                let depth = 0;
+                                while (parent && depth < 5) {
+                                    const pStyle = iframe.contentWindow.getComputedStyle(parent);
+                                    log(`Parent ${depth}: ${parent.className || parent.id} - ${pStyle.display} - ${parent.offsetWidth}x${parent.offsetHeight}`);
+                                    parent = parent.parentElement;
+                                    depth++;
+                                }
+                            }
+                            
+                            resultDiv.classList.add('error');
+                        } else {
+                            log('✓ SUCCESS: Matchups panel is visible!', false);
+                            resultDiv.classList.add('success');
+                        }
+                        
+                    }, 1000);
+                    
+                } catch (e) {
+                    log('ERROR: ' + e.message, true);
+                    resultDiv.classList.add('error');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

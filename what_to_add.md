@@ -1,0 +1,2 @@
+- On Trade Matrix tab, when you click on a cell in the matrix and it pulls the trades between those 2 teams up, i want to see the trade sliders for those trades under the trades
+- 
