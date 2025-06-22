@@ -351,6 +351,14 @@ class SiteGenerator:
         team_names = self.get_team_names_from_trades(trade_items)
         team_options = '\n'.join([f'<option value="{team}">{team}</option>' for team in team_names])
         
+        # Generate draft year options with 2025 as default
+        draft_year_options = """
+                <option value="2025" selected>2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+        """
+        
         # Load all panel components
         panels_raw = {
             'OVERVIEW_PANEL': self.load_component('panels/overview.html'),
@@ -368,6 +376,13 @@ class SiteGenerator:
             'TEAM_OPTIONS': team_options
         }
         panels_raw['TIMELINE_PANEL'] = self.replace_placeholders(panels_raw['TIMELINE_PANEL'], timeline_replacements)
+        
+        # Process draft panel to inject year options
+        draft_replacements = {
+            'DRAFT_YEAR_OPTIONS': draft_year_options,
+            'DRAFT_DATA': '<!-- Draft data will be loaded dynamically -->'
+        }
+        panels_raw['DRAFT_PANEL'] = self.replace_placeholders(panels_raw['DRAFT_PANEL'], draft_replacements)
         
         panels = panels_raw
         
@@ -522,7 +537,9 @@ console.log('Core functions loaded: showPanel, updateTradeGrade, showMatchupYear
             'TOTAL_TRADES': str(total_trades),
             'TOTAL_PLAYERS': '234',  # These would need to be calculated from the data
             'TOTAL_PICKS': '87',    # These would need to be calculated from the data
-            'TRADE_HISTORY': trade_history_html
+            'TRADE_HISTORY': trade_history_html,
+            'DRAFT_YEAR_OPTIONS': draft_year_options,
+            'DRAFT_DATA': '<!-- Draft data will be loaded dynamically -->'
         }
         
         # Replace all placeholders

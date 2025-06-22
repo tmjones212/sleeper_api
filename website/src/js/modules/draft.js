@@ -18,7 +18,7 @@ export function showDraftYear() {
     }
     
     const yearSelect = document.getElementById('draftYearSelect');
-    const selectedYear = yearSelect ? yearSelect.value : '2024';
+    const selectedYear = yearSelect ? yearSelect.value : '2025';
     const container = document.getElementById('draftContainer');
     
     if (!container) {

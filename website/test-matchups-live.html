@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Matchups Live</title>
+    <script>
+        function testMatchups() {
+            // Get the matchups panel
+            const panel = document.getElementById('matchups-panel');
+            if (!panel) {
+                console.error('matchups-panel not found!');
+                return;
+            }
+            
+            console.log('Found matchups-panel');
+            
+            // Trace up the parent chain
+            let parent = panel.parentElement;
+            let depth = 0;
+            console.log('=== PARENT CHAIN ===');
+            
+            while (parent && depth < 20) {
+                const id = parent.id || '';
+                const className = parent.className || '';
+                const tag = parent.tagName;
+                const display = window.getComputedStyle(parent).display;
+                const dims = `${parent.offsetWidth}x${parent.offsetHeight}`;
+                
+                console.log(`${depth}: <${tag}${id ? ' id="' + id + '"' : ''}${className ? ' class="' + className + '"' : ''}> display:${display} dims:${dims}`);
+                
+                // Check if we hit another visualization-panel
+                if (className.includes('visualization-panel') && depth > 0) {
+                    console.error(`ERROR: matchups-panel is nested inside another visualization-panel!`);
+                    console.error(`The parent panel is: ${id || className}`);
+                }
+                
+                parent = parent.parentElement;
+                depth++;
+            }
+            
+            // Try to make it visible
+            console.log('\n=== FORCING VISIBILITY ===');
+            panel.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: static !important; width: 100% !important; height: auto !important; min-height: 600px !important; background: yellow !important;';
+            
+            const panelContent = panel.querySelector('.panel-content');
+            if (panelContent) {
+                panelContent.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: auto !important; min-height: 500px !important; background: green !important;';
+            }
+            
+            const container = document.getElementById('matchupsContainer');
+            if (container) {
+                container.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: auto !important; min-height: 400px !important; background: red !important;';
+            }
+            
+            console.log('Forced styles applied. Panel should be visible with yellow/green/red colors.');
+        }
+    </script>
+</head>
+<body>
+    <h1>Test Matchups Panel</h1>
+    <p>Open index.html in another tab, then run the test.</p>
+    
+    <button onclick="testMatchups()">Run Test on index.html</button>
+    
+    <p>To use: Open browser console, paste this into index.html's console:</p>
+    <pre style="background: #333; color: #0f0; padding: 10px;">
+// Paste this into index.html console:
+const script = document.createElement('script');
+script.src = 'test-matchups-live.html';
+document.head.appendChild(script);
+    </pre>
+</body>
+</html>

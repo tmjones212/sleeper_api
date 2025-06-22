@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Panel Structure</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: Arial, sans-serif; padding: 20px; }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        iframe { width: 100%; height: 400px; border: 1px solid #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Panel Structure Verification</h1>
+    <div id="results"></div>
+    <iframe id="testFrame" src="index.html"></iframe>
+    
+    <script>
+        function log(msg, isError = false) {
+            const div = document.createElement('div');
+            div.className = isError ? 'error' : 'success';
+            div.textContent = msg;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const iframe = document.getElementById('testFrame');
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check panels-container
+                const container = doc.querySelector('.panels-container');
+                if (!container) {
+                    log('ERROR: No panels-container found', true);
+                    return;
+                }
+                log('✓ Found panels-container');
+                
+                // Check all panels
+                const panels = container.querySelectorAll('.visualization-panel');
+                log(`✓ Found ${panels.length} panels`);
+                
+                // Check for nested panels
+                let hasNested = false;
+                panels.forEach(panel => {
+                    const nestedPanels = panel.querySelectorAll('.visualization-panel');
+                    if (nestedPanels.length > 0) {
+                        log(`ERROR: Panel ${panel.id} contains ${nestedPanels.length} nested panels!`, true);
+                        hasNested = true;
+                    }
+                });
+                
+                if (!hasNested) {
+                    log('✓ No nested panels found - structure is correct!');
+                }
+                
+                // Test matchups panel specifically
+                const matchupsPanel = doc.getElementById('matchups-panel');
+                if (!matchupsPanel) {
+                    log('ERROR: matchups-panel not found', true);
+                    return;
+                }
+                
+                // Check parent chain
+                let parent = matchupsPanel.parentElement;
+                let depth = 0;
+                while (parent && depth < 10) {
+                    log(`Parent ${depth}: ${parent.className || parent.tagName}`);
+                    if (parent.classList && parent.classList.contains('visualization-panel')) {
+                        log('ERROR: matchups-panel is nested inside another visualization-panel!', true);
+                        break;
+                    }
+                    if (parent.classList && parent.classList.contains('panels-container')) {
+                        log('✓ matchups-panel is correctly inside panels-container');
+                        break;
+                    }
+                    parent = parent.parentElement;
+                    depth++;
+                }
+                
+                // Click matchups button
+                const matchupsBtn = Array.from(doc.querySelectorAll('.tab-button'))
+                    .find(btn => btn.textContent.includes('Matchups'));
+                
+                if (matchupsBtn) {
+                    log('✓ Clicking Matchups button...');
+                    matchupsBtn.click();
+                    
+                    setTimeout(() => {
+                        const style = iframe.contentWindow.getComputedStyle(matchupsPanel);
+                        log(`Matchups panel display: ${style.display}`);
+                        log(`Matchups panel dimensions: ${matchupsPanel.offsetWidth}x${matchupsPanel.offsetHeight}`);
+                        
+                        if (matchupsPanel.offsetHeight === 0) {
+                            log('ERROR: Matchups panel still has 0 height!', true);
+                        } else {
+                            log('✓ SUCCESS: Matchups panel is visible!');
+                        }
+                    }, 1000);
+                }
+                
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

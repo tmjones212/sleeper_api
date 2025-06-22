@@ -201,6 +201,7 @@ export function showTeamTrades(team1, team2) {
     `;
     
     edgeData.trades.forEach((trade, index) => {
+        const tradeId = `matrix-trade-${team1}-${team2}-${index}`;
         html += `
             <div class="trade-item-small">
                 <h5>Trade ${index + 1} - ${trade.date}</h5>
@@ -241,6 +242,26 @@ export function showTeamTrades(team1, team2) {
                 html += '</div>';
             }
         });
+        
+        // Add trade grade slider
+        html += `
+            <div class="trade-grade-container" style="margin-top: 10px; padding: 10px; background: #2d2d2d; border-radius: 5px;">
+                <div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                <input type="range" min="0" max="100" value="50" 
+                       class="trade-grade-slider" 
+                       id="trade-grade-${tradeId}"
+                       onchange="updateTradeGrade('${tradeId}', this.value)"
+                       style="width: 100%; margin: 10px 0;">
+                <div class="trade-grade-labels" style="display: flex; justify-content: space-between; font-size: 0.85em; color: #999;">
+                    <span>${team1} Won</span>
+                    <span>Even</span>
+                    <span>${team2} Won</span>
+                </div>
+                <div class="trade-grade-result" id="trade-result-${tradeId}" style="text-align: center; margin-top: 8px;">
+                    <span style="color: #999999;">Move slider to grade</span>
+                </div>
+            </div>
+        `;
         
         html += '</div>';
     });
