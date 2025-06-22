@@ -921,27 +921,49 @@
             opacity: 1 !important;
             min-height: 100px;
         }
-        /* Fix for matchups panel */
+        /* Fix for matchups panel - CRITICAL */
         #matchups-panel {
             overflow: visible !important;
             min-height: 600px !important;
+            height: auto !important;
+        }
+        
+        #matchups-panel.active {
+            display: block !important;
+            overflow: visible !important;
         }
         
         #matchups-panel .panel-content {
             min-height: 500px !important;
             overflow: visible !important;
+            height: auto !important;
+            display: block !important;
+            width: 100% !important;
+            position: relative !important;
         }
         
         #matchupsContainer {
             min-height: 400px !important;
             width: 100% !important;
             display: block !important;
+            position: relative !important;
+            overflow: visible !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Force all content to be visible */
+        #matchups-panel * {
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         /* Ensure year matchups are visible */
         .year-matchups {
             display: block !important;
             min-height: 100px !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
     </style>
     <script>
@@ -1027,6 +1049,19 @@
                 // Call immediately without timeout
                 if (typeof window.showMatchupYear === 'function') {
                     console.log('Calling showMatchupYear...');
+                    // Force layout recalculation
+                    const matchupsPanel = document.getElementById('matchups-panel');
+                    const matchupsContainer = document.getElementById('matchupsContainer');
+                    if (matchupsPanel) {
+                        matchupsPanel.style.display = 'block';
+                        matchupsPanel.style.height = 'auto';
+                        matchupsPanel.offsetHeight; // Force reflow
+                    }
+                    if (matchupsContainer) {
+                        matchupsContainer.style.display = 'block';
+                        matchupsContainer.style.height = 'auto';
+                        matchupsContainer.offsetHeight; // Force reflow
+                    }
                     window.showMatchupYear();
                 } else {
                     console.error('ERROR: showMatchupYear function not found!');
@@ -1077,7 +1112,7 @@
 </div>
 </div>
 <!-- Panels Container -->
-<div class="panels-container" style="position: relative; width: 100%; min-height: 600px; display: block;">
+<div class="panels-container" style="position: relative; width: 100%; min-height: 600px; display: block; overflow: visible;">
 <!-- Overview Panel -->
 <div class="visualization-panel active" id="overview-panel">
 <div class="panel-header">

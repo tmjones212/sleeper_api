@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Matchups</title>
+    <style>
+        body { background: #1a1a1a; color: #e0e0e0; font-family: Arial, sans-serif; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        #matchups-panel {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 600px;
+        }
+        
+        .panel-content {
+            padding: 20px;
+            background: #333;
+            min-height: 400px;
+        }
+        
+        #matchupsContainer {
+            background: #444;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 300px;
+        }
+        
+        .year-matchups {
+            background: #555;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Matchups Panel</h1>
+        
+        <div id="matchups-panel">
+            <h2>Matchups Panel</h2>
+            <div class="panel-content">
+                <p>Panel Content Start</p>
+                
+                <div id="matchupsContainer">
+                    <p>MatchupsContainer Start</p>
+                    
+                    <div class="year-matchups" data-year="2024">
+                        <h3>2024 Season</h3>
+                        <p>This should be visible with a background color</p>
+                    </div>
+                    
+                    <div class="year-matchups" data-year="2023">
+                        <h3>2023 Season</h3>
+                        <p>This should also be visible</p>
+                    </div>
+                    
+                    <p>MatchupsContainer End</p>
+                </div>
+                
+                <p>Panel Content End</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check dimensions
+        console.log('Panel width:', document.getElementById('matchups-panel').offsetWidth);
+        console.log('Panel height:', document.getElementById('matchups-panel').offsetHeight);
+        console.log('Container width:', document.getElementById('matchupsContainer').offsetWidth);
+        console.log('Container height:', document.getElementById('matchupsContainer').offsetHeight);
+    </script>
+</body>
+</html>
