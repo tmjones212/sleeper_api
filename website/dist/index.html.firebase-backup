@@ -10,8 +10,9 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="matchup_breakdowns.js?v=3"></script>
 <script src="league_mapping.js"></script>
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 <style>
         * {
             margin: 0;
@@ -11592,7 +11593,7 @@
                 // Check if we have Firebase connection but no data yet
                 if (db && !window.leagueAverageRatings) {
                     summaryContainer.innerHTML = '<p style="color: #667eea; text-align: center; padding: 20px;">📡 Loading league consensus data...</p>';
-                } else if (!supabase) {
+                } else if (!db) {
                     summaryContainer.innerHTML = '<p style="color: #ff6b6b; text-align: center; padding: 20px;">❌ Firebase not connected. Summary unavailable.</p>';
                 } else {
                     summaryContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">No league ratings available yet. Grade some trades to see team performance!</p>';
@@ -11842,39 +11843,29 @@
         }
 
         // Firebase Configuration
-        // Supabase configuration
-        const SUPABASE_URL = 'https://kuslrouglinnmiabblhp.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1c2xyb3VnbGlubm1pYWJibGhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2Mjc1NDEsImV4cCI6MjA2NjIwMzU0MX0.-9ZW6BZFd89fmzFNYK0ZPoG1KMrQ15J163qEUFX8iA8';
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyPZgFFjuWcjop2MkhqUeE70iH9WBvsVQ",
+            authDomain: "easypickens-95989.firebaseapp.com",
+            projectId: "easypickens-95989",
+            storageBucket: "easypickens-95989.firebasestorage.app",
+            messagingSenderId: "732973559000",
+            appId: "1:732973559000:web:6c1da5da08ce39ed3d3bad"
+        };
 
-        // Initialize Supabase
-        let supabase = null;
-        console.log('🔍 Initializing Supabase...');
-        if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL') {
+        // Initialize Firebase (only if config is provided)
+        let db = null;
+        console.log('🔍 Initializing Firebase with config:', firebaseConfig);
+        if (firebaseConfig.apiKey) {
             try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
                 const statusEl = document.getElementById('firebase-status');
                 if (statusEl) statusEl.textContent = '🔗 Real-time sync enabled';
-                console.log('✅ Supabase initialized successfully');
-                
-                // Set up real-time subscription for ratings changes
-                const subscription = supabase
-                    .channel('ratings-changes')
-                    .on('postgres_changes', 
-                        { event: '*', schema: 'public', table: 'ratings' },
-                        (payload) => {
-                            console.log('Real-time update received:', payload);
-                            // Refresh ratings when changes occur
-                            if (typeof manualRefreshRatings === 'function') {
-                                manualRefreshRatings(true); // Silent refresh
-                            }
-                        }
-                    )
-                    .subscribe();
-                    
+                console.log('✅ Firebase initialized successfully, db =', db);
             } catch (error) {
-                console.error('❌ Supabase initialization failed:', error);
+                console.error('❌ Firebase initialization failed:', error);
                 const statusEl = document.getElementById('firebase-status');
-                if (statusEl) statusEl.textContent = '❌ Database connection failed';
+                if (statusEl) statusEl.textContent = '❌ Firebase connection failed';
             }
         } else {
             const statusEl = document.getElementById('firebase-status');
@@ -11923,7 +11914,7 @@
         
         function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
             console.log('🔍 saveTradeGradeToFirebase called with:', { tradeIndex, gradeValue, userName, dbExists: !!db });
-            if (!supabase) {
+            if (!db) {
                 console.log('❌ Firebase not configured, using localStorage only');
                 return;
             }
@@ -11935,73 +11926,43 @@
                 // Generate consistent trade ID
                 const tradeId = generateFirebaseTradeId(tradeIndex, tradeItem);
                 
-                console.log(`💾 Saving to Supabase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}, ID: ${tradeId}`);
+                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}, ID: ${tradeId}`);
                 
-                // Save to Supabase
-                (async () => {
-                    try {
-                        // First check if trade exists
-                        const { data: existingRatings, error: fetchError } = await supabase
-                            .from('ratings')
-                            .select('*')
-                            .eq('trade_id', tradeId);
-                        
+                // First, check if this trade already exists in Firebase to get its Trade History index
+                db.collection('tradeRatings').doc(tradeId).collection('ratings').get()
+                    .then(existingRatings => {
                         let historyIndex = null;
                         
                         // Look for an existing Trade History index
-                        if (existingRatings && existingRatings.length > 0) {
-                            for (const rating of existingRatings) {
-                                if (rating.trade_index !== undefined && !isNaN(rating.trade_index)) {
-                                    historyIndex = rating.trade_index.toString();
-                                    console.log(`Found existing Trade History index: ${historyIndex}`);
+                        existingRatings.forEach(doc => {
+                            const data = doc.data();
+                            if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                historyIndex = data.tradeIndex.toString();
+                                console.log(`Found existing Trade History index: ${historyIndex}`);
+                                
+                                // Update the mapping
+                                if (tradeIndex.includes('-')) {
+                                    window.tradeIndexMapping[tradeIndex] = historyIndex;
                                     
-                                    // Update the mapping
-                                    if (tradeIndex.includes('-')) {
-                                        window.tradeIndexMapping[tradeIndex] = historyIndex;
-                                        
-                                        // Also save to localStorage with the Trade History index
-                                        saveTradeGrade(historyIndex, gradeValue);
-                                    }
-                                    break;
+                                    // Also save to localStorage with the Trade History index
+                                    saveTradeGrade(historyIndex, gradeValue);
                                 }
                             }
-                        }
-                        
-                        // Ensure trade exists in trade_ratings table
-                        const { error: upsertTradeError } = await supabase
-                            .from('trade_ratings')
-                            .upsert({ 
-                                trade_id: tradeId,
-                                trade_index: parseInt(historyIndex || tradeIndex)
-                            }, {
-                                onConflict: 'trade_id'
-                            });
-                        
-                        if (upsertTradeError) {
-                            console.error('Error upserting trade:', upsertTradeError);
-                        }
+                        });
                         
                         // Now save the rating
-                        const { error: ratingError } = await supabase
-                            .from('ratings')
-                            .upsert({
-                                trade_id: tradeId,
-                                user_name: userName,
-                                rating: gradeValue,
-                                timestamp: new Date().toISOString()
-                            }, {
-                                onConflict: 'trade_id,user_name'
-                            });
-                        
-                        if (ratingError) {
-                            console.error('❌ Error saving to Supabase:', ratingError);
-                        } else {
-                            console.log('✅ Rating saved to Supabase successfully');
-                        }
-                    } catch (error) {
-                        console.error('❌ Error in saveTradeGradeToSupabase:', error);
-                    }
-                })();
+                        return db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
+                            rating: gradeValue,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            tradeIndex: historyIndex || tradeIndex, // Use Trade History index if available
+                            userName: userName
+                        });
+                    })
+                    .then(() => {
+                        console.log('✅ Rating saved to Firebase successfully');
+                    }).catch((error) => {
+                        console.error('❌ Error saving to Firebase:', error);
+                    });
                 
             } catch (error) {
                 console.error('❌ Error in saveTradeGradeToFirebase:', error);
@@ -12012,7 +11973,7 @@
         let isUserChangingSlider = false;
 
         function loadAverageRatings() {
-            if (!supabase) {
+            if (!db) {
                 console.log('❌ No database connection for loading ratings');
                 return;
             }
@@ -12134,7 +12095,7 @@
         
         function loadFirebaseRatingsForDisplay() {
             console.log('🔄 Loading Firebase ratings for Trade Matrix...');
-            if (!supabase) return;
+            if (!db) return;
             
             // Get username without prompting
             const currentUser = localStorage.getItem('tradeRaterName');
@@ -12153,39 +12114,29 @@
                     console.log(`Checking Firebase for trade ${tradeIndex} with ID: ${firebaseTradeId}`);
                     
                     // Load this specific trade's ratings from Firebase
-                    // Load from Supabase
-                    (async () => {
-                        try {
-                            const { data: ratingsData, error } = await supabase
-                                .from('ratings')
-                                .select('*')
-                                .eq('trade_id', firebaseTradeId);
-                            
-                            if (error) {
-                                console.error('Error loading ratings:', error);
-                                return;
-                            }
-                            
-                            if (ratingsData && ratingsData.length > 0) {
-                                console.log(`Found ${ratingsData.length} ratings for trade ${firebaseTradeId}`);
+                    db.collection('tradeRatings').doc(firebaseTradeId).collection('ratings').get()
+                        .then(ratingsSnapshot => {
+                            if (!ratingsSnapshot.empty) {
+                                console.log(`Found ${ratingsSnapshot.size} ratings for trade ${firebaseTradeId}`);
                                 
                                 let userRating = null;
                                 let actualTradeIndex = null;
                                 const allRatings = [];
                                 
-                                ratingsData.forEach(ratingDoc => {
-                                    const rating = ratingDoc.rating;
+                                ratingsSnapshot.forEach(doc => {
+                                    const data = doc.data();
+                                    const rating = data.rating;
                                     allRatings.push(rating);
                                     
                                     // Check if this document has a numeric tradeIndex (from Trade History)
-                                    if (ratingDoc.trade_index !== undefined && !isNaN(ratingDoc.trade_index)) {
-                                        actualTradeIndex = ratingDoc.trade_index.toString();
+                                    if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                        actualTradeIndex = data.tradeIndex.toString();
                                         console.log(`Found Trade History index: ${actualTradeIndex} for Trade Matrix index: ${tradeIndex}`);
                                         // Store the mapping
                                         window.tradeIndexMapping[tradeIndex] = actualTradeIndex;
                                     }
                                     
-                                    if (ratingDoc.user_name === currentUser) {
+                                    if (doc.id === currentUser) {
                                         userRating = rating;
                                     }
                                 });
@@ -12224,10 +12175,10 @@
                                     // You could display this average somewhere if desired
                                 }
                             }
-                        } catch (error) {
+                        })
+                        .catch(error => {
                             console.error(`Error loading ratings for trade ${firebaseTradeId}:`, error);
-                        }
-                    })();
+                        });
                 }
             });
         }
@@ -12235,75 +12186,63 @@
 
 
         function manualRefreshRatings(silent = false) {
-            console.log('🔄 Manually refreshing ratings from Supabase...');
-            if (supabase) {
+            console.log('🔄 Manually refreshing ratings from Firebase...');
+            if (db) {
                 const currentUser = getUserName();
                 
-                // Get all ratings from Supabase
-                (async () => {
-                    try {
-                        const { data: ratingsData, error } = await supabase
-                            .from('ratings')
-                            .select('*');
-                        
-                        if (error) {
-                            console.error('Error fetching ratings:', error);
-                            return;
-                        }
-                        
-                        console.log(`📊 Manual refresh: found ${ratingsData ? ratingsData.length : 0} ratings`);
-                        
-                        const allRatings = {}; // Everyone's ratings for summary
-                        const userRatings = {}; // This user's ratings for sliders
+                // Use collectionGroup to get all ratings directly
+                db.collectionGroup('ratings').get().then(ratingsSnapshot => {
+                    console.log(`📊 Manual refresh: found ${ratingsSnapshot.size} ratings`);
+                    
+                    const allRatings = {}; // Everyone's ratings for summary
+                    const userRatings = {}; // This user's ratings for sliders
 
-                        if (ratingsData) {
-                            ratingsData.forEach(ratingDoc => {
-                                const tradeIndex = ratingDoc.trade_index;
-                                const userName = ratingDoc.user_name;
-                                const rating = ratingDoc.rating;
-                                
-                                if (!silent) console.log(`   🎯 Rating data:`, ratingDoc);
-                                
-                                if (tradeIndex !== undefined && tradeIndex !== null) {
-                                    // Collect all ratings for summary
-                                    if (!allRatings[tradeIndex]) {
-                                        allRatings[tradeIndex] = [];
-                                    }
-                                    allRatings[tradeIndex].push(rating);
-                                    
-                                    // Collect this user's ratings for sliders
-                                    if (userName === currentUser) {
-                                        userRatings[tradeIndex] = rating;
-                                    }
-                                } else {
-                                    console.log(`❌ Rating missing tradeIndex:`, ratingDoc);
-                                }
-                            });
+                    ratingsSnapshot.forEach(ratingDoc => {
+                        const data = ratingDoc.data();
+                        const tradeIndex = data.tradeIndex;
+                        const userName = data.userName;
+                        const rating = data.rating;
+                        
+                        if (!silent) console.log(`   🎯 Rating data:`, data);
+                        
+                        if (tradeIndex !== undefined && tradeIndex !== null) {
+                            // Collect all ratings for summary
+                            if (!allRatings[tradeIndex]) {
+                                allRatings[tradeIndex] = [];
+                            }
+                            allRatings[tradeIndex].push(rating);
+                            
+                            // Collect this user's ratings for sliders
+                            if (userName === currentUser) {
+                                userRatings[tradeIndex] = rating;
+                            }
+                        } else {
+                            console.log(`❌ Rating missing tradeIndex:`, data);
                         }
+                    });
 
                     console.log('📈 All ratings for summary:', allRatings);
                     console.log('👤 Current user ratings for sliders:', userRatings);
 
-                        // Update individual sliders with THIS USER's ratings only (without saving)
-                        Object.entries(userRatings).forEach(([tradeIndex, rating]) => {
-                            const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                            if (slider) {
-                                if (!silent) console.log(`🎯 Setting slider ${tradeIndex} to user's rating: ${rating}`);
-                                slider.value = rating;
-                                // Update display only, don't save to Supabase to prevent infinite loop
-                                updateTradeGradeDisplay(tradeIndex, rating, 1);
-                            }
-                        });
+                    // Update individual sliders with THIS USER's ratings only (without saving)
+                    Object.entries(userRatings).forEach(([tradeIndex, rating]) => {
+                        const slider = document.getElementById(`trade-grade-${tradeIndex}`);
+                        if (slider) {
+                            if (!silent) console.log(`🎯 Setting slider ${tradeIndex} to user's rating: ${rating}`);
+                            slider.value = rating;
+                            // Update display only, don't save to Firebase to prevent infinite loop
+                            updateTradeGradeDisplay(tradeIndex, rating, 1);
+                        }
+                    });
 
-                        // Update summary section with EVERYONE's averaged ratings
-                        updateSummaryWithAverages(allRatings);
-                        
-                        // Removed annoying popup - manual refresh complete notification
-                    } catch (error) {
-                        console.error('❌ Manual refresh failed:', error);
-                        // Removed annoying error popup - errors logged to console instead
-                    }
-                })();
+                    // Update summary section with EVERYONE's averaged ratings
+                    updateSummaryWithAverages(allRatings);
+                    
+                    // Removed annoying popup - manual refresh complete notification
+                }).catch(error => {
+                    console.error('❌ Manual refresh failed:', error);
+                    // Removed annoying error popup - errors logged to console instead
+                });
             } else {
                 // Removed annoying Firebase connection popup - errors logged to console instead
             }
