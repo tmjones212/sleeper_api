@@ -1058,6 +1058,34 @@
             // Show selected panel
             const targetPanel = document.getElementById(panelName + '-panel');
             if (targetPanel) {
+                // EMERGENCY FIX: Fix matchups panel if nested
+                if (panelName === 'matchups') {
+                    const panelsContainer = document.querySelector('.panels-container');
+                    let parent = targetPanel.parentElement;
+                    let isNested = false;
+                    
+                    while (parent && parent !== panelsContainer && parent !== document.body) {
+                        if (parent.classList && parent.classList.contains('visualization-panel')) {
+                            console.log('FIXING: matchups-panel is nested inside:', parent.id);
+                            isNested = true;
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    
+                    if (isNested) {
+                        console.log('Moving matchups-panel to correct location...');
+                        targetPanel.remove();
+                        const draftPanel = document.getElementById('draft-panel');
+                        if (draftPanel) {
+                            panelsContainer.insertBefore(targetPanel, draftPanel);
+                        } else {
+                            panelsContainer.appendChild(targetPanel);
+                        }
+                        console.log('✓ Fixed matchups panel nesting');
+                    }
+                }
+                
                 targetPanel.classList.add('active');
                 console.log('Activated panel:', panelName + '-panel');
                 console.log('Panel classList:', targetPanel.classList.toString());
@@ -6177,6 +6205,9 @@
 <li class="pick-item">📋 Pick #16 (lamjohnson56's 2024 R2) - BO NIX</li>
 <li class="pick-item">📋 Pick #9 (lamjohnson56's 2023 R1) - ZAY FLOWERS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
 </ul></div></div></div>
+</div> <!-- End of timeline-container -->
+</div> <!-- End of panel-content -->
+</div> <!-- End of timeline-panel -->
 <!-- Player Journey Panel -->
 <div class="visualization-panel" id="players-panel">
 <div class="panel-header">
