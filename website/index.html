@@ -1231,6 +1231,13 @@
                         console.log('showDraftYear function not found');
                     }
                 }, 100);
+            } else if (panelName === 'history') {
+                // Sync ratings when switching to history panel
+                console.log('🔄 History panel activated, syncing ratings...');
+                setTimeout(() => {
+                    loadTradeGrades();
+                    checkForCrossViewRatings();
+                }, 100);
             }
         }
     </script>
@@ -9799,8 +9806,8 @@
 <div class="search-container">
 <label for="draftYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
 <select class="search-input" id="draftYearSelect" onchange="showDraftYear()" style="width: 200px;">
-<option value="2025">2025</option>
-<option selected="" value="2024">2024</option>
+<option value="2025" selected>2025</option>
+<option value="2024">2024</option>
 <option value="2023">2023</option>
 <option value="2022">2022</option>
 </select>
@@ -10069,7 +10076,7 @@
             
             teamTrades.forEach((trade, index) => {
                 tradesHTML += `
-                    <div class="trade-detail-item">
+                    <div class="trade-item trade-detail-item">
                         <div class="trade-detail-date">Trade #${index + 1} - ${trade.date}</div>
                         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 `;
@@ -10079,6 +10086,13 @@
                     teamData.team === team1 || teamData.team === team2
                 );
                 
+                // Sort teams to ensure consistent order: team1 first, team2 second
+                teamsInTrade.sort((a, b) => {
+                    if (a.team === team1) return -1;
+                    if (b.team === team1) return 1;
+                    return 0;
+                });
+                
                 teamsInTrade.forEach(teamData => {
                     const hasReceives = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0 || (teamData.receives.faab && teamData.receives.faab.length > 0);
                     const hasGives = teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0 || (teamData.gives.faab && teamData.gives.faab.length > 0));
@@ -10086,7 +10100,10 @@
                     if (hasReceives || hasGives) {
                         tradesHTML += `
                             <div style="flex: 1; min-width: 300px; background: #404040; padding: 20px; border-radius: 10px; border: 2px solid #66ccff; color: #e0e0e0;">
-                                <h4 style="color: #66ccff; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">${teamData.team}</h4>
+                                <h4 style="color: #66ccff; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">
+                                    ${teamData.team}
+                                    ${teamData.team === team1 ? '<span style="font-size: 0.8rem; color: #999;"> (Left)</span>' : '<span style="font-size: 0.8rem; color: #999;"> (Right)</span>'}
+                                </h4>
                                 
                                 <div style="display: flex; gap: 15px;">
                                     <div style="flex: 1;">
@@ -10206,6 +10223,23 @@
                 
                 tradesHTML += `
                         </div>
+                        <!-- Trade Rating Slider -->
+                        <div style="margin-top: 15px; padding: 15px; background: #2d2d2d; border-radius: 8px; border: 1px solid #404040;">
+                            <div style="margin-bottom: 10px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" 
+                                   class="trade-grade-slider" 
+                                   id="trade-grade-${team1}-${team2}-${index}"
+                                   onchange="updateTradeGrade('${team1}-${team2}-${index}', this.value, '${team1}', '${team2}')"
+                                   style="width: 100%; margin: 10px 0; cursor: pointer;">
+                            <div class="trade-grade-labels" style="display: flex; justify-content: space-between; font-size: 0.85em; color: #999;">
+                                <span>${team1} Won</span>
+                                <span>Even</span>
+                                <span>${team2} Won</span>
+                            </div>
+                            <div class="trade-grade-result" id="trade-result-${team1}-${team2}-${index}" style="text-align: center; margin-top: 10px; font-size: 0.95em;">
+                                <span style="color: #999999;">Move slider to grade</span>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -10220,6 +10254,20 @@
                 // Show in modal
                 showTradeModal(tradesHTML);
             }
+            
+            // Load existing ratings - first from localStorage, then from Firebase
+            setTimeout(() => {
+                console.log('Loading ratings for Trade Matrix trades...');
+                
+                // First load from localStorage
+                loadTradeGrades();
+                
+                // Then load from Firebase but don't overwrite user's current ratings
+                if (db) {
+                    // Only load Firebase ratings for display purposes, not to overwrite sliders
+                    loadFirebaseRatingsForDisplay();
+                }
+            }, 100);
         }
         
         // Show trade modal
@@ -11466,18 +11514,23 @@
             filterTradesByTeam();
         }
 
-        function updateTradeGrade(tradeIndex, value) {
+        function updateTradeGrade(tradeIndex, value, team1, team2) {
             // Set flag to prevent real-time listener interference
             isUserChangingSlider = true;
             
             const gradeValue = parseInt(value);
             const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
             
-            // Get team names from the trade item
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
-            const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-            const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
-            const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
+            // Get team names from parameters or try to find from trade item
+            let leftTeam = team1;
+            let rightTeam = team2;
+            
+            if (!leftTeam || !rightTeam) {
+                const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
+                const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
+                leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
+                rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
+            }
 
             let gradeText, gradeColor;
 
@@ -11505,6 +11558,13 @@
 
             // Save the grade to localStorage
             saveTradeGrade(tradeIndex, gradeValue);
+            
+            // Also save with the Trade History index if we have a mapping
+            if (window.tradeIndexMapping && window.tradeIndexMapping[tradeIndex]) {
+                const historyIndex = window.tradeIndexMapping[tradeIndex];
+                console.log(`Also saving to Trade History index: ${historyIndex}`);
+                saveTradeGrade(historyIndex, gradeValue);
+            }
             
             // Save to Firebase if available
             const userName = getUserName();
@@ -11535,12 +11595,23 @@
             try {
                 const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
                 
-                Object.keys(grades).forEach(tradeIndex => {
-                    const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                    if (slider) {
+                // First, check if we have any Trade History indices that should override Trade Matrix indices
+                document.querySelectorAll('.trade-grade-slider').forEach(slider => {
+                    const tradeIndex = slider.id.replace('trade-grade-', '');
+                    
+                    // Check for this specific index first
+                    if (grades[tradeIndex] !== undefined) {
                         slider.value = grades[tradeIndex];
-                        // Use display-only function to avoid infinite loop
                         updateTradeGradeDisplay(tradeIndex, grades[tradeIndex], 1);
+                    } else {
+                        // For Trade Matrix sliders, also check if there's a Trade History rating
+                        // by looking for numeric indices that might match this trade
+                        Object.keys(grades).forEach(storedIndex => {
+                            if (!isNaN(storedIndex) && grades[storedIndex] !== undefined) {
+                                // This is a Trade History index - we'll let Firebase loading handle the mapping
+                                console.log(`Found Trade History rating ${grades[storedIndex]} for index ${storedIndex}`);
+                            }
+                        });
                     }
                 });
             } catch (error) {
@@ -11851,6 +11922,46 @@
             if (statusEl) statusEl.textContent = '💾 Local storage only';
         }
 
+        // Helper function to generate consistent Firebase trade IDs
+        function generateFirebaseTradeId(tradeIndex, tradeItem) {
+            // Try to get date and summary from Trade History format
+            let dateElement = tradeItem?.querySelector('.trade-date');
+            let summaryElement = tradeItem?.querySelector('.trade-summary strong');
+            
+            // If not found, try Trade Matrix format
+            if (!dateElement) {
+                dateElement = tradeItem?.querySelector('.trade-detail-date');
+            }
+            
+            let tradeId;
+            if (dateElement && summaryElement) {
+                // Trade History format
+                tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
+            } else if (dateElement && tradeIndex.includes('-')) {
+                // Trade Matrix format - extract date, time, and teams
+                const dateText = dateElement.textContent.trim(); // e.g., "Trade #1 - 2022-07-21 02:37 PM"
+                const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2}:\d{2}\s+[AP]M)/);
+                const teams = tradeIndex.split('-'); // e.g., ["BaoDown", "EBao", "0"]
+                
+                if (dateMatch && teams.length >= 2) {
+                    // Format: 2022_07_21_02_37_PM_team1___team2
+                    const date = dateMatch[1].replace(/-/g, '_'); // 2022_07_21
+                    const time = dateMatch[2].replace(/[:\s]/g, '_'); // 02_37_PM
+                    const team1 = teams[0];
+                    const team2 = teams[1];
+                    tradeId = `${date}_${time}_${team1}___${team2}`;
+                } else {
+                    // Fallback if parsing fails
+                    tradeId = `${dateText}_${tradeIndex}`.replace(/[^a-zA-Z0-9_]/g, '_');
+                }
+            } else {
+                // Fallback - just use the trade index
+                tradeId = tradeIndex.replace(/[^a-zA-Z0-9]/g, '_');
+            }
+            
+            return tradeId;
+        }
+        
         function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
             console.log('🔍 saveTradeGradeToFirebase called with:', { tradeIndex, gradeValue, userName, dbExists: !!db });
             if (!db) {
@@ -11861,23 +11972,47 @@
             try {
                 // Get trade info
                 const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
-                const dateElement = tradeItem?.querySelector('.trade-date');
-                const summaryElement = tradeItem?.querySelector('.trade-summary strong');
                 
-                const tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
+                // Generate consistent trade ID
+                const tradeId = generateFirebaseTradeId(tradeIndex, tradeItem);
                 
-                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}`);
+                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}, ID: ${tradeId}`);
                 
-                db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
-                    rating: gradeValue,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    tradeIndex: tradeIndex,
-                    userName: userName
-                }).then(() => {
-                    console.log('✅ Rating saved to Firebase successfully');
-                }).catch((error) => {
-                    console.error('❌ Error saving to Firebase:', error);
-                });
+                // First, check if this trade already exists in Firebase to get its Trade History index
+                db.collection('tradeRatings').doc(tradeId).collection('ratings').get()
+                    .then(existingRatings => {
+                        let historyIndex = null;
+                        
+                        // Look for an existing Trade History index
+                        existingRatings.forEach(doc => {
+                            const data = doc.data();
+                            if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                historyIndex = data.tradeIndex.toString();
+                                console.log(`Found existing Trade History index: ${historyIndex}`);
+                                
+                                // Update the mapping
+                                if (tradeIndex.includes('-')) {
+                                    window.tradeIndexMapping[tradeIndex] = historyIndex;
+                                    
+                                    // Also save to localStorage with the Trade History index
+                                    saveTradeGrade(historyIndex, gradeValue);
+                                }
+                            }
+                        });
+                        
+                        // Now save the rating
+                        return db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
+                            rating: gradeValue,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            tradeIndex: historyIndex || tradeIndex, // Use Trade History index if available
+                            userName: userName
+                        });
+                    })
+                    .then(() => {
+                        console.log('✅ Rating saved to Firebase successfully');
+                    }).catch((error) => {
+                        console.error('❌ Error saving to Firebase:', error);
+                    });
                 
             } catch (error) {
                 console.error('❌ Error in saveTradeGradeToFirebase:', error);
@@ -11950,6 +12085,152 @@
                 }
             }
             return userName;
+        }
+        
+        // Global mapping between Trade Matrix indices and Trade History indices
+        window.tradeIndexMapping = {};
+        
+        function checkForCrossViewRatings() {
+            console.log('🔄 Checking for cross-view ratings...');
+            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+            
+            // Look through all localStorage entries
+            Object.keys(grades).forEach(storedIndex => {
+                // If this is a Trade Matrix index (contains hyphen and looks like team1-team2-number)
+                if (storedIndex.includes('-') && storedIndex.split('-').length >= 3) {
+                    console.log(`Found Trade Matrix rating for ${storedIndex}: ${grades[storedIndex]}`);
+                    
+                    // Try to find corresponding Trade History slider
+                    // We need to check Firebase to get the mapping
+                    if (db) {
+                        // Extract team names from the index
+                        const parts = storedIndex.split('-');
+                        if (parts.length >= 2) {
+                            const team1 = parts[0];
+                            const team2 = parts[1];
+                            
+                            // Look for any Trade History sliders that might match this trade
+                            document.querySelectorAll('.trade-grade-slider').forEach(slider => {
+                                const sliderIndex = slider.id.replace('trade-grade-', '');
+                                
+                                // Skip if this is also a Trade Matrix slider
+                                if (!sliderIndex.includes('-') && !isNaN(sliderIndex)) {
+                                    // This is a Trade History slider - check if it matches
+                                    const tradeItem = slider.closest('.trade-item');
+                                    if (tradeItem) {
+                                        const summaryText = tradeItem.querySelector('.trade-summary')?.textContent || '';
+                                        
+                                        // Check if this trade involves both teams
+                                        if (summaryText.includes(team1) && summaryText.includes(team2)) {
+                                            console.log(`Found matching Trade History slider ${sliderIndex} for teams ${team1} and ${team2}`);
+                                            
+                                            // Update the slider with the Trade Matrix rating
+                                            if (!grades[sliderIndex]) {
+                                                console.log(`Updating Trade History slider ${sliderIndex} with Trade Matrix rating ${grades[storedIndex]}`);
+                                                slider.value = grades[storedIndex];
+                                                updateTradeGradeDisplay(sliderIndex, grades[storedIndex], 1);
+                                                
+                                                // Also save to localStorage with the Trade History index
+                                                saveTradeGrade(sliderIndex, grades[storedIndex]);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        
+        function loadFirebaseRatingsForDisplay() {
+            console.log('🔄 Loading Firebase ratings for Trade Matrix...');
+            if (!db) return;
+            
+            // Get username without prompting
+            const currentUser = localStorage.getItem('tradeRaterName');
+            
+            // Find all trade sliders on the page
+            const sliders = document.querySelectorAll('.trade-grade-slider');
+            console.log(`Found ${sliders.length} trade sliders to check`);
+            
+            sliders.forEach(slider => {
+                const tradeIndex = slider.id.replace('trade-grade-', '');
+                const tradeItem = slider.closest('.trade-item');
+                
+                if (tradeItem) {
+                    // Generate the Firebase ID for this trade
+                    const firebaseTradeId = generateFirebaseTradeId(tradeIndex, tradeItem);
+                    console.log(`Checking Firebase for trade ${tradeIndex} with ID: ${firebaseTradeId}`);
+                    
+                    // Load this specific trade's ratings from Firebase
+                    db.collection('tradeRatings').doc(firebaseTradeId).collection('ratings').get()
+                        .then(ratingsSnapshot => {
+                            if (!ratingsSnapshot.empty) {
+                                console.log(`Found ${ratingsSnapshot.size} ratings for trade ${firebaseTradeId}`);
+                                
+                                let userRating = null;
+                                let actualTradeIndex = null;
+                                const allRatings = [];
+                                
+                                ratingsSnapshot.forEach(doc => {
+                                    const data = doc.data();
+                                    const rating = data.rating;
+                                    allRatings.push(rating);
+                                    
+                                    // Check if this document has a numeric tradeIndex (from Trade History)
+                                    if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                        actualTradeIndex = data.tradeIndex.toString();
+                                        console.log(`Found Trade History index: ${actualTradeIndex} for Trade Matrix index: ${tradeIndex}`);
+                                        // Store the mapping
+                                        window.tradeIndexMapping[tradeIndex] = actualTradeIndex;
+                                    }
+                                    
+                                    if (doc.id === currentUser) {
+                                        userRating = rating;
+                                    }
+                                });
+                                
+                                // Update slider with user's rating if found
+                                if (userRating !== null || actualTradeIndex) {
+                                    // Check localStorage for both indices
+                                    const localGrades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+                                    
+                                    // Use the Trade History rating if it exists in localStorage
+                                    let finalRating = userRating;
+                                    if (actualTradeIndex && localGrades[actualTradeIndex] !== undefined) {
+                                        finalRating = localGrades[actualTradeIndex];
+                                        console.log(`Using Trade History localStorage rating: ${finalRating} for index ${actualTradeIndex}`);
+                                    } else if (userRating !== null) {
+                                        console.log(`Using Firebase rating: ${finalRating}`);
+                                    }
+                                    
+                                    if (finalRating !== null) {
+                                        console.log(`Setting slider ${tradeIndex} to rating: ${finalRating}`);
+                                        slider.value = finalRating;
+                                        updateTradeGradeDisplay(tradeIndex, finalRating, 1);
+                                        
+                                        // Save to localStorage with both indices to keep them in sync
+                                        saveTradeGrade(tradeIndex, finalRating);
+                                        if (actualTradeIndex) {
+                                            saveTradeGrade(actualTradeIndex, finalRating);
+                                        }
+                                    }
+                                }
+                                
+                                // Calculate and display average if multiple ratings exist
+                                if (allRatings.length > 1) {
+                                    const avgRating = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
+                                    console.log(`Average rating for trade ${tradeIndex}: ${avgRating.toFixed(1)} from ${allRatings.length} users`);
+                                    // You could display this average somewhere if desired
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error(`Error loading ratings for trade ${firebaseTradeId}:`, error);
+                        });
+                }
+            });
         }
 
 
@@ -12042,6 +12323,9 @@
             
             // Load trade grades from localStorage
             loadTradeGrades();
+            
+            // Also check for any Trade Matrix ratings that should update Trade History
+            checkForCrossViewRatings();
             
             // Load average ratings from Firebase
             if (db) {
