@@ -10930,7 +10930,7 @@
 </div>
 </div>
 <!-- Matchups Panel -->
-<div class="visualization-panel" id="matchups-panel">
+<div class="visualization-panel" id="matchups-panel" style="overflow: visible !important;">
 <div class="panel-header">
 <h2>⚔️ League Matchups</h2>
 <p>View matchup history across all years (2025, 2024, 2023, 2022)</p>
@@ -11492,9 +11492,8 @@
 </tr>
 </tbody>
 </table>
-</div>
 <!-- Matchups by Year/Week -->
-<div id="matchupsContainer" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 10;">
+<div id="matchupsContainer" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 10; min-height: 500px; width: 100%;">
 <div class="year-matchups" data-year="2025" style="margin: 20px 0;">
 <h3 style="color: #e0e0e0; margin-bottom: 15px;">📅 2025 Season</h3>
 <div class="weeks-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
@@ -14478,6 +14477,9 @@
 </div>
 </div>
 </div>
+</div><!-- Close matchupsContainer -->
+</div><!-- Close panel-content -->
+</div><!-- Close matchups-panel -->
 <!-- Fixed: Added 2 missing closing divs for matchups panel -->
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
