@@ -1048,6 +1048,10 @@
             // Hide all panels
             document.querySelectorAll('.visualization-panel').forEach(panel => {
                 panel.classList.remove('active');
+                // Remove any inline styles that might override hiding
+                panel.removeAttribute('style');
+                // Force hide to ensure panels are actually hidden
+                panel.style.display = 'none';
             });
             
             // Remove active class from all buttons
@@ -1098,6 +1102,8 @@
                 }
                 
                 targetPanel.classList.add('active');
+                // Force display block for active panel
+                targetPanel.style.display = 'block';
                 console.log('Activated panel:', panelName + '-panel');
                 console.log('Panel classList:', targetPanel.classList.toString());
                 const computedStyle = window.getComputedStyle(targetPanel);
