@@ -1058,32 +1058,54 @@
             // Show selected panel
             const targetPanel = document.getElementById(panelName + '-panel');
             if (targetPanel) {
-                // EMERGENCY FIX: Fix matchups panel if nested
-                if (panelName === 'matchups') {
-                    const panelsContainer = document.querySelector('.panels-container');
-                    let parent = targetPanel.parentElement;
-                    let isNested = false;
-                    
+                // EMERGENCY FIX: Ensure panel is in correct location
+                const panelsContainer = document.querySelector('.panels-container');
+                let parent = targetPanel.parentElement;
+                let needsMove = false;
+                
+                // Check if panel is not directly in panels-container
+                if (parent !== panelsContainer) {
+                    // Check if it's nested in another panel
                     while (parent && parent !== panelsContainer && parent !== document.body) {
                         if (parent.classList && parent.classList.contains('visualization-panel')) {
-                            console.log('FIXING: matchups-panel is nested inside:', parent.id);
-                            isNested = true;
+                            console.log(`FIXING: ${panelName}-panel is nested inside:`, parent.id);
+                            needsMove = true;
                             break;
                         }
                         parent = parent.parentElement;
                     }
                     
-                    if (isNested) {
-                        console.log('Moving matchups-panel to correct location...');
-                        targetPanel.remove();
-                        const draftPanel = document.getElementById('draft-panel');
-                        if (draftPanel) {
-                            panelsContainer.insertBefore(targetPanel, draftPanel);
-                        } else {
-                            panelsContainer.appendChild(targetPanel);
-                        }
-                        console.log('✓ Fixed matchups panel nesting');
+                    // Also move if parent is not panels-container
+                    if (!needsMove && targetPanel.parentElement !== panelsContainer) {
+                        console.log(`FIXING: ${panelName}-panel is not in panels-container`);
+                        needsMove = true;
                     }
+                }
+                
+                if (needsMove) {
+                    console.log(`Moving ${panelName}-panel to correct location...`);
+                    targetPanel.remove();
+                    
+                    // Determine correct position based on panel order
+                    const panelOrder = ['overview', 'network', 'matrix', 'timeline', 'players', 'matchups', 'draft'];
+                    const currentIndex = panelOrder.indexOf(panelName);
+                    
+                    // Find the next panel in order that exists
+                    let insertBefore = null;
+                    for (let i = currentIndex + 1; i < panelOrder.length; i++) {
+                        const nextPanel = document.getElementById(panelOrder[i] + '-panel');
+                        if (nextPanel && nextPanel.parentElement === panelsContainer) {
+                            insertBefore = nextPanel;
+                            break;
+                        }
+                    }
+                    
+                    if (insertBefore) {
+                        panelsContainer.insertBefore(targetPanel, insertBefore);
+                    } else {
+                        panelsContainer.appendChild(targetPanel);
+                    }
+                    console.log(`✓ Fixed ${panelName} panel location`);
                 }
                 
                 targetPanel.classList.add('active');
