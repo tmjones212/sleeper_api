@@ -1086,6 +1086,17 @@
                     }
                 }
                 
+                // Special handling for draft panel after matchups fix
+                if (panelName === 'draft') {
+                    // Ensure draft panel is visible and in correct location
+                    const panelsContainer = document.querySelector('.panels-container');
+                    if (targetPanel.parentElement !== panelsContainer) {
+                        console.log('Moving draft panel to panels-container');
+                        targetPanel.remove();
+                        panelsContainer.appendChild(targetPanel);
+                    }
+                }
+                
                 targetPanel.classList.add('active');
                 console.log('Activated panel:', panelName + '-panel');
                 console.log('Panel classList:', targetPanel.classList.toString());
