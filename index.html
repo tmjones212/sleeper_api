@@ -117,9 +117,7 @@
             border: 1px solid #404040;
             min-height: 200px;
             width: 100%;
-            min-width: 100%;
             box-sizing: border-box;
-            position: relative;
         }
 
         .visualization-panel.active {
@@ -928,24 +926,16 @@
             overflow: visible !important;
             min-height: 600px !important;
             height: auto !important;
-            width: 100% !important;
-            position: relative !important;
         }
         
         #matchups-panel.active {
             display: block !important;
             overflow: visible !important;
-            width: 100% !important;
-            min-width: 100% !important;
-            visibility: visible !important;
-            opacity: 1 !important;
         }
         
         #matchups-panel .panel-content {
             min-height: 500px !important;
             overflow: visible !important;
-            width: 100% !important;
-            display: block !important;
             height: auto !important;
             display: block !important;
             width: 100% !important;
@@ -1058,6 +1048,10 @@
             // Hide all panels
             document.querySelectorAll('.visualization-panel').forEach(panel => {
                 panel.classList.remove('active');
+                // Remove any inline styles that might override hiding
+                panel.removeAttribute('style');
+                // Force hide to ensure panels are actually hidden
+                panel.style.display = 'none';
             });
             
             // Remove active class from all buttons
@@ -1068,7 +1062,48 @@
             // Show selected panel
             const targetPanel = document.getElementById(panelName + '-panel');
             if (targetPanel) {
+                // EMERGENCY FIX: Fix matchups panel if nested
+                if (panelName === 'matchups') {
+                    const panelsContainer = document.querySelector('.panels-container');
+                    let parent = targetPanel.parentElement;
+                    let isNested = false;
+                    
+                    while (parent && parent !== panelsContainer && parent !== document.body) {
+                        if (parent.classList && parent.classList.contains('visualization-panel')) {
+                            console.log('FIXING: matchups-panel is nested inside:', parent.id);
+                            isNested = true;
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    
+                    if (isNested) {
+                        console.log('Moving matchups-panel to correct location...');
+                        targetPanel.remove();
+                        const draftPanel = document.getElementById('draft-panel');
+                        if (draftPanel) {
+                            panelsContainer.insertBefore(targetPanel, draftPanel);
+                        } else {
+                            panelsContainer.appendChild(targetPanel);
+                        }
+                        console.log('✓ Fixed matchups panel nesting');
+                    }
+                }
+                
+                // Special handling for draft panel after matchups fix
+                if (panelName === 'draft') {
+                    // Ensure draft panel is visible and in correct location
+                    const panelsContainer = document.querySelector('.panels-container');
+                    if (targetPanel.parentElement !== panelsContainer) {
+                        console.log('Moving draft panel to panels-container');
+                        targetPanel.remove();
+                        panelsContainer.appendChild(targetPanel);
+                    }
+                }
+                
                 targetPanel.classList.add('active');
+                // Force display block for active panel
+                targetPanel.style.display = 'block';
                 console.log('Activated panel:', panelName + '-panel');
                 console.log('Panel classList:', targetPanel.classList.toString());
                 const computedStyle = window.getComputedStyle(targetPanel);
@@ -1195,6 +1230,13 @@
                     } else {
                         console.log('showDraftYear function not found');
                     }
+                }, 100);
+            } else if (panelName === 'history') {
+                // Sync ratings when switching to history panel
+                console.log('🔄 History panel activated, syncing ratings...');
+                setTimeout(() => {
+                    loadTradeGrades();
+                    checkForCrossViewRatings();
                 }, 100);
             }
         }
@@ -1989,6 +2031,376 @@
 </select>
 <button onclick="resetTradeFilter()" style="background: #606060; color: #e0e0e0; border: 1px solid #808080; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reset</button>
 </div>
+<div class="timeline-container">
+<div class="trade-item">
+<div class="trade-date">2025-06-16 04:18 PM</div>
+<div class="trade-summary">
+<strong>Halteclere ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                1 players, 1 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>Halteclere</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="Jaylen Waddle" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7526.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>JAYLEN WADDLE</span>
+</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="pick-item">📋 Halteclere's 2028 Round 1 pick</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-waddle" max="100" min="0" onchange="updateTradeGrade('waddle', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>Halteclere Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-waddle">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-16 01:13 AM</div>
+<div class="trade-summary">
+<strong>BaoDown ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>BaoDown</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="MAC JONES" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7527.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>MAC JONES</span>
+</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="WILL LEVIS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>WILL LEVIS</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-levis" max="100" min="0" onchange="updateTradeGrade('levis', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>BaoDown Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-levis">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 10:11 PM</div>
+<div class="trade-summary">
+<strong>ShadyCommish88 ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                1 players, 2 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>ShadyCommish88</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Calvin Austin III" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11557.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>CALVIN AUSTIN III</span></li><li class="pick-item">📋 lamjohnson56's 2026 Round 4 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="pick-item">📋 ShadyCommish88's 2027 Round 3 pick</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-austin" max="100" min="0" onchange="updateTradeGrade('austin', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>ShadyCommish88 Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-austin">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 08:21 PM</div>
+<div class="trade-summary">
+<strong>ShadyCommish88 ↔ emanueljd3</strong>
+<span style="color: #666; margin-left: 20px;">
+                                1 players, 2 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>ShadyCommish88</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="pick-item">📋 EBao's 2026 Round 2 pick</li>
+<li class="pick-item">📋 ShadyCommish88's 2026 Round 2 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>emanueljd3</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="DJ MOORE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4983.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>DJ MOORE</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-djmoore1" max="100" min="0" onchange="updateTradeGrade('djmoore1', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>ShadyCommish88 Won</span>
+<span>Even</span>
+<span>emanueljd3 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-djmoore1">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 03:21 PM</div>
+<div class="trade-summary">
+<strong>BaoDown ↔ emanueljd3</strong>
+<span style="color: #666; margin-left: 20px;">
+                                2 players, 0 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>BaoDown</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Will Levis" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>WILL LEVIS</span></li>
+</ul>
+</div>
+<div class="team-side">
+<h4>emanueljd3</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Derek Carr" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/2028.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>DEREK CARR</span></li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-carr" max="100" min="0" onchange="updateTradeGrade('carr', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>BaoDown Won</span>
+<span>Even</span>
+<span>emanueljd3 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-carr">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 03:10 PM</div>
+<div class="trade-summary">
+<strong>emanueljd3 ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                3 players, 2 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>emanueljd3</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Will Levis" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>WILL LEVIS</span></li><li class="pick-item">📋 lamjohnson56's 2026 Round 3 pick</li><li class="pick-item">📋 emanueljd3's 2026 Round 3 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Travis Etienne" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7543.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>TRAVIS ETIENNE</span></li><li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Joshua Palmer" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7670.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>JOSHUA PALMER</span></li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-etienne" max="100" min="0" onchange="updateTradeGrade('etienne', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>emanueljd3 Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-etienne">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 02:02 PM</div>
+<div class="trade-summary">
+<strong>emanueljd3 ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                3 players, 2 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>emanueljd3</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="DIONTAE JOHNSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/5937.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>DIONTAE JOHNSON</span>
+</li>
+<li class="pick-item">📋 lamjohnson56's 2026 Round 1 pick</li>
+<li class="pick-item">📋 lamjohnson56's 2027 Round 1 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="DJ MOORE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4983.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>DJ MOORE</span>
+</li>
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="TREVOR SIEMIAN" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/5965.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>TREVOR SIEMIAN</span>
+</li>
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;">
+<img alt="DANIEL JONES" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6156.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
+<span>DANIEL JONES</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-djmoore2" max="100" min="0" onchange="updateTradeGrade('djmoore2', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>emanueljd3 Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-djmoore2">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 12:42 PM</div>
+<div class="trade-summary">
+<strong>Halteclere ↔ ShadyCommish88</strong>
+<span style="color: #666; margin-left: 20px;">
+                                1 players, 4 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>Halteclere</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Marvin Harrison Jr" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11628.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>MARVIN HARRISON JR</span></li>
+</ul>
+</div>
+<div class="team-side">
+<h4>ShadyCommish88</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="pick-item">📋 Halteclere's 2026 Round 1 pick</li><li class="pick-item">📋 Halteclere's 2027 Round 1 pick</li><li class="pick-item">📋 Halteclere's 2027 Round 2 pick</li><li class="pick-item">📋 Halteclere's 2028 Round 2 pick</li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-mhj" max="100" min="0" onchange="updateTradeGrade('mhj', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>Halteclere Won</span>
+<span>Even</span>
+<span>ShadyCommish88 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-mhj">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-12 12:29 PM</div>
+<div class="trade-summary">
+<strong>BaoDown ↔ emanueljd3</strong>
+<span style="color: #666; margin-left: 20px;">
+                                1 players, 2 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>BaoDown</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="pick-item">📋 emanueljd3's 2027 Round 2 pick</li><li class="pick-item">📋 emanueljd3's 2028 Round 2 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>emanueljd3</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Alvin Kamara" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4035.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>ALVIN KAMARA</span></li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-kamara" max="100" min="0" onchange="updateTradeGrade('kamara', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>BaoDown Won</span>
+<span>Even</span>
+<span>emanueljd3 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-kamara">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
+<div class="trade-item">
+<div class="trade-date">2025-06-11 11:33 PM</div>
+<div class="trade-summary">
+<strong>ShadyCommish88 ↔ lamjohnson56</strong>
+<span style="color: #666; margin-left: 20px;">
+                                2 players, 1 picks
+                            </span>
+</div>
+<div class="trade-teams">
+<div class="team-side">
+<h4>ShadyCommish88</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Xavier Restrepo" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/12520.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>XAVIER RESTREPO</span></li><li class="pick-item">📋 lamjohnson56's 2026 Round 4 pick</li>
+</ul>
+</div>
+<div class="team-side">
+<h4>lamjohnson56</h4>
+<div style="color: #66ff66; margin: 5px 0;">Receives:</div>
+<ul class="asset-list">
+<li class="player-item" style="display: flex; align-items: center; gap: 8px; padding: 5px 0;"><img alt="Aaron Rodgers" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/96.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/><span>AARON RODGERS</span></li>
+</ul>
+</div>
+</div>
+<div class="trade-grade-container">
+<div style="margin-bottom: 8px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+<input class="trade-grade-slider" id="trade-grade-restrepo" max="100" min="0" onchange="updateTradeGrade('restrepo', this.value)" type="range" value="50"/>
+<div class="trade-grade-labels">
+<span>ShadyCommish88 Won</span>
+<span>Even</span>
+<span>lamjohnson56 Won</span>
+</div>
+<div class="trade-grade-result" id="trade-result-restrepo">
+<span style="color: #999999;">Move slider to grade</span></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-05-02 08:44 PM</div>
 <div class="trade-summary">
@@ -2022,9 +2434,7 @@
 <span>Even</span>
 <span>emanueljd3 Won</span>
 </div>
-<div class="trade-grade-result" id="trade-result-0">Even Trade</div>
-</div>
-</div>
+<div class="trade-grade-result" id="trade-result-0">Even Trade</div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-05-02 11:58 AM</div>
 <div class="trade-summary">
@@ -2044,10 +2454,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 ShadyCommish88's 2027 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-05-01 05:06 PM</div>
 <div class="trade-summary">
@@ -2067,10 +2474,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #29 (connerstafford11's 2025 R3) - TERRANCE FERGUSON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-05-01 09:52 AM</div>
 <div class="trade-summary">
@@ -2093,10 +2497,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #14 (lamjohnson56's 2025 R2) - JAXSON DART <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-30 12:51 PM</div>
 <div class="trade-summary">
@@ -2120,10 +2521,7 @@
 <li class="pick-item">📋 Halteclere's 2026 Round 2 pick</li>
 <li class="pick-item">📋 Halteclere's 2026 Round 3 pick</li>
 <li class="pick-item">📋 Halteclere's 2026 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-30 10:18 AM</div>
 <div class="trade-summary">
@@ -2144,10 +2542,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #6 (EBao's 2025 R1) - QUINSHON JUDKINS</li>
 <li class="pick-item">📋 Pick #16 (EBao's 2025 R2) - JAYDEN HIGGINS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-30 09:48 AM</div>
 <div class="trade-summary">
@@ -2169,10 +2564,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #4 (lamjohnson56's 2025 R1) - CAM WARD</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-26 11:55 AM</div>
 <div class="trade-summary">
@@ -2186,10 +2578,7 @@
 <h4>Halteclere</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #26 (EBao's 2025 R3) - ISAAC TESLAA</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-26 10:58 AM</div>
 <div class="trade-summary">
@@ -2211,10 +2600,7 @@
 <li class="pick-item">📋 Pick #5 (ShadyCommish88's 2025 R1) - TETAIROA MCMILLAN</li>
 <li class="pick-item">📋 Pick #15 (ShadyCommish88's 2025 R2) - JAYLIN NOEL <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
 <li class="pick-item">📋 Halteclere's 2026 Round 2 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-25 05:32 PM</div>
 <div class="trade-summary">
@@ -2238,10 +2624,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #17 (BaoDown's 2025 R2) - JALEN MILROE</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-22 07:23 PM</div>
 <div class="trade-summary">
@@ -2272,10 +2655,7 @@
 <span>MIKE PENIX</span>
 </li>
 <li class="pick-item">📋 ShadyCommish88's 2027 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-22 07:22 PM</div>
 <div class="trade-summary">
@@ -2307,10 +2687,7 @@
 </li>
 <li class="pick-item">📋 Pick #22 (Halteclere's 2025 R3) - SHEDEUR SANDERS</li>
 <li class="pick-item">📋 Pick #1 (caviar89's 2025 R1) - TRAVIS HUNTER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-22 05:00 PM</div>
 <div class="trade-summary">
@@ -2338,10 +2715,7 @@
 </li>
 <li class="pick-item">📋 Pick #8 (tmjones212's 2025 R1) - EMEKA EGBUKA <span style="color: #ff9800; font-size: 0.9em;">(actually picked by tmjones212)</span></li>
 <li class="pick-item">📋 Pick #6 (EBao's 2025 R1) - QUINSHON JUDKINS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-16 04:48 AM</div>
 <div class="trade-summary">
@@ -2361,10 +2735,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 tmjones212's 2026 Round 2 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-04-14 01:37 PM</div>
 <div class="trade-summary">
@@ -2394,10 +2765,7 @@
 <li class="pick-item">📋 Pick #16 (EBao's 2025 R2) - JAYDEN HIGGINS</li>
 <li class="pick-item">📋 Pick #25 (ShadyCommish88's 2025 R3) - DILLON GABRIEL</li>
 <li class="pick-item">📋 Pick #10 (emanueljd3's 2025 R1) - TYLER WARREN</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-03-05 05:27 PM</div>
 <div class="trade-summary">
@@ -2420,10 +2788,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 ShadyCommish88's 2026 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-02-26 05:36 PM</div>
 <div class="trade-summary">
@@ -2438,10 +2803,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #39 (connerstafford11's 2025 R4) - Unknown Player (12540) <span style="color: #ff9800; font-size: 0.9em;">(actually picked by lamjohnson56)</span></li>
 <li class="pick-item">📋 Pick #21 (caviar89's 2025 R3) - JALEN ROYALS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-02-11 10:28 AM</div>
 <div class="trade-summary">
@@ -2468,10 +2830,7 @@
 <span>AARON JONES</span>
 </li>
 <li class="pick-item">📋 lamjohnson56's 2026 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-01-29 07:08 PM</div>
 <div class="trade-summary">
@@ -2513,10 +2872,7 @@
 <h4>Halteclere</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #15 (ShadyCommish88's 2025 R2) - JAYLIN NOEL <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-01-09 06:40 AM</div>
 <div class="trade-summary">
@@ -2545,10 +2901,7 @@
 </li>
 <li class="pick-item">📋 Pick #8 (tmjones212's 2025 R1) - EMEKA EGBUKA <span style="color: #ff9800; font-size: 0.9em;">(actually picked by tmjones212)</span></li>
 <li class="pick-item">📋 Pick #38 (tmjones212's 2025 R4) - JARQUEZ HUNTER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2025-01-01 04:24 PM</div>
 <div class="trade-summary">
@@ -2573,10 +2926,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #2 (Halteclere's 2025 R1) - ASHTON JEANTY</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-11 06:49 PM</div>
 <div class="trade-summary">
@@ -2606,10 +2956,7 @@
 <img alt="AARON RODGERS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/96.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>AARON RODGERS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-11 06:16 PM</div>
 <div class="trade-summary">
@@ -2644,10 +2991,7 @@
 <span>JOHN METCHIE</span>
 </li>
 <li class="pick-item">📋 Pick #20 (emanueljd3's 2025 R2) - Unknown Player (12547) <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-11 04:46 PM</div>
 <div class="trade-summary">
@@ -2676,10 +3020,7 @@
 </li>
 <li class="pick-item">📋 tmjones212's 2026 Round 3 pick</li>
 <li class="pick-item">📋 tmjones212's 2027 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-11 03:11 PM</div>
 <div class="trade-summary">
@@ -2702,10 +3043,7 @@
 <img alt="DEVAUGHN VELE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11834.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DEVAUGHN VELE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-10 09:17 PM</div>
 <div class="trade-summary">
@@ -2731,10 +3069,7 @@
 <img alt="TANK BIGSBY" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9225.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>TANK BIGSBY</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-10 08:49 PM</div>
 <div class="trade-summary">
@@ -2760,10 +3095,7 @@
 <img alt="CHRISTIAN KIRK" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4950.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>CHRISTIAN KIRK</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-12-03 12:38 PM</div>
 <div class="trade-summary">
@@ -2787,10 +3119,7 @@
 <img alt="AMARI COOPER" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/2309.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>AMARI COOPER</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-30 05:37 PM</div>
 <div class="trade-summary">
@@ -2814,10 +3143,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #39 (connerstafford11's 2025 R4) - Unknown Player (12540) <span style="color: #ff9800; font-size: 0.9em;">(actually picked by lamjohnson56)</span></li>
 <li class="pick-item">📋 Pick #21 (caviar89's 2025 R3) - JALEN ROYALS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-20 10:59 PM</div>
 <div class="trade-summary">
@@ -2843,10 +3169,7 @@
 <img alt="WILL LEVIS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>WILL LEVIS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-13 07:52 PM</div>
 <div class="trade-summary">
@@ -2875,10 +3198,7 @@
 <li class="pick-item">📋 Pick #19 (connerstafford11's 2025 R2) - CAM SKATTEBO <span style="color: #ff9800; font-size: 0.9em;">(actually picked by tmjones212)</span></li>
 <li class="pick-item">📋 Pick #29 (connerstafford11's 2025 R3) - TERRANCE FERGUSON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
 <li class="pick-item">📋 Pick #39 (connerstafford11's 2025 R4) - Unknown Player (12540) <span style="color: #ff9800; font-size: 0.9em;">(actually picked by lamjohnson56)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-13 09:16 AM</div>
 <div class="trade-summary">
@@ -2903,10 +3223,7 @@
 <img alt="COOPER KUPP" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4039.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>COOPER KUPP</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-13 07:26 AM</div>
 <div class="trade-summary">
@@ -2929,10 +3246,7 @@
 <img alt="DONTAYVION WICKS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9486.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DONTAYVION WICKS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-07 03:54 PM</div>
 <div class="trade-summary">
@@ -2958,10 +3272,7 @@
 <li class="pick-item">📋 EBao's 2026 Round 1 pick</li>
 <li class="pick-item">📋 EBao's 2026 Round 4 pick</li>
 <li class="pick-item">📋 Pick #5 (ShadyCommish88's 2025 R1) - TETAIROA MCMILLAN</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-07 09:57 AM</div>
 <div class="trade-summary">
@@ -3012,10 +3323,7 @@
 <span>ZAY FLOWERS</span>
 </li>
 <li class="pick-item">📋 Pick #36 (EBao's 2025 R4) - ELIJAH ARROYO</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-03 09:00 AM</div>
 <div class="trade-summary">
@@ -3050,10 +3358,7 @@
 <img alt="MIKE WILLIAMS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4068.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>MIKE WILLIAMS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-02 10:08 PM</div>
 <div class="trade-summary">
@@ -3082,10 +3387,7 @@
 <span>TYRONE TRACY</span>
 </li>
 <li class="pick-item">📋 Pick #21 (caviar89's 2025 R3) - JALEN ROYALS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-11-01 08:40 AM</div>
 <div class="trade-summary">
@@ -3111,10 +3413,7 @@
 <li class="pick-item">📋 Pick #27 (BaoDown's 2025 R3) - BHAYSHUL TUTEN <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
 <li class="pick-item">📋 Pick #37 (BaoDown's 2025 R4) - ELIC AYOMANOR</li>
 <li class="pick-item">📋 Pick #33 (androooooo's 2025 R4) - HAROLD FANNIN</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-10-29 08:10 PM</div>
 <div class="trade-summary">
@@ -3140,10 +3439,7 @@
 <img alt="RICO DOWDLE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7021.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>RICO DOWDLE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-10-29 05:20 PM</div>
 <div class="trade-summary">
@@ -3172,10 +3468,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #26 (EBao's 2025 R3) - ISAAC TESLAA</li>
 <li class="pick-item">📋 EBao's 2027 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-10-25 12:40 PM</div>
 <div class="trade-summary">
@@ -3198,10 +3491,7 @@
 <img alt="BRIAN BRANCH" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/10905.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>BRIAN BRANCH</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-10-16 02:56 PM</div>
 <div class="trade-summary">
@@ -3218,10 +3508,7 @@
 <img alt="KAYSHON BOUTTE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9504.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>KAYSHON BOUTTE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-10-10 07:40 AM</div>
 <div class="trade-summary">
@@ -3247,10 +3534,7 @@
 <img alt="RAY DAVIS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11575.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>RAY DAVIS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-09-30 12:20 PM</div>
 <div class="trade-summary">
@@ -3273,10 +3557,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #18 (tmjones212's 2025 R2) - TRE HARRIS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-09-25 07:10 PM</div>
 <div class="trade-summary">
@@ -3304,10 +3585,7 @@
 <span>SAM DARNOLD</span>
 </li>
 <li class="pick-item">📋 BaoDown's 2026 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-09-21 06:15 AM</div>
 <div class="trade-summary">
@@ -3352,10 +3630,7 @@
 <img alt="JORDAN MASON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8408.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JORDAN MASON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-09-17 08:54 AM</div>
 <div class="trade-summary">
@@ -3380,10 +3655,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #23 (androooooo's 2025 R3) - PAT BRYANT</li>
 <li class="pick-item">📋 lamjohnson56's 2027 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-09-15 03:50 PM</div>
 <div class="trade-summary">
@@ -3400,10 +3672,7 @@
 <img alt="ZAMIR WHITE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8139.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ZAMIR WHITE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-08-28 11:23 AM</div>
 <div class="trade-summary">
@@ -3420,10 +3689,7 @@
 <img alt="GABRIEL DAVIS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6943.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>GABRIEL DAVIS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-08-26 03:38 PM</div>
 <div class="trade-summary">
@@ -3446,10 +3712,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #40 (emanueljd3's 2025 R4) - Unknown Player (12574)</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-08-26 03:12 PM</div>
 <div class="trade-summary">
@@ -3473,10 +3736,7 @@
 <span>JAKOBI MEYERS</span>
 </li>
 <li class="pick-item">📋 lamjohnson56's 2026 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-08-21 09:08 PM</div>
 <div class="trade-summary">
@@ -3493,10 +3753,7 @@
 <img alt="TYLER ALLGEIER" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8132.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>TYLER ALLGEIER</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-08-21 10:35 AM</div>
 <div class="trade-summary">
@@ -3513,10 +3770,7 @@
 <img alt="GARDNER MINSHEW" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6011.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>GARDNER MINSHEW</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-07-24 05:47 PM</div>
 <div class="trade-summary">
@@ -3542,10 +3796,7 @@
 <img alt="QUENTIN JOHNSTON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9754.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>QUENTIN JOHNSTON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-07-24 05:41 PM</div>
 <div class="trade-summary">
@@ -3562,10 +3813,7 @@
 <img alt="ZACH WILSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7538.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ZACH WILSON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-07-24 12:31 PM</div>
 <div class="trade-summary">
@@ -3593,10 +3841,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 ShadyCommish88's 2026 Round 2 pick</li>
 <li class="pick-item">📋 ShadyCommish88's 2026 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-07-21 07:59 PM</div>
 <div class="trade-summary">
@@ -3613,10 +3858,7 @@
 <img alt="BRAELON ALLEN" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11576.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>BRAELON ALLEN</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-14 08:20 AM</div>
 <div class="trade-summary">
@@ -3639,10 +3881,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #25 (ShadyCommish88's 2025 R3) - DILLON GABRIEL</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-13 09:58 PM</div>
 <div class="trade-summary">
@@ -3670,10 +3909,7 @@
 <span>DAVANTE ADAMS</span>
 </li>
 <li class="pick-item">📋 Pick #34 (lamjohnson56's 2025 R4) - MASON TAYLOR</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-12 03:23 PM</div>
 <div class="trade-summary">
@@ -3704,10 +3940,7 @@
 <img alt="ISIAH PACHECO" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8205.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ISIAH PACHECO</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-11 01:31 PM</div>
 <div class="trade-summary">
@@ -3724,10 +3957,7 @@
 <img alt="KENNY PICKETT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8160.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>KENNY PICKETT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-11 07:25 AM</div>
 <div class="trade-summary">
@@ -3754,10 +3984,7 @@
 <span>BLAKE CORUM</span>
 </li>
 <li class="pick-item">📋 Pick #26 (EBao's 2025 R3) - ISAAC TESLAA</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-09 01:33 PM</div>
 <div class="trade-summary">
@@ -3781,10 +4008,7 @@
 <span>JOHN METCHIE</span>
 </li>
 <li class="pick-item">📋 Pick #27 (BaoDown's 2024 R3) - MARSHAWN LLOYD <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-07 08:25 PM</div>
 <div class="trade-summary">
@@ -3805,10 +4029,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #35 (ShadyCommish88's 2024 R4) - AUDRIC ESTIME <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-07 04:08 PM</div>
 <div class="trade-summary">
@@ -3838,10 +4059,7 @@
 <li class="pick-item">📋 Pick #32 (androooooo's 2024 R4) - JATAVION SANDERS</li>
 <li class="pick-item">📋 Pick #13 (androooooo's 2025 R2) - KALEB JOHNSON</li>
 <li class="pick-item">📋 androooooo's 2026 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-05-03 07:43 AM</div>
 <div class="trade-summary">
@@ -3863,10 +4081,7 @@
 <h4>tmjones212</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #17 (lamjohnson56's 2024 R2) - XAVIER LEGETTE</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-04-29 12:46 PM</div>
 <div class="trade-summary">
@@ -3890,10 +4105,7 @@
 <img alt="DERRICK HENRY" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/3198.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DERRICK HENRY</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-03-27 08:12 PM</div>
 <div class="trade-summary">
@@ -3916,10 +4128,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #7 (androooooo's 2024 R1) - BROCK BOWERS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-03-20 09:00 AM</div>
 <div class="trade-summary">
@@ -3958,10 +4167,7 @@
 <span>TREY PALMER</span>
 </li>
 <li class="pick-item">📋 Pick #24 (lamjohnson56's 2025 R3) - ISAIAH BOND <span style="color: #ff9800; font-size: 0.9em;">(actually picked by caviar89)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-26 04:19 AM</div>
 <div class="trade-summary">
@@ -3984,10 +4190,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 EBao's 2026 Round 3 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-24 03:58 PM</div>
 <div class="trade-summary">
@@ -4010,10 +4213,7 @@
 <h4>emanueljd3</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #24 (tmjones212's 2024 R3) - JAVON BAKER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by caviar89)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-24 08:18 AM</div>
 <div class="trade-summary">
@@ -4040,10 +4240,7 @@
 <span>MIKE EVANS</span>
 </li>
 <li class="pick-item">📋 Pick #26 (EBao's 2025 R3) - ISAAC TESLAA</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-24 06:24 AM</div>
 <div class="trade-summary">
@@ -4060,10 +4257,7 @@
 <img alt="EVAN HULL" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9220.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>EVAN HULL</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-23 08:31 PM</div>
 <div class="trade-summary">
@@ -4088,10 +4282,7 @@
 <li class="pick-item">📋 Pick #40 (ShadyCommish88's 2024 R4) - DEVONTEZ WALKER</li>
 <li class="pick-item">📋 Pick #26 (ShadyCommish88's 2024 R3) - ROMAN WILSON</li>
 <li class="pick-item">📋 ShadyCommish88's 2024 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-17 09:46 PM</div>
 <div class="trade-summary">
@@ -4138,10 +4329,7 @@
 <img alt="WILL LEVIS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9999.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>WILL LEVIS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-17 12:57 PM</div>
 <div class="trade-summary">
@@ -4167,10 +4355,7 @@
 <img alt="WILL MALLORY" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/10220.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>WILL MALLORY</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-17 11:02 AM</div>
 <div class="trade-summary">
@@ -4196,10 +4381,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #5 (BaoDown's 2024 R1) - JAYDEN DANIELS</li>
 <li class="pick-item">📋 Pick #15 (BaoDown's 2024 R2) - MIKE PENIX <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-17 05:11 AM</div>
 <div class="trade-summary">
@@ -4219,10 +4401,7 @@
 <h4>BaoDown</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #27 (tmjones212's 2024 R3) - MARSHAWN LLOYD <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2024-01-16 09:15 PM</div>
 <div class="trade-summary">
@@ -4261,10 +4440,7 @@
 <img alt="ROQUAN SMITH" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4960.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ROQUAN SMITH</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-29 04:54 PM</div>
 <div class="trade-summary">
@@ -4281,10 +4457,7 @@
 <img alt="DEVIN WHITE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6119.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DEVIN WHITE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-28 08:10 PM</div>
 <div class="trade-summary">
@@ -4311,10 +4484,7 @@
 <span>DJ MOORE</span>
 </li>
 <li class="pick-item">📋 EBao's 2026 Round 2 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-21 06:12 PM</div>
 <div class="trade-summary">
@@ -4331,10 +4501,7 @@
 <img alt="CHUBA HUBBARD" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7594.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>CHUBA HUBBARD</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-21 08:12 AM</div>
 <div class="trade-summary">
@@ -4351,10 +4518,7 @@
 <img alt="ISAIAH LIKELY" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8131.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ISAIAH LIKELY</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-21 08:11 AM</div>
 <div class="trade-summary">
@@ -4377,10 +4541,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 androooooo's 2024 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-20 08:38 PM</div>
 <div class="trade-summary">
@@ -4411,10 +4572,7 @@
 <span>ROMEO DOUBS</span>
 </li>
 <li class="pick-item">📋 ShadyCommish88's 2026 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-05 10:19 AM</div>
 <div class="trade-summary">
@@ -4431,10 +4589,7 @@
 <img alt="JAREN HALL" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9231.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JAREN HALL</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-04 10:30 AM</div>
 <div class="trade-summary">
@@ -4457,10 +4612,7 @@
 <h4>Halteclere</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #14 (tmjones212's 2024 R2) - TREY BENSON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-03 10:57 PM</div>
 <div class="trade-summary">
@@ -4486,10 +4638,7 @@
 <img alt="KIRK COUSINS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/1166.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>KIRK COUSINS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-11-03 07:55 PM</div>
 <div class="trade-summary">
@@ -4512,10 +4661,7 @@
 <img alt="JERRY JEUDY" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6783.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JERRY JEUDY</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-29 06:08 PM</div>
 <div class="trade-summary">
@@ -4538,10 +4684,7 @@
 <h4>Halteclere</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #4 (tmjones212's 2024 R1) - ROME ODUNZE</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-24 11:04 AM</div>
 <div class="trade-summary">
@@ -4569,10 +4712,7 @@
 </li>
 <li class="pick-item">📋 Pick #15 (lamjohnson56's 2024 R2) - MIKE PENIX <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
 <li class="pick-item">📋 Pick #24 (lamjohnson56's 2025 R3) - ISAIAH BOND <span style="color: #ff9800; font-size: 0.9em;">(actually picked by caviar89)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-22 09:21 PM</div>
 <div class="trade-summary">
@@ -4589,10 +4729,7 @@
 <img alt="TYSON BAGENT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/11256.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>TYSON BAGENT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-20 09:17 PM</div>
 <div class="trade-summary">
@@ -4622,10 +4759,7 @@
 <img alt="TRAVIS ETIENNE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7543.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>TRAVIS ETIENNE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-19 06:58 PM</div>
 <div class="trade-summary">
@@ -4651,10 +4785,7 @@
 <img alt="JK DOBBINS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6806.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JK DOBBINS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-19 05:23 AM</div>
 <div class="trade-summary">
@@ -4683,10 +4814,7 @@
 <li class="pick-item">📋 Pick #22 (Previous Team 9's 2024 R3) - TROY FRANKLIN</li>
 <li class="pick-item">📋 Pick #20 (emanueljd3's 2025 R2) - Unknown Player (12547) <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
 <li class="pick-item">📋 Previous Team 9's 2024 Round 4 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-08 08:41 AM</div>
 <div class="trade-summary">
@@ -4703,10 +4831,7 @@
 <img alt="JAKE ELLIOTT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4195.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JAKE ELLIOTT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-07 08:52 PM</div>
 <div class="trade-summary">
@@ -4723,10 +4848,7 @@
 <img alt="DEVIN WHITE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6119.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DEVIN WHITE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-10-04 08:19 PM</div>
 <div class="trade-summary">
@@ -4743,10 +4865,7 @@
 <img alt="TJ WATT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4070.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>TJ WATT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-09-18 03:56 PM</div>
 <div class="trade-summary">
@@ -4763,10 +4882,7 @@
 <img alt="KEN GAINWELL" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7567.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>KEN GAINWELL</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-09-17 09:41 AM</div>
 <div class="trade-summary">
@@ -4793,10 +4909,7 @@
 <span>MIKE WILSON</span>
 </li>
 <li class="pick-item">📋 Pick #9 (connerstafford11's 2025 R1) - MATTHEW GOLDEN <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-09-12 03:17 PM</div>
 <div class="trade-summary">
@@ -4828,10 +4941,7 @@
 <span>JAMESON WILLIAMS</span>
 </li>
 <li class="pick-item">📋 Pick #11 (ShadyCommish88's 2024 R2) - LADD MCCONKEY <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-09-12 08:49 AM</div>
 <div class="trade-summary">
@@ -4868,10 +4978,7 @@
 <img alt="DALTON KINCAID" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/10236.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DALTON KINCAID</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-06-22 01:40 PM</div>
 <div class="trade-summary">
@@ -4905,10 +5012,7 @@
 <img alt="MATT LANDERS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/10869.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>MATT LANDERS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-06-22 01:21 PM</div>
 <div class="trade-summary">
@@ -4945,10 +5049,7 @@
 </li>
 <li class="pick-item">📋 Pick #7 (BaoDown's 2024 R1) - BROCK BOWERS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
 <li class="pick-item">📋 Pick #7 (BaoDown's 2025 R1) - TREVEYON HENDERSON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-22 01:59 PM</div>
 <div class="trade-summary">
@@ -4980,10 +5081,7 @@
 <img alt="CJ STROUD" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9758.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>CJ STROUD</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-20 10:53 AM</div>
 <div class="trade-summary">
@@ -5000,10 +5098,7 @@
 <img alt="JALEN PITRE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8314.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JALEN PITRE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-19 08:07 PM</div>
 <div class="trade-summary">
@@ -5033,10 +5128,7 @@
 <img alt="ZONOVAN KNIGHT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8122.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ZONOVAN KNIGHT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-14 08:30 PM</div>
 <div class="trade-summary">
@@ -5059,10 +5151,7 @@
 <img alt="DEUCE VAUGHN" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/9505.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DEUCE VAUGHN</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-14 02:50 PM</div>
 <div class="trade-summary">
@@ -5089,10 +5178,7 @@
 <img alt="JEROME FORD" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8143.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JEROME FORD</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-12 07:52 AM</div>
 <div class="trade-summary">
@@ -5118,10 +5204,7 @@
 <img alt="ZACH WILSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/7538.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>ZACH WILSON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-11 09:22 AM</div>
 <div class="trade-summary">
@@ -5148,10 +5231,7 @@
 <span>JARRETT STIDHAM</span>
 </li>
 <li class="pick-item">📋 Pick #35 (lamjohnson56's 2024 R4) - AUDRIC ESTIME <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-09 08:35 AM</div>
 <div class="trade-summary">
@@ -5166,10 +5246,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #30 (mlum20's 2023 R3) - ZACH EVANS</li>
 <li class="pick-item">📋 Pick #40 (mlum20's 2023 R4) - TYLER SCOTT</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-08 10:01 AM</div>
 <div class="trade-summary">
@@ -5196,10 +5273,7 @@
 <span>JOHN METCHIE</span>
 </li>
 <li class="pick-item">📋 Pick #16 (tmjones212's 2023 R2) - JONATHAN MINGO</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-08 09:35 AM</div>
 <div class="trade-summary">
@@ -5220,10 +5294,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #24 (androooooo's 2023 R3) - HENDON HOOKER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by caviar89)</span></li>
 <li class="pick-item">📋 Pick #20 (androooooo's 2023 R2) - MARVIN MIMS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-07 10:08 PM</div>
 <div class="trade-summary">
@@ -5247,10 +5318,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #9 (EBao's 2023 R1) - ZAY FLOWERS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-05-04 07:28 PM</div>
 <div class="trade-summary">
@@ -5274,10 +5342,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #18 (EBao's 2023 R2) - JALIN HYATT</li>
 <li class="pick-item">📋 Pick #21 (EBao's 2023 R3) - TYJAE SPEARS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-04-12 10:37 AM</div>
 <div class="trade-summary">
@@ -5303,10 +5368,7 @@
 <img alt="JELANI WOODS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8219.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JELANI WOODS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-04-11 12:39 PM</div>
 <div class="trade-summary">
@@ -5334,10 +5396,7 @@
 <img alt="BRIAN ROBINSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8154.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>BRIAN ROBINSON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-04-09 07:04 PM</div>
 <div class="trade-summary">
@@ -5365,10 +5424,7 @@
 <span>JEROME FORD</span>
 </li>
 <li class="pick-item">📋 Pick #6 (Previous Team 9's 2024 R1) - DRAKE MAYE</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-04-07 11:22 AM</div>
 <div class="trade-summary">
@@ -5397,10 +5453,7 @@
 </li>
 <li class="pick-item">📋 Pick #38 (ShadyCommish88's 2023 R4) - PUKA NACUA <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
 <li class="pick-item">📋 Pick #23 (ShadyCommish88's 2023 R3) - SAM LAPORTA</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-04-06 01:36 PM</div>
 <div class="trade-summary">
@@ -5426,10 +5479,7 @@
 <li class="pick-item">📋 Pick #3 (EBao's 2023 R1) - BRYCE YOUNG</li>
 <li class="pick-item">📋 Pick #1 (EBao's 2024 R1) - MARVIN HARRISON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
 <li class="pick-item">📋 Pick #10 (EBao's 2023 R1) - WILL LEVIS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-03-29 05:35 PM</div>
 <div class="trade-summary">
@@ -5452,10 +5502,7 @@
 <img alt="IRV SMITH" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/6126.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>IRV SMITH</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-03-21 02:08 PM</div>
 <div class="trade-summary">
@@ -5483,10 +5530,7 @@
 <span>JAMESON WILLIAMS</span>
 </li>
 <li class="pick-item">📋 Pick #2 (tmjones212's 2023 R1) - ANTHONY RICHARDSON</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-02-07 08:31 AM</div>
 <div class="trade-summary">
@@ -5507,10 +5551,7 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #4 (tmjones212's 2023 R1) - CJ STROUD</li>
 <li class="pick-item">📋 Pick #5 (tmjones212's 2023 R1) - JAXON SMITH NJIGBA</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-01-04 10:00 PM</div>
 <div class="trade-summary">
@@ -5541,10 +5582,7 @@
 <span>DEANDRE HOPKINS</span>
 </li>
 <li class="pick-item">📋 Pick #5 (lamjohnson56's 2024 R1) - JAYDEN DANIELS</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2023-01-04 01:58 PM</div>
 <div class="trade-summary">
@@ -5576,10 +5614,7 @@
 <span>GARRETT WILSON</span>
 </li>
 <li class="pick-item">📋 Pick #22 (tmjones212's 2023 R3) - KAYSHON BOUTTE</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-12-07 10:35 AM</div>
 <div class="trade-summary">
@@ -5605,10 +5640,7 @@
 <img alt="DAVID BELL" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8118.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DAVID BELL</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-12-07 09:35 AM</div>
 <div class="trade-summary">
@@ -5625,10 +5657,7 @@
 <img alt="RAHEEM MOSTERT" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/2749.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>RAHEEM MOSTERT</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-12-07 09:35 AM</div>
 <div class="trade-summary">
@@ -5654,10 +5683,7 @@
 <img alt="MIKE GALLUP" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/5038.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>MIKE GALLUP</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-12-01 04:40 PM</div>
 <div class="trade-summary">
@@ -5701,10 +5727,7 @@
 <img alt="BRIAN ROBINSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8154.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>BRIAN ROBINSON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-11-29 06:23 PM</div>
 <div class="trade-summary">
@@ -5731,10 +5754,7 @@
 <span>CHRIS GODWIN</span>
 </li>
 <li class="pick-item">📋 Pick #20 (mlum20's 2023 R2) - MARVIN MIMS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-11-24 10:15 PM</div>
 <div class="trade-summary">
@@ -5770,10 +5790,7 @@
 <span>JAVONTE WILLIAMS</span>
 </li>
 <li class="pick-item">📋 Pick #1 (caviar89's 2025 R1) - TRAVIS HUNTER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-10-27 02:30 PM</div>
 <div class="trade-summary">
@@ -5799,10 +5816,7 @@
 <img alt="DAMEON PIERCE" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8129.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>DAMEON PIERCE</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-10-25 12:52 PM</div>
 <div class="trade-summary">
@@ -5826,10 +5840,7 @@
 <span>RASHAAD PENNY</span>
 </li>
 <li class="pick-item">📋 Pick #27 (BaoDown's 2024 R3) - MARSHAWN LLOYD <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-10-13 04:23 PM</div>
 <div class="trade-summary">
@@ -5852,10 +5863,7 @@
 <h4>EBao</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Previous Team 9's 2024 Round 2 pick</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-26 09:52 PM</div>
 <div class="trade-summary">
@@ -5881,10 +5889,7 @@
 <img alt="JAMAAL WILLIAMS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/4149.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>JAMAAL WILLIAMS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-19 04:37 PM</div>
 <div class="trade-summary">
@@ -5907,10 +5912,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #40 (EBao's 2024 R4) - DEVONTEZ WALKER</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-15 05:03 PM</div>
 <div class="trade-summary">
@@ -5943,10 +5945,7 @@
 <span>DAWSON KNOX</span>
 </li>
 <li class="pick-item">📋 Pick #7 (connerstafford11's 2023 R1) - QUENTIN JOHNSTON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-15 02:29 PM</div>
 <div class="trade-summary">
@@ -5982,10 +5981,7 @@
 </li>
 <li class="pick-item">📋 Pick #8 (BaoDown's 2023 R1) - JORDAN ADDISON <span style="color: #ff9800; font-size: 0.9em;">(actually picked by tmjones212)</span></li>
 <li class="pick-item">📋 Pick #28 (BaoDown's 2023 R3) - ROSCHON JOHNSON</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-15 02:29 PM</div>
 <div class="trade-summary">
@@ -6012,10 +6008,7 @@
 <span>MELVIN GORDON</span>
 </li>
 <li class="pick-item">📋 Pick #14 (androooooo's 2023 R2) - MIKE MAYER <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-13 02:49 PM</div>
 <div class="trade-summary">
@@ -6042,10 +6035,7 @@
 <img alt="CORDARRELLE PATTERSON" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/1535.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>CORDARRELLE PATTERSON</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-09-08 01:45 PM</div>
 <div class="trade-summary">
@@ -6073,10 +6063,7 @@
 </li>
 <li class="pick-item">📋 Pick #17 (connerstafford11's 2023 R2) - JOSH DOWNS</li>
 <li class="pick-item">📋 Pick #27 (connerstafford11's 2023 R3) - TANK BIGSBY <span style="color: #ff9800; font-size: 0.9em;">(actually picked by androooooo)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-08-20 01:11 AM</div>
 <div class="trade-summary">
@@ -6100,10 +6087,7 @@
 <img alt="GEORGE PICKENS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/8137.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>GEORGE PICKENS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-08-17 10:48 AM</div>
 <div class="trade-summary">
@@ -6130,10 +6114,7 @@
 <span>DEVIN SINGLETARY</span>
 </li>
 <li class="pick-item">📋 Pick #38 (BaoDown's 2023 R4) - PUKA NACUA <span style="color: #ff9800; font-size: 0.9em;">(actually picked by emanueljd3)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-08-17 07:25 AM</div>
 <div class="trade-summary">
@@ -6163,10 +6144,7 @@
 <img alt="AARON RODGERS" onerror="this.outerHTML='&lt;span style=&quot;color: #66ff66;&quot;&gt;🏈&lt;/span&gt;'" src="https://sleepercdn.com/content/nfl/players/thumb/96.jpg" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"/>
 <span>AARON RODGERS</span>
 </li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-08-16 03:27 PM</div>
 <div class="trade-summary">
@@ -6189,10 +6167,7 @@
 <h4>ShadyCommish88</h4>
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #31 (EBao's 2023 R4) - CEDRIC TILLMAN</li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-08-16 03:27 PM</div>
 <div class="trade-summary">
@@ -6229,10 +6204,7 @@
 <span>NICO COLLINS</span>
 </li>
 <li class="pick-item">📋 Pick #11 (EBao's 2023 R2) - DALTON KINCAID <span style="color: #ff9800; font-size: 0.9em;">(actually picked by EBao)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
 <div class="trade-item">
 <div class="trade-date">2022-07-21 02:37 PM</div>
 <div class="trade-summary">
@@ -6256,10 +6228,10 @@
 <ul class="asset-list">
 <li class="pick-item">📋 Pick #16 (lamjohnson56's 2024 R2) - BO NIX</li>
 <li class="pick-item">📋 Pick #9 (lamjohnson56's 2023 R1) - ZAY FLOWERS <span style="color: #ff9800; font-size: 0.9em;">(actually picked by ShadyCommish88)</span></li>
-</ul>
-</div>
-</div>
-</div>
+</ul></div></div></div>
+</div> <!-- End of timeline-container -->
+</div> <!-- End of panel-content -->
+</div> <!-- End of timeline-panel -->
 <!-- Player Journey Panel -->
 <div class="visualization-panel" id="players-panel">
 <div class="panel-header">
@@ -6837,6 +6809,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <!-- Matchups by Year/Week -->
 <div id="matchupsContainer" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 10;">
 <div class="year-matchups" data-year="2025" style="margin: 20px 0;">
@@ -9819,10 +9792,10 @@
 </div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<!-- Fixed: matchupsContainer now properly inside panel-content -->
+</div> <!-- matchupsContainer -->
+</div> <!-- panel-content -->
+</div> <!-- matchups-panel -->
+<!-- Properly closed matchups panel structure -->
 <!-- Draft Results Panel -->
 <div class="visualization-panel" id="draft-panel">
 <div class="panel-header">
@@ -9833,8 +9806,8 @@
 <div class="search-container">
 <label for="draftYearSelect" style="margin-right: 10px; color: #e0e0e0;">Select Year:</label>
 <select class="search-input" id="draftYearSelect" onchange="showDraftYear()" style="width: 200px;">
-<option value="2025">2025</option>
-<option selected="" value="2024">2024</option>
+<option value="2025" selected>2025</option>
+<option value="2024">2024</option>
 <option value="2023">2023</option>
 <option value="2022">2022</option>
 </select>
@@ -10103,7 +10076,7 @@
             
             teamTrades.forEach((trade, index) => {
                 tradesHTML += `
-                    <div class="trade-detail-item">
+                    <div class="trade-item trade-detail-item">
                         <div class="trade-detail-date">Trade #${index + 1} - ${trade.date}</div>
                         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 `;
@@ -10113,6 +10086,13 @@
                     teamData.team === team1 || teamData.team === team2
                 );
                 
+                // Sort teams to ensure consistent order: team1 first, team2 second
+                teamsInTrade.sort((a, b) => {
+                    if (a.team === team1) return -1;
+                    if (b.team === team1) return 1;
+                    return 0;
+                });
+                
                 teamsInTrade.forEach(teamData => {
                     const hasReceives = teamData.receives.players.length > 0 || teamData.receives.draft_picks.length > 0 || (teamData.receives.faab && teamData.receives.faab.length > 0);
                     const hasGives = teamData.gives && (teamData.gives.players.length > 0 || teamData.gives.draft_picks.length > 0 || (teamData.gives.faab && teamData.gives.faab.length > 0));
@@ -10120,7 +10100,10 @@
                     if (hasReceives || hasGives) {
                         tradesHTML += `
                             <div style="flex: 1; min-width: 300px; background: #404040; padding: 20px; border-radius: 10px; border: 2px solid #66ccff; color: #e0e0e0;">
-                                <h4 style="color: #66ccff; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">${teamData.team}</h4>
+                                <h4 style="color: #66ccff; text-align: center; margin-bottom: 15px; font-size: 1.2rem;">
+                                    ${teamData.team}
+                                    ${teamData.team === team1 ? '<span style="font-size: 0.8rem; color: #999;"> (Left)</span>' : '<span style="font-size: 0.8rem; color: #999;"> (Right)</span>'}
+                                </h4>
                                 
                                 <div style="display: flex; gap: 15px;">
                                     <div style="flex: 1;">
@@ -10240,6 +10223,23 @@
                 
                 tradesHTML += `
                         </div>
+                        <!-- Trade Rating Slider -->
+                        <div style="margin-top: 15px; padding: 15px; background: #2d2d2d; border-radius: 8px; border: 1px solid #404040;">
+                            <div style="margin-bottom: 10px; color: #e0e0e0; font-weight: 600;">👤 Your Trade Grade:</div>
+                            <input type="range" min="0" max="100" value="50" 
+                                   class="trade-grade-slider" 
+                                   id="trade-grade-${team1}-${team2}-${index}"
+                                   onchange="updateTradeGrade('${team1}-${team2}-${index}', this.value, '${team1}', '${team2}')"
+                                   style="width: 100%; margin: 10px 0; cursor: pointer;">
+                            <div class="trade-grade-labels" style="display: flex; justify-content: space-between; font-size: 0.85em; color: #999;">
+                                <span>${team1} Won</span>
+                                <span>Even</span>
+                                <span>${team2} Won</span>
+                            </div>
+                            <div class="trade-grade-result" id="trade-result-${team1}-${team2}-${index}" style="text-align: center; margin-top: 10px; font-size: 0.95em;">
+                                <span style="color: #999999;">Move slider to grade</span>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -10254,6 +10254,20 @@
                 // Show in modal
                 showTradeModal(tradesHTML);
             }
+            
+            // Load existing ratings - first from localStorage, then from Firebase
+            setTimeout(() => {
+                console.log('Loading ratings for Trade Matrix trades...');
+                
+                // First load from localStorage
+                loadTradeGrades();
+                
+                // Then load from Firebase but don't overwrite user's current ratings
+                if (db) {
+                    // Only load Firebase ratings for display purposes, not to overwrite sliders
+                    loadFirebaseRatingsForDisplay();
+                }
+            }, 100);
         }
         
         // Show trade modal
@@ -11500,18 +11514,23 @@
             filterTradesByTeam();
         }
 
-        function updateTradeGrade(tradeIndex, value) {
+        function updateTradeGrade(tradeIndex, value, team1, team2) {
             // Set flag to prevent real-time listener interference
             isUserChangingSlider = true;
             
             const gradeValue = parseInt(value);
             const resultElement = document.getElementById(`trade-result-${tradeIndex}`);
             
-            // Get team names from the trade item
-            const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
-            const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
-            const leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
-            const rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
+            // Get team names from parameters or try to find from trade item
+            let leftTeam = team1;
+            let rightTeam = team2;
+            
+            if (!leftTeam || !rightTeam) {
+                const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`).closest('.trade-item');
+                const teamHeaders = tradeItem.querySelectorAll('.team-side h4');
+                leftTeam = teamHeaders[0] ? teamHeaders[0].textContent.trim() : "Team 1";
+                rightTeam = teamHeaders[1] ? teamHeaders[1].textContent.trim() : "Team 2";
+            }
 
             let gradeText, gradeColor;
 
@@ -11539,6 +11558,13 @@
 
             // Save the grade to localStorage
             saveTradeGrade(tradeIndex, gradeValue);
+            
+            // Also save with the Trade History index if we have a mapping
+            if (window.tradeIndexMapping && window.tradeIndexMapping[tradeIndex]) {
+                const historyIndex = window.tradeIndexMapping[tradeIndex];
+                console.log(`Also saving to Trade History index: ${historyIndex}`);
+                saveTradeGrade(historyIndex, gradeValue);
+            }
             
             // Save to Firebase if available
             const userName = getUserName();
@@ -11569,12 +11595,23 @@
             try {
                 const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
                 
-                Object.keys(grades).forEach(tradeIndex => {
-                    const slider = document.getElementById(`trade-grade-${tradeIndex}`);
-                    if (slider) {
+                // First, check if we have any Trade History indices that should override Trade Matrix indices
+                document.querySelectorAll('.trade-grade-slider').forEach(slider => {
+                    const tradeIndex = slider.id.replace('trade-grade-', '');
+                    
+                    // Check for this specific index first
+                    if (grades[tradeIndex] !== undefined) {
                         slider.value = grades[tradeIndex];
-                        // Use display-only function to avoid infinite loop
                         updateTradeGradeDisplay(tradeIndex, grades[tradeIndex], 1);
+                    } else {
+                        // For Trade Matrix sliders, also check if there's a Trade History rating
+                        // by looking for numeric indices that might match this trade
+                        Object.keys(grades).forEach(storedIndex => {
+                            if (!isNaN(storedIndex) && grades[storedIndex] !== undefined) {
+                                // This is a Trade History index - we'll let Firebase loading handle the mapping
+                                console.log(`Found Trade History rating ${grades[storedIndex]} for index ${storedIndex}`);
+                            }
+                        });
                     }
                 });
             } catch (error) {
@@ -11885,6 +11922,46 @@
             if (statusEl) statusEl.textContent = '💾 Local storage only';
         }
 
+        // Helper function to generate consistent Firebase trade IDs
+        function generateFirebaseTradeId(tradeIndex, tradeItem) {
+            // Try to get date and summary from Trade History format
+            let dateElement = tradeItem?.querySelector('.trade-date');
+            let summaryElement = tradeItem?.querySelector('.trade-summary strong');
+            
+            // If not found, try Trade Matrix format
+            if (!dateElement) {
+                dateElement = tradeItem?.querySelector('.trade-detail-date');
+            }
+            
+            let tradeId;
+            if (dateElement && summaryElement) {
+                // Trade History format
+                tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
+            } else if (dateElement && tradeIndex.includes('-')) {
+                // Trade Matrix format - extract date, time, and teams
+                const dateText = dateElement.textContent.trim(); // e.g., "Trade #1 - 2022-07-21 02:37 PM"
+                const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})\s+(\d{1,2}:\d{2}\s+[AP]M)/);
+                const teams = tradeIndex.split('-'); // e.g., ["BaoDown", "EBao", "0"]
+                
+                if (dateMatch && teams.length >= 2) {
+                    // Format: 2022_07_21_02_37_PM_team1___team2
+                    const date = dateMatch[1].replace(/-/g, '_'); // 2022_07_21
+                    const time = dateMatch[2].replace(/[:\s]/g, '_'); // 02_37_PM
+                    const team1 = teams[0];
+                    const team2 = teams[1];
+                    tradeId = `${date}_${time}_${team1}___${team2}`;
+                } else {
+                    // Fallback if parsing fails
+                    tradeId = `${dateText}_${tradeIndex}`.replace(/[^a-zA-Z0-9_]/g, '_');
+                }
+            } else {
+                // Fallback - just use the trade index
+                tradeId = tradeIndex.replace(/[^a-zA-Z0-9]/g, '_');
+            }
+            
+            return tradeId;
+        }
+        
         function saveTradeGradeToFirebase(tradeIndex, gradeValue, userName) {
             console.log('🔍 saveTradeGradeToFirebase called with:', { tradeIndex, gradeValue, userName, dbExists: !!db });
             if (!db) {
@@ -11895,23 +11972,47 @@
             try {
                 // Get trade info
                 const tradeItem = document.querySelector(`#trade-grade-${tradeIndex}`)?.closest('.trade-item');
-                const dateElement = tradeItem?.querySelector('.trade-date');
-                const summaryElement = tradeItem?.querySelector('.trade-summary strong');
                 
-                const tradeId = `${dateElement?.textContent.trim()}_${summaryElement?.textContent.trim()}`.replace(/[^a-zA-Z0-9]/g, '_');
+                // Generate consistent trade ID
+                const tradeId = generateFirebaseTradeId(tradeIndex, tradeItem);
                 
-                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}`);
+                console.log(`💾 Saving to Firebase: Trade ${tradeIndex}, User: ${userName}, Rating: ${gradeValue}, ID: ${tradeId}`);
                 
-                db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
-                    rating: gradeValue,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    tradeIndex: tradeIndex,
-                    userName: userName
-                }).then(() => {
-                    console.log('✅ Rating saved to Firebase successfully');
-                }).catch((error) => {
-                    console.error('❌ Error saving to Firebase:', error);
-                });
+                // First, check if this trade already exists in Firebase to get its Trade History index
+                db.collection('tradeRatings').doc(tradeId).collection('ratings').get()
+                    .then(existingRatings => {
+                        let historyIndex = null;
+                        
+                        // Look for an existing Trade History index
+                        existingRatings.forEach(doc => {
+                            const data = doc.data();
+                            if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                historyIndex = data.tradeIndex.toString();
+                                console.log(`Found existing Trade History index: ${historyIndex}`);
+                                
+                                // Update the mapping
+                                if (tradeIndex.includes('-')) {
+                                    window.tradeIndexMapping[tradeIndex] = historyIndex;
+                                    
+                                    // Also save to localStorage with the Trade History index
+                                    saveTradeGrade(historyIndex, gradeValue);
+                                }
+                            }
+                        });
+                        
+                        // Now save the rating
+                        return db.collection('tradeRatings').doc(tradeId).collection('ratings').doc(userName).set({
+                            rating: gradeValue,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            tradeIndex: historyIndex || tradeIndex, // Use Trade History index if available
+                            userName: userName
+                        });
+                    })
+                    .then(() => {
+                        console.log('✅ Rating saved to Firebase successfully');
+                    }).catch((error) => {
+                        console.error('❌ Error saving to Firebase:', error);
+                    });
                 
             } catch (error) {
                 console.error('❌ Error in saveTradeGradeToFirebase:', error);
@@ -11984,6 +12085,152 @@
                 }
             }
             return userName;
+        }
+        
+        // Global mapping between Trade Matrix indices and Trade History indices
+        window.tradeIndexMapping = {};
+        
+        function checkForCrossViewRatings() {
+            console.log('🔄 Checking for cross-view ratings...');
+            const grades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+            
+            // Look through all localStorage entries
+            Object.keys(grades).forEach(storedIndex => {
+                // If this is a Trade Matrix index (contains hyphen and looks like team1-team2-number)
+                if (storedIndex.includes('-') && storedIndex.split('-').length >= 3) {
+                    console.log(`Found Trade Matrix rating for ${storedIndex}: ${grades[storedIndex]}`);
+                    
+                    // Try to find corresponding Trade History slider
+                    // We need to check Firebase to get the mapping
+                    if (db) {
+                        // Extract team names from the index
+                        const parts = storedIndex.split('-');
+                        if (parts.length >= 2) {
+                            const team1 = parts[0];
+                            const team2 = parts[1];
+                            
+                            // Look for any Trade History sliders that might match this trade
+                            document.querySelectorAll('.trade-grade-slider').forEach(slider => {
+                                const sliderIndex = slider.id.replace('trade-grade-', '');
+                                
+                                // Skip if this is also a Trade Matrix slider
+                                if (!sliderIndex.includes('-') && !isNaN(sliderIndex)) {
+                                    // This is a Trade History slider - check if it matches
+                                    const tradeItem = slider.closest('.trade-item');
+                                    if (tradeItem) {
+                                        const summaryText = tradeItem.querySelector('.trade-summary')?.textContent || '';
+                                        
+                                        // Check if this trade involves both teams
+                                        if (summaryText.includes(team1) && summaryText.includes(team2)) {
+                                            console.log(`Found matching Trade History slider ${sliderIndex} for teams ${team1} and ${team2}`);
+                                            
+                                            // Update the slider with the Trade Matrix rating
+                                            if (!grades[sliderIndex]) {
+                                                console.log(`Updating Trade History slider ${sliderIndex} with Trade Matrix rating ${grades[storedIndex]}`);
+                                                slider.value = grades[storedIndex];
+                                                updateTradeGradeDisplay(sliderIndex, grades[storedIndex], 1);
+                                                
+                                                // Also save to localStorage with the Trade History index
+                                                saveTradeGrade(sliderIndex, grades[storedIndex]);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        
+        function loadFirebaseRatingsForDisplay() {
+            console.log('🔄 Loading Firebase ratings for Trade Matrix...');
+            if (!db) return;
+            
+            // Get username without prompting
+            const currentUser = localStorage.getItem('tradeRaterName');
+            
+            // Find all trade sliders on the page
+            const sliders = document.querySelectorAll('.trade-grade-slider');
+            console.log(`Found ${sliders.length} trade sliders to check`);
+            
+            sliders.forEach(slider => {
+                const tradeIndex = slider.id.replace('trade-grade-', '');
+                const tradeItem = slider.closest('.trade-item');
+                
+                if (tradeItem) {
+                    // Generate the Firebase ID for this trade
+                    const firebaseTradeId = generateFirebaseTradeId(tradeIndex, tradeItem);
+                    console.log(`Checking Firebase for trade ${tradeIndex} with ID: ${firebaseTradeId}`);
+                    
+                    // Load this specific trade's ratings from Firebase
+                    db.collection('tradeRatings').doc(firebaseTradeId).collection('ratings').get()
+                        .then(ratingsSnapshot => {
+                            if (!ratingsSnapshot.empty) {
+                                console.log(`Found ${ratingsSnapshot.size} ratings for trade ${firebaseTradeId}`);
+                                
+                                let userRating = null;
+                                let actualTradeIndex = null;
+                                const allRatings = [];
+                                
+                                ratingsSnapshot.forEach(doc => {
+                                    const data = doc.data();
+                                    const rating = data.rating;
+                                    allRatings.push(rating);
+                                    
+                                    // Check if this document has a numeric tradeIndex (from Trade History)
+                                    if (data.tradeIndex !== undefined && !isNaN(data.tradeIndex)) {
+                                        actualTradeIndex = data.tradeIndex.toString();
+                                        console.log(`Found Trade History index: ${actualTradeIndex} for Trade Matrix index: ${tradeIndex}`);
+                                        // Store the mapping
+                                        window.tradeIndexMapping[tradeIndex] = actualTradeIndex;
+                                    }
+                                    
+                                    if (doc.id === currentUser) {
+                                        userRating = rating;
+                                    }
+                                });
+                                
+                                // Update slider with user's rating if found
+                                if (userRating !== null || actualTradeIndex) {
+                                    // Check localStorage for both indices
+                                    const localGrades = JSON.parse(localStorage.getItem('tradeGrades') || '{}');
+                                    
+                                    // Use the Trade History rating if it exists in localStorage
+                                    let finalRating = userRating;
+                                    if (actualTradeIndex && localGrades[actualTradeIndex] !== undefined) {
+                                        finalRating = localGrades[actualTradeIndex];
+                                        console.log(`Using Trade History localStorage rating: ${finalRating} for index ${actualTradeIndex}`);
+                                    } else if (userRating !== null) {
+                                        console.log(`Using Firebase rating: ${finalRating}`);
+                                    }
+                                    
+                                    if (finalRating !== null) {
+                                        console.log(`Setting slider ${tradeIndex} to rating: ${finalRating}`);
+                                        slider.value = finalRating;
+                                        updateTradeGradeDisplay(tradeIndex, finalRating, 1);
+                                        
+                                        // Save to localStorage with both indices to keep them in sync
+                                        saveTradeGrade(tradeIndex, finalRating);
+                                        if (actualTradeIndex) {
+                                            saveTradeGrade(actualTradeIndex, finalRating);
+                                        }
+                                    }
+                                }
+                                
+                                // Calculate and display average if multiple ratings exist
+                                if (allRatings.length > 1) {
+                                    const avgRating = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
+                                    console.log(`Average rating for trade ${tradeIndex}: ${avgRating.toFixed(1)} from ${allRatings.length} users`);
+                                    // You could display this average somewhere if desired
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error(`Error loading ratings for trade ${firebaseTradeId}:`, error);
+                        });
+                }
+            });
         }
 
 
@@ -12077,6 +12324,9 @@
             // Load trade grades from localStorage
             loadTradeGrades();
             
+            // Also check for any Trade Matrix ratings that should update Trade History
+            checkForCrossViewRatings();
+            
             // Load average ratings from Firebase
             if (db) {
                 loadAverageRatings();
@@ -12113,60 +12363,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, tabs ready');
         });
-        
-        // Diagnostic function to check for duplicate panels
-        function checkDuplicatePanels() {
-            const allPanels = document.querySelectorAll('.visualization-panel');
-            const panelIds = {};
-            
-            console.log('=== Panel Diagnostic ===');
-            console.log('Total panels found:', allPanels.length);
-            
-            allPanels.forEach((panel, index) => {
-                const id = panel.id;
-                const classes = panel.className;
-                const rect = panel.getBoundingClientRect();
-                const computed = window.getComputedStyle(panel);
-                
-                console.log(`Panel ${index + 1}:`, {
-                    id: id,
-                    classes: classes,
-                    width: rect.width,
-                    height: rect.height,
-                    display: computed.display,
-                    visibility: computed.visibility,
-                    position: computed.position,
-                    parent: panel.parentElement?.className || 'none'
-                });
-                
-                if (panelIds[id]) {
-                    console.error(`DUPLICATE PANEL FOUND: ${id}`);
-                } else {
-                    panelIds[id] = true;
-                }
-            });
-            
-            // Check specifically for matchups panel
-            const matchupsPanels = document.querySelectorAll('#matchups-panel');
-            console.log('Matchups panels found:', matchupsPanels.length);
-            
-            if (matchupsPanels.length > 1) {
-                console.error('MULTIPLE MATCHUPS PANELS DETECTED!');
-                matchupsPanels.forEach((panel, i) => {
-                    console.log(`Matchups panel ${i + 1} parent:`, panel.parentElement);
-                });
-            }
-            
-            return panelIds;
-        }
-        
-        window.checkDuplicatePanels = checkDuplicatePanels;
-        
-        // Run diagnostic after page load
-        setTimeout(() => {
-            console.log('Running automatic panel diagnostic...');
-            checkDuplicatePanels();
-        }, 1000);
     </script>
 </div></body>
 </html>
