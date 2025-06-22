@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Matchups Test</title>
+    <style>
+        body { background: #1a1a1a; color: white; }
+        
+        .visualization-panel {
+            display: none;
+            background: yellow;
+            padding: 20px;
+            border: 2px solid red;
+        }
+        
+        .visualization-panel.active {
+            display: block;
+        }
+        
+        .panel-content {
+            background: green;
+            padding: 20px;
+            min-height: 200px;
+        }
+        
+        #matchupsContainer {
+            background: blue;
+            padding: 20px;
+            min-height: 100px;
+            color: white;
+        }
+        
+        .year-matchups {
+            background: purple;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test - Can We See These Divs?</h1>
+    
+    <div class="visualization-panel active" id="matchups-panel">
+        <h2>Matchups Panel (Yellow Background)</h2>
+        <div class="panel-content">
+            <h3>Panel Content (Green Background)</h3>
+            <div id="matchupsContainer">
+                <h4>Matchups Container (Blue Background)</h4>
+                <div class="year-matchups" data-year="2024">
+                    <p>2024 Matchups (Purple Background)</p>
+                    <p>This text should be visible!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button onclick="checkDimensions()">Check Dimensions</button>
+    
+    <script>
+        function checkDimensions() {
+            const panel = document.getElementById('matchups-panel');
+            const content = panel.querySelector('.panel-content');
+            const container = document.getElementById('matchupsContainer');
+            
+            console.log('Panel:', panel.offsetWidth + 'x' + panel.offsetHeight);
+            console.log('Content:', content.offsetWidth + 'x' + content.offsetHeight);
+            console.log('Container:', container.offsetWidth + 'x' + container.offsetHeight);
+        }
+    </script>
+</body>
+</html>
