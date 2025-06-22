@@ -967,6 +967,50 @@
         }
     </style>
     <script>
+        // DEBUG FUNCTION
+        function debugMatchups() {
+            console.log('=== DEBUGGING MATCHUPS ===');
+            
+            const panel = document.getElementById('matchups-panel');
+            const panelContent = panel ? panel.querySelector('.panel-content') : null;
+            const container = document.getElementById('matchupsContainer');
+            const yearMatchups = document.querySelectorAll('.year-matchups');
+            
+            console.log('Panel exists:', !!panel);
+            console.log('Panel display:', panel ? getComputedStyle(panel).display : 'N/A');
+            console.log('Panel dimensions:', panel ? `${panel.offsetWidth}x${panel.offsetHeight}` : 'N/A');
+            
+            console.log('PanelContent exists:', !!panelContent);
+            console.log('PanelContent display:', panelContent ? getComputedStyle(panelContent).display : 'N/A');
+            console.log('PanelContent dimensions:', panelContent ? `${panelContent.offsetWidth}x${panelContent.offsetHeight}` : 'N/A');
+            
+            console.log('Container exists:', !!container);
+            console.log('Container display:', container ? getComputedStyle(container).display : 'N/A');
+            console.log('Container dimensions:', container ? `${container.offsetWidth}x${container.offsetHeight}` : 'N/A');
+            console.log('Container parent:', container ? container.parentElement.id || container.parentElement.className : 'N/A');
+            
+            console.log('Year matchups count:', yearMatchups.length);
+            yearMatchups.forEach((ym, i) => {
+                console.log(`Year ${i}: ${ym.getAttribute('data-year')}, display: ${getComputedStyle(ym).display}, dimensions: ${ym.offsetWidth}x${ym.offsetHeight}`);
+            });
+            
+            // Try to find where the content is
+            if (container && container.offsetHeight === 0) {
+                console.log('Container has 0 height. Checking parents...');
+                let parent = container.parentElement;
+                while (parent && parent !== document.body) {
+                    console.log(`Parent: ${parent.tagName}.${parent.className || parent.id}, display: ${getComputedStyle(parent).display}, dimensions: ${parent.offsetWidth}x${parent.offsetHeight}`);
+                    parent = parent.parentElement;
+                }
+            }
+            
+            // Force everything visible
+            console.log('FORCING EVERYTHING VISIBLE...');
+            if (panel) panel.style.cssText = 'display: block !important; visibility: visible !important; height: 1000px !important; background: yellow !important;';
+            if (panelContent) panelContent.style.cssText = 'display: block !important; visibility: visible !important; height: 800px !important; background: green !important;';
+            if (container) container.style.cssText = 'display: block !important; visibility: visible !important; height: 600px !important; background: red !important;';
+        }
+        
         // NUCLEAR OPTION: Force matchups to display
         function forceMatchupsDisplay() {
             console.log('FORCING MATCHUPS DISPLAY');
@@ -1162,6 +1206,7 @@
 <button class="tab-button" onclick="showPanel('timeline')">📅 Trade History</button>
 <button class="tab-button" onclick="showPanel('players')">👤 Player Journey</button>
 <button class="tab-button" onclick="showPanel('matchups')">⚔️ Matchups</button>
+<button class="tab-button" onclick="debugMatchups()" style="background: red;">DEBUG</button>
 <button class="tab-button" onclick="showPanel('draft')">🏈 Draft Results</button>
 </div>
 </div>
